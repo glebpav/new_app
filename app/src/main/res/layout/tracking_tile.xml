@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="5dp">
+
+    <soup.neumorphism.NeumorphCardView
+        android:id="@+id/nuemorph_card"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:padding="20dp"
+        app:neumorph_shapeType="pressed">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="тема"
+                android:textSize="30sp"
+                android:id="@+id/tv_tracking_theme"
+                android:layout_marginLeft="10dp"/>
+
+            <soup.neumorphism.NeumorphFloatingActionButton
+                style="@style/Widget.Neumorph.FloatingActionButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:textSize="30sp"
+                android:layout_toLeftOf="@+id/btn_delete"
+                android:src="@drawable/ic_baseline_chevron_right_24"
+                android:scaleType="center"
+                android:id="@+id/btn_open"
+                app:neumorph_shapeType="flat"/>
+
+            <soup.neumorphism.NeumorphFloatingActionButton
+                style="@style/Widget.Neumorph.FloatingActionButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:textSize="30sp"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/ic_baseline_close_24"
+                android:scaleType="center"
+                android:id="@+id/btn_delete"
+                app:neumorph_shapeType="flat"/>
+        </RelativeLayout>
+    </soup.neumorphism.NeumorphCardView>
+
+</RelativeLayout>

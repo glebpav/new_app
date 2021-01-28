@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animationCache="false"
+    tools:context=".Searching">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="Поиск новостей"
+            android:textSize="30sp"
+            android:textColor="#5E5E5E"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_search"
+            android:id="@+id/linear1">
+
+            <soup.neumorphism.NeumorphCardView
+                style="@style/Widget.Neumorph.CardView"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                app:neumorph_lightSource="leftTop"
+                app:neumorph_shapeType="pressed">
+
+                <EditText
+                    android:id="@+id/et_theme"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:background="@android:color/transparent" />
+
+            </soup.neumorphism.NeumorphCardView>
+
+            <soup.neumorphism.NeumorphFloatingActionButton
+                android:id="@+id/btn_find"
+                style="@style/Widget.Neumorph.FloatingActionButton"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_baseline_find_replace_24"
+                android:scaleType="center">
+
+            </soup.neumorphism.NeumorphFloatingActionButton>
+
+        </LinearLayout>
+
+        <androidx.viewpager.widget.ViewPager
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/view_pager"
+            android:layout_below="@id/linear1"
+            android:visibility="invisible"
+            android:foregroundGravity="center"
+            android:overScrollMode="never"
+            android:clipToPadding="false"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            />
+
+        <ProgressBar
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="370dp"
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible"
+            android:id="@+id/progress_circular"
+            />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/find4"
+            android:padding="40dp"
+            android:scaleType="fitEnd"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/img_hello"
+            android:alpha="0.3"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/error_layout"
+            android:visibility="invisible">
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:src="@drawable/error"
+                android:id="@+id/img_error"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="300dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Упс, что-то пошло не так"
+                android:layout_below="@+id/img_error"
+                android:layout_centerHorizontal="true"
+                android:textSize="20sp"
+                android:layout_marginTop="20dp"
+                android:textStyle="bold"
+                android:textColor="#FF0A0A"/>
+
+        </RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>
