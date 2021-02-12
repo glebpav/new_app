@@ -22,6 +22,8 @@
                 android:layout_centerVertical="true"
                 android:text="тема"
                 android:textSize="30sp"
+                android:fontFamily="@font/monserrat"
+                android:textStyle="bold"
                 android:id="@+id/tv_tracking_theme"
                 android:layout_marginLeft="10dp"/>
 

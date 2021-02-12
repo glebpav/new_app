@@ -54,7 +54,9 @@
             android:layout_centerHorizontal="true"
             android:text="Name"
             android:textColor="#FFFF"
-            android:textSize="35sp" />
+            android:textSize="35sp"
+            android:fontFamily="@font/monserrat"
+            android:textStyle="bold"/>
 
 
         <com.chinodev.androidneomorphframelayout.NeomorphFrameLayout
@@ -93,7 +95,8 @@
                         android:textAlignment="center"
                         android:textColor="#000000"
                         android:textSize="20sp"
-                        tools:ignore="RtlCompat" />
+                        tools:ignore="RtlCompat"
+                        android:fontFamily="@font/monserrat"/>
 
                     <TextView
                         android:id="@+id/tv_count_themes"
@@ -104,7 +107,8 @@
                         android:textAlignment="center"
                         android:textColor="#3C9BFF"
                         android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:fontFamily="@font/monserrat"/>
 
                 </LinearLayout>
 
@@ -123,7 +127,8 @@
                         android:textAlignment="center"
                         android:textColor="#000000"
                         android:textSize="20sp"
-                        tools:ignore="RtlCompat" />
+                        tools:ignore="RtlCompat"
+                        android:fontFamily="@font/monserrat"/>
 
                     <TextView
                         android:id="@+id/tv_count_tracking"
@@ -134,25 +139,19 @@
                         android:textAlignment="center"
                         android:textColor="#3C9BFF"
                         android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:fontFamily="@font/monserrat"/>
 
                 </LinearLayout>
             </LinearLayout>
         </com.chinodev.androidneomorphframelayout.NeomorphFrameLayout>
 
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="История поиска"
-            android:id="@+id/tv_history"
-            android:layout_below="@id/chinodev"
-            android:layout_centerHorizontal="true"
-            android:textSize="20dp"/>
+
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/tv_history"
+            android:layout_below="@+id/chinodev"
             android:layout_above="@id/linear2"
             android:id="@+id/lv_history"
             android:layout_marginTop="10dp"
@@ -173,7 +172,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="сменить имя" />
+                android:text="сменить имя"
+                android:fontFamily="@font/monserrat"/>
 
             <soup.neumorphism.NeumorphButton
                 android:id="@+id/btn_sign_out"
@@ -182,7 +182,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Выйти"
-                app:neomorph_view_type="rectangular" />
+                app:neomorph_view_type="rectangular"
+                android:fontFamily="@font/monserrat"/>
         </LinearLayout>
     </RelativeLayout>
 
@@ -215,7 +216,8 @@
             android:textSize="20sp"
             android:layout_marginTop="20dp"
             android:textStyle="bold"
-            android:textColor="#FF0A0A"/>
+            android:textColor="#FF0A0A"
+            android:fontFamily="@font/monserrat"/>
 
     </RelativeLayout>
 

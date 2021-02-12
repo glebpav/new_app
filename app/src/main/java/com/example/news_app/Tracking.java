@@ -62,6 +62,7 @@ public class Tracking extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         recycler_view.setLayoutManager(llm);
 
+        clearThemes();
         adapter  = new Tracking_themes_adapter(serialise_themes(user.themes.split(";")), this, pager, meow);
         recycler_view.setAdapter(adapter);
 
@@ -126,9 +127,12 @@ public class Tracking extends Fragment {
         return strings_list;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d("asd", "onResume");
+    void clearThemes(){
+        try {
+            user.themes = user.themes.replace(";;", ";");
+            if (user.themes.charAt(0) == ';'){
+                user.themes = user.themes.substring(1);
+            }
+        }catch (Exception e){}
     }
 }

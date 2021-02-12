@@ -28,72 +28,6 @@ public class MakeRequests {
         this.main_url = main_url;
     }
 
-    String sign_in(final String login, final String password) {
-        final String[] response_str = new String[1];
-        final MediaType JSON
-                = MediaType.get("application/json; charset=utf-8");
-        Thread t1 = new Thread() {
-            public void run() {
-                OkHttpClient client = new OkHttpClient();
-
-                String json = "{\"user\":{ \"login\": \"" + login + "\",\"password\": \"" + password + "\"}}";
-                Log.d("json", json);
-
-                RequestBody body = RequestBody.create(json, JSON);
-                Request request = new Request.Builder().url((main_url + "api/user_check/")).post(body).build();
-                try (Response response = client.newCall(request).execute()) {
-                    response_str[0] = response.body().string();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        t1.start();
-        try {
-            t1.join();
-            return response_str[0];
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        return response_str[0];
-    }
-
-    String sign_up(final String login, final String password, final String name) {
-        final String[] response_str = new String[1];
-        final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-
-        Thread t1 = new Thread() {
-            public void run() {
-                OkHttpClient client = new OkHttpClient();
-
-                String json = "{\"user\":{ \"login\": \"" + login + "\"," +
-                        "\"name\": \"" + name + "\"," +
-                        "\"password\": \"" + password + "\", " +
-                        "\"themes\": \"null\",\"history\": \"null\" }}";
-                Log.d("json", json);
-
-                RequestBody body = RequestBody.create(json, JSON);
-                Request request = new Request.Builder().url((main_url + "api/users/")).post(body).build();
-                try (Response response = client.newCall(request).execute()) {
-                    response_str[0] = response.body().string();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        t1.start();
-        try {
-            t1.join();
-            Log.d("response", response_str[0]);
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        return response_str[0];
-    }
-
     String change_user(final User user) {
         final String[] response_str = new String[1];
         final MediaType JSON = MediaType.get("application/json; charset=utf-8");
@@ -118,7 +52,6 @@ public class MakeRequests {
         t1.start();
         try {
             t1.join();
-            Log.d("response", response_str[0]);
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -142,7 +75,7 @@ public class MakeRequests {
             OkHttpClient client = new OkHttpClient();
 
             String json = "{\"user\":{" +
-                    "\"themes\": \"" + fragment.user.themes+ fragment.adding_theme +";\"}}";
+                    "\"themes\": \"" + fragment.user.themes + fragment.adding_theme + ";\"}}";
             Log.d("json", json);
 
             RequestBody body = RequestBody.create(json, JSON);
@@ -174,6 +107,7 @@ public class MakeRequests {
                         fragment.alertDialog.dismiss();
                         fragment.user = user;
                         fragment.adapter.themes_list = serialise_themes(user.themes.split(";"));
+                        fragment.clearThemes();
                         fragment.recycler_view.getAdapter().notifyDataSetChanged();
 
                         Toast.makeText(fragment.getContext(), "Тема успешно добавлена", Toast.LENGTH_SHORT).show();
@@ -207,8 +141,11 @@ public class MakeRequests {
 
             OkHttpClient client = new OkHttpClient();
 
+            fragment.user.themes = fragment.user.themes.replace(";;", ";");
+
             String json = "{\"user\":{" +
-                    "\"themes\": \"" + fragment.user.themes.replace(deleting_theme+";", "") +";\"}}";
+                    "\"themes\": \"" + fragment.user.themes.replace(deleting_theme + ";", "") + ";\"}}";
+
             Log.d("json", json);
 
             RequestBody body = RequestBody.create(json, JSON);
@@ -236,8 +173,18 @@ public class MakeRequests {
                     User user = null;
                     try {
                         user = serialize_User(obj.getString("user"));
+
+                        try {
+                            user.themes = user.themes.replace(";;", ";");
+                            if (user.themes.charAt(0) == ';') {
+                                user.themes = user.themes.substring(1);
+                            }
+                        } catch (Exception e) {
+                        }
+
                         fragment.progress_bar.setVisibility(View.INVISIBLE);
                         fragment.user = user;
+                        fragment.clearThemes();
                         fragment.adapter.themes_list = serialise_themes(user.themes.split(";"));
                         fragment.recycler_view.getAdapter().notifyDataSetChanged();
 
@@ -258,9 +205,15 @@ public class MakeRequests {
     class Sign_in_request extends AsyncTask<Void, Void, String> {
 
         Sign_in fragment;
+        boolean isFromUser;
 
         Sign_in_request(Sign_in fragment) {
             this.fragment = fragment;
+        }
+
+        public Sign_in_request(Sign_in fragment, boolean isFromUser) {
+            this.fragment = fragment;
+            this.isFromUser = isFromUser;
         }
 
         @Override
@@ -295,6 +248,14 @@ public class MakeRequests {
             try {
                 obj = new JSONObject(server_response);
                 if (obj.getString("status").equals("ok")) {
+
+                    if (fragment.cb_remember_me.isChecked()) {
+                        SharedPreferences pref = fragment.getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor edt = pref.edit();
+                        edt.putString("login", fragment.login);
+                        edt.putString("password", fragment.password);
+                        edt.commit();
+                    }
                     User user = null;
                     try {
                         user = serialize_User(obj.getString("user"));
@@ -363,8 +324,7 @@ public class MakeRequests {
                 if (obj.getString("status").equals("ok")) {
                     Toast.makeText(fragment.getActivity(), "Пользователь создан успешно", Toast.LENGTH_SHORT).show();
                     return;
-                }
-                else if (obj.getString("status").equals("bad response")){
+                } else if (obj.getString("status").equals("bad response")) {
                     Toast.makeText(fragment.getActivity(), obj.getString("trouble"), Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -373,6 +333,16 @@ public class MakeRequests {
             }
 
             Toast.makeText(fragment.getActivity(), "Возникла проблема с автоматической авторизацией", Toast.LENGTH_LONG).show();
+        }
+
+        String deleteTheme(String fullStr, String deletingStr) {
+            String outStr = "";
+            for (int i = 0; i < fullStr.length(); i++) {
+                if (fullStr.charAt(i) == deletingStr.charAt(0))
+                    while (fullStr.charAt(i) != 0) i++;
+                outStr += fullStr.charAt(i);
+            }
+            return fullStr;
         }
     }
 
@@ -573,7 +543,7 @@ public class MakeRequests {
                         fragment.adapter = new Top_news_adapter(fragment.getContext(), news_list);
                         fragment.view_pager.setAdapter(fragment.adapter);
                         //fragment.view_pager.getAdapter().notifyDataSetChanged();
-                        fragment.view_pager.setPadding(65,0,65,0);
+                        fragment.view_pager.setPadding(65, 0, 65, 0);
                         fragment.progressBar.setVisibility(View.INVISIBLE);
                         fragment.view_pager.setVisibility(View.VISIBLE);
                         return;

@@ -42,15 +42,13 @@ public class Searching extends Fragment {
     RelativeLayout layout_error;
     ViewPager2 pager;
 
-
     User user;
     Searching fragment_search;
     MakeRequests requests;
     ArrayList<News> news_list;
     View_news_adapter adapter;
 
-
-    Searching(ViewPager2 pager, User user){
+    Searching(ViewPager2 pager, User user) {
         this.pager = pager;
         this.user = user;
     }
@@ -68,11 +66,12 @@ public class Searching extends Fragment {
 
         news_list = new ArrayList<>();
         adapter = new View_news_adapter(getContext(), news_list);
-        view_pager.setAdapter(adapter);
+
+        view_pager.setClipToPadding(false);
         view_pager.setPadding(65,0,65,0);
+        view_pager.setAdapter(adapter);
 
         btn_find.setOnClickListener(btn_find_clicked);
-
         requests = new MakeRequests("https://analisinf.pythonanywhere.com/");
         fragment_search = this;
 
@@ -83,15 +82,12 @@ public class Searching extends Fragment {
         @Override
         public void onClick(View v) {
             String theme = et_theme.getText().toString();
-
             if (theme.length() == 0) {
                 Toast.makeText(getActivity(), "Введите тему", Toast.LENGTH_SHORT).show();
                 return;
             }
-
             MakeRequests.Find_news find_news = requests.new Find_news(fragment_search, theme);
             find_news.execute();
-
         }
     };
 

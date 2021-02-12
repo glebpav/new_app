@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.ArrayList;
@@ -48,7 +49,8 @@ public class View_news_adapter extends PagerAdapter {
         View view = layoutInflater.inflate(R.layout.article_tile, container, false);
 
         NeumorphButton btn;
-        NeumorphCardView card_view_tile;
+        //NeumorphCardView card_view_tile;
+        CardView card_view_tile;
         TextView tv_title, tv_description, tv_rating;
 
         final News article = news_array.get(position);
@@ -59,6 +61,7 @@ public class View_news_adapter extends PagerAdapter {
         tv_description = view.findViewById(R.id.tv_tile_description);
         tv_rating = view.findViewById(R.id.tv_tile_rating);
         btn = view.findViewById(R.id.btn_tile_more_inf);
+        //card_view_tile = view.findViewById(R.id.card_tile);
         card_view_tile = view.findViewById(R.id.card_tile);
 
         tv_title.setText(article.title);
@@ -75,14 +78,14 @@ public class View_news_adapter extends PagerAdapter {
         return view;
     }
 
-    public void set_rating_value(double rating_value, TextView tv_rating, NeumorphCardView card_view_tile, NeumorphButton btn){
+    public void set_rating_value(double rating_value, TextView tv_rating, CardView card_view_tile, NeumorphButton btn){
 
         Log.d("asd", String.valueOf(rating_value));
         if (rating_value < 0.35){
             tv_rating.setText("Негативно");
             Log.d("asd", "pos");
             tv_rating.setTextColor(Color.argb(100,150,0, 0));
-            card_view_tile.setShadowColorDark(Color.argb(100,255,0, 0));
+            //card_view_tile.setShadowColorDark(Color.argb(100,255,0, 0));
             //btn.setShadowColorDark(Color.argb(100,255,0, 0));
             //btn.setShadowColorLight(Color.argb(100,255,0, 0));
         }
@@ -90,7 +93,7 @@ public class View_news_adapter extends PagerAdapter {
             tv_rating.setText("Нейтрально");
             Log.d("asd", "neut");
             tv_rating.setTextColor(Color.argb(100,0,0, 150));
-            card_view_tile.setShadowColorDark(Color.argb(100,0,0, 255));
+            //card_view_tile.setShadowColorDark(Color.argb(100,0,0, 255));
             //btn.setShadowColorDark(Color.argb(100,0,0, 255));
             //btn.setShadowColorLight(Color.argb(100,0,0, 255));
         }
@@ -98,7 +101,7 @@ public class View_news_adapter extends PagerAdapter {
             tv_rating.setText("Позитивно");
             Log.d("asd", "neg");
             tv_rating.setTextColor(Color.argb(100,0,150, 0));
-            card_view_tile.setShadowColorDark(Color.argb(100,0,255, 0));
+            //card_view_tile.setShadowColorDark(Color.argb(100,0,255, 0));
             //btn.setShadowColorDark(Color.argb(100,0,255, 0));
             //btn.setShadowColorLight(Color.argb(100,0,255, 0));
         }

@@ -43,6 +43,7 @@ public class Sign_in extends Fragment {
     ProgressBar progress_bar;
 
     MakeRequests requests;
+    Sign_in thisFragment;
     String login, password;
 
     final String url = "https://analisinf.pythonanywhere.com/";
@@ -62,6 +63,7 @@ public class Sign_in extends Fragment {
         btn_sign_up.setOnClickListener(btn_sign_up_clicked);
 
         requests = new MakeRequests("https://analisinf.pythonanywhere.com/");
+        thisFragment = this;
 
         check_user();
 
@@ -74,7 +76,6 @@ public class Sign_in extends Fragment {
         password = pref.getString("password", "");
         String status = "bad request";
 
-        //String server_request = requests.sign_in(login, password);
         Log.d("asd", login + " - " + login.length());
         Log.d("asd", password + " - " + password.length());
 
@@ -97,55 +98,20 @@ public class Sign_in extends Fragment {
     View.OnClickListener btn_sign_in_clicked = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            String status = "bad request", trouble = "something went wrong";
+            login = et_login.getText().toString();
+            password = et_password.getText().toString();
 
-            if (et_login.getText().length() == 0) {
+            if (login.length() == 0) {
                 Toast.makeText(getActivity(), "введите логин", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (et_password.getText().length() == 0) {
+            if (login.length() == 0) {
                 Toast.makeText(getActivity(), "введите пароль", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            String server_request = requests.sign_in(et_login.getText().toString(), et_password.getText().toString());
-            Log.d("response", server_request);
-
-            String jsonString = server_request;
-            JSONObject obj = null;
-            try {
-                obj = new JSONObject(jsonString);
-                status = obj.getString("status");
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            if (status.equals("ok")) {
-                if (cb_remember_me.isChecked()) {
-                    SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor edt = pref.edit();
-                    edt.putString("login", et_login.getText().toString());
-                    edt.putString("password", et_password.getText().toString());
-                    edt.commit();
-                }
-                try {
-                    User user = serialize_User(obj.getString("user"));
-                    goto_next_activity(user);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            } else {
-
-                try {
-                    trouble = obj.getString("trouble");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                Toast.makeText(getActivity(), trouble, Toast.LENGTH_SHORT).show();
-            }
-
+            MakeRequests.Sign_in_request sign_in_request = requests.new Sign_in_request(thisFragment, true);
+            sign_in_request.execute();
         }
     };
 
@@ -161,14 +127,4 @@ public class Sign_in extends Fragment {
         startActivity(intent);
     }
 
-    User serialize_User(String jsonString) {
-        JSONObject obj = null;
-        try {
-            obj = new JSONObject(jsonString);
-            return new User(Integer.valueOf(obj.getString("id")), obj.getString("name"), obj.getString("login"), obj.getString("password"), obj.getString("history"), obj.getString("themes"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }
