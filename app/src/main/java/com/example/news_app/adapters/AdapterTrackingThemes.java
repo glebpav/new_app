@@ -1,33 +1,33 @@
-package com.example.news_app;
+package com.example.news_app.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
+import com.example.news_app.network.MakeRequests;
+import com.example.news_app.R;
+import com.example.news_app.fragments.FragmentTrackingTheme;
 
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.List;
 
 import soup.neumorphism.NeumorphFloatingActionButton;
 
-class Tracking_themes_adapter extends RecyclerView.Adapter<Tracking_themes_adapter.Tracking_themes_Holder> {
+public class AdapterTrackingThemes extends RecyclerView.Adapter<AdapterTrackingThemes.Tracking_themes_Holder> {
 
-    ArrayList <String> themes_list;
-    Tracking fragment;
+    public List <String> themes_list;
+    FragmentTrackingTheme fragment;
     ViewPager2 pager;
     MeowBottomNavigation meow;
 
-    Tracking_themes_adapter(ArrayList <String> themes_list, Tracking fragment, ViewPager2 pager, MeowBottomNavigation meow){
+    public AdapterTrackingThemes(List<String> themes_list, FragmentTrackingTheme fragment, ViewPager2 pager, MeowBottomNavigation meow) {
         this.themes_list = themes_list;
         this.fragment = fragment;
         this.pager = pager;
@@ -71,7 +71,7 @@ class Tracking_themes_adapter extends RecyclerView.Adapter<Tracking_themes_adapt
             btn_delete.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    MakeRequests.Delete_theme delete_theme = fragment.requests.new Delete_theme(fragment, themes_list.get(getAdapterPosition()));
+                    MakeRequests.DeleteTheme delete_theme = fragment.requests.new DeleteTheme(fragment, themes_list.get(getAdapterPosition()));
                     delete_theme.execute();
                 }
             });

@@ -1,4 +1,4 @@
-package com.example.news_app;
+package com.example.news_app.fragments;
 
 import android.app.AlertDialog;
 import android.graphics.drawable.ColorDrawable;
@@ -6,70 +6,66 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
+import com.example.news_app.adapters.AdapterTrackingThemes;
+import com.example.news_app.network.MakeRequests;
+import com.example.news_app.R;
+import com.example.news_app.databinding.FragmentTrackingBinding;
+import com.example.news_app.models.User;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.util.ArrayList;
-import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
-import soup.neumorphism.NeumorphButton;
+import java.util.Arrays;
 
-public class Tracking extends Fragment {
+public class FragmentTrackingTheme extends Fragment {
 
-    User user;
-    View view;
-    MakeRequests requests;
-    Tracking fragment;
-    AlertDialog alertDialog;
-    Tracking_themes_adapter adapter;
+    public User user;
+    public View view;
+    public MakeRequests requests;
+    public FragmentTrackingTheme fragment;
+    public AlertDialog alertDialog;
+    public AdapterTrackingThemes adapter;
 
-    RecyclerView recycler_view;
-    NeumorphButton btn_add_theme;
-    ProgressBar progress_bar_alert, progress_bar;
-    ViewPager2 pager;
-    MeowBottomNavigation meow;
+    public ViewPager2 pager;
+    public MeowBottomNavigation meow;
+    public FragmentTrackingBinding binding;
 
-    String adding_theme;
+    public String addingTheme;
 
-    Tracking(ViewPager2 pager, User user, MeowBottomNavigation meow) {
+    public FragmentTrackingTheme(ViewPager2 pager, User user, MeowBottomNavigation meow) {
         this.user = user;
         this.pager = pager;
         this.meow = meow;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_tracking, container, false);
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = FragmentTrackingBinding.inflate(inflater, container, false);
 
-        recycler_view = view.findViewById(R.id.recycle_view);
-        btn_add_theme = view.findViewById(R.id.btn_add_tracking_theme);
-        progress_bar = view.findViewById(R.id.progress_circular);
-
-        btn_add_theme.setOnClickListener(btn_add_theme_clicked);
+        binding.btnAddTrackingTheme.setOnClickListener(btn_add_theme_clicked);
 
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
-        recycler_view.setLayoutManager(llm);
+        binding.recyclerView.setLayoutManager(llm);
 
         clearThemes();
-        adapter  = new Tracking_themes_adapter(serialise_themes(user.themes.split(";")), this, pager, meow);
-        recycler_view.setAdapter(adapter);
+        adapter = new AdapterTrackingThemes( Arrays.asList(user.getThemes().split(";")),
+                this, pager, meow);
+        binding.recyclerView.setAdapter(adapter);
 
         requests = new MakeRequests("https://analisinf.pythonanywhere.com/");
         fragment = this;
 
-        return view;
+        return binding.getRoot();
     }
 
     View.OnClickListener btn_add_theme_clicked = new View.OnClickListener() {
@@ -85,7 +81,6 @@ public class Tracking extends Fragment {
             final TextInputEditText textInputEditText = view_dialog.findViewById(R.id.et_add_theme);
             Button btn_dismiss = view_dialog.findViewById(R.id.btn_dismiss);
             Button btn_apply = view_dialog.findViewById(R.id.btn_apply);
-            progress_bar_alert = view_dialog.findViewById(R.id.progress_circular_alert);
 
             alertDialog = builder.create();
 
@@ -103,36 +98,23 @@ public class Tracking extends Fragment {
                 @Override
                 public void onClick(View v) {
                     String theme = String.valueOf(textInputEditText.getText());
-
                     if (theme.length() == 0) {
-                        Toast.makeText(getContext(), "Введите тему", Toast.LENGTH_SHORT);
+                        Toast.makeText(getContext(), "Введите тему", Toast.LENGTH_SHORT).show();
                         return;
                     }
-
-                    adding_theme = theme;
-                    MakeRequests.Add_tracking_theme add_tracking_theme = requests.new Add_tracking_theme(fragment);
+                    addingTheme = theme;
+                    MakeRequests.AddTrackingTheme add_tracking_theme = requests.new AddTrackingTheme(fragment);
                     add_tracking_theme.execute();
                 }
             });
-
             alertDialog.show();
         }
     };
 
-    ArrayList<String> serialise_themes(String[] str) {
-        ArrayList<String> strings_list = new ArrayList<>();
-        for (String str_one : str) {
-            strings_list.add(str_one);
+    public void clearThemes() {
+        user.setThemes(user.getThemes().replace(";;", ";"));
+        if (user.getThemes().charAt(0) == ';') {
+            user.setThemes(user.getThemes().substring(1));
         }
-        return strings_list;
-    }
-
-    void clearThemes(){
-        try {
-            user.themes = user.themes.replace(";;", ";");
-            if (user.themes.charAt(0) == ';'){
-                user.themes = user.themes.substring(1);
-            }
-        }catch (Exception e){}
     }
 }

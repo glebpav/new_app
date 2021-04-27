@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animationCache="false"
-    tools:context=".Searching">
+    tools:context=".fragments.FragmentSearching">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -16,14 +16,9 @@
             android:id="@+id/tv_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
             android:text="Поиск новостей"
-            android:textSize="30sp"
-            android:fontFamily="@font/monserrat"
-            android:textStyle="bold"
-            android:textColor="#5E5E5E"/>
+            style="@style/topTitleText"
+            android:textColor="@color/dark_text"/>
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -3,18 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Top_News"
+    tools:context=".fragments.FragmentTopNews"
     >
 
     <TextView
         android:id="@+id/tv_top_news"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
         android:text="Горячие новости"
-        android:textSize="30sp"/>
+        style="@style/topTitleText"
+        android:textColor="@color/dark_text"/>
 
     <ProgressBar
         android:layout_width="100dp"
@@ -52,7 +50,7 @@
 
     <androidx.viewpager.widget.ViewPager
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="400dp"
         android:overScrollMode="never"
         android:clipToPadding="false"
         android:layout_centerInParent="true"

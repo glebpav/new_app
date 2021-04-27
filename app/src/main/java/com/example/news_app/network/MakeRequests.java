@@ -1,4 +1,4 @@
-package com.example.news_app;
+package com.example.news_app.network;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,6 +6,15 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import com.example.news_app.adapters.AdapterTopNews;
+import com.example.news_app.fragments.FragmentSearching;
+import com.example.news_app.fragments.FragmentSignIn;
+import com.example.news_app.fragments.FragmentSingUp;
+import com.example.news_app.fragments.FragmentTopNews;
+import com.example.news_app.fragments.FragmentTrackingTheme;
+import com.example.news_app.models.News;
+import com.example.news_app.models.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,14 +31,14 @@ import okhttp3.Response;
 
 public class MakeRequests {
 
-    String main_url;
+    String mainUrl;
 
-    MakeRequests(String main_url) {
-        this.main_url = main_url;
+    public MakeRequests(String mainUrl) {
+        this.mainUrl = mainUrl;
     }
 
-    String change_user(final User user) {
-        final String[] response_str = new String[1];
+    public void changeUser(final User user) {
+        final String[] responseStr = new String[1];
         final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
         Thread t1 = new Thread() {
@@ -37,13 +46,13 @@ public class MakeRequests {
                 OkHttpClient client = new OkHttpClient();
 
                 String json = "{\"user\":{" +
-                        "\"name\": \"" + user.name + "\"}}";
+                        "\"name\": \"" + user.getName() + "\"}}";
                 Log.d("json", json);
 
                 RequestBody body = RequestBody.create(json, JSON);
-                Request request = new Request.Builder().url((main_url + "api/users/" + user.id)).put(body).build();
+                Request request = new Request.Builder().url((mainUrl + "api/users/" + user.getId())).put(body).build();
                 try (Response response = client.newCall(request).execute()) {
-                    response_str[0] = response.body().string();
+                    responseStr[0] = response.body().string();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -56,14 +65,13 @@ public class MakeRequests {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return response_str[0];
     }
 
-    class Add_tracking_theme extends AsyncTask<Void, Void, String> {
+    public class AddTrackingTheme extends AsyncTask<Void, Void, String> {
 
-        Tracking fragment;
+        FragmentTrackingTheme fragment;
 
-        Add_tracking_theme(Tracking fragment) {
+        public AddTrackingTheme(FragmentTrackingTheme fragment) {
             this.fragment = fragment;
         }
 
@@ -75,11 +83,11 @@ public class MakeRequests {
             OkHttpClient client = new OkHttpClient();
 
             String json = "{\"user\":{" +
-                    "\"themes\": \"" + fragment.user.themes + fragment.adding_theme + ";\"}}";
+                    "\"themes\": \"" + fragment.user.getThemes() + fragment.addingTheme + ";\"}}";
             Log.d("json", json);
 
             RequestBody body = RequestBody.create(json, JSON);
-            Request request = new Request.Builder().url((main_url + "api/users/" + fragment.user.id)).put(body).build();
+            Request request = new Request.Builder().url((mainUrl + "api/users/" + fragment.user.getId())).put(body).build();
             try (Response response = client.newCall(request).execute()) {
                 response_str = response.body().string();
             } catch (IOException e) {
@@ -91,7 +99,7 @@ public class MakeRequests {
 
         @Override
         protected void onPreExecute() {
-            fragment.progress_bar_alert.setVisibility(View.VISIBLE);
+            fragment.binding.progressCircular.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -102,13 +110,13 @@ public class MakeRequests {
                 if (obj.getString("status").equals("ok")) {
                     User user = null;
                     try {
-                        user = serialize_User(obj.getString("user"));
-                        fragment.progress_bar_alert.setVisibility(View.INVISIBLE);
+                        user = serializeUser(obj.getString("user"));
+                        fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
                         fragment.alertDialog.dismiss();
                         fragment.user = user;
-                        fragment.adapter.themes_list = serialise_themes(user.themes.split(";"));
+                        fragment.adapter.themes_list = serialiseThemes(user.getThemes().split(";"));
                         fragment.clearThemes();
-                        fragment.recycler_view.getAdapter().notifyDataSetChanged();
+                        fragment.binding.recyclerView.getAdapter().notifyDataSetChanged();
 
                         Toast.makeText(fragment.getContext(), "Тема успешно добавлена", Toast.LENGTH_SHORT).show();
                         return;
@@ -119,17 +127,17 @@ public class MakeRequests {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            fragment.progress_bar_alert.setVisibility(View.INVISIBLE);
+            fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
             Toast.makeText(fragment.getActivity(), "Что-то пошло не так", Toast.LENGTH_LONG).show();
         }
     }
 
-    class Delete_theme extends AsyncTask<Void, Void, String> {
+    public class DeleteTheme extends AsyncTask<Void, Void, String> {
 
-        Tracking fragment;
+        FragmentTrackingTheme fragment;
         String deleting_theme;
 
-        Delete_theme(Tracking fragment, String deleting_theme) {
+        public DeleteTheme(FragmentTrackingTheme fragment, String deleting_theme) {
             this.fragment = fragment;
             this.deleting_theme = deleting_theme;
         }
@@ -141,15 +149,15 @@ public class MakeRequests {
 
             OkHttpClient client = new OkHttpClient();
 
-            fragment.user.themes = fragment.user.themes.replace(";;", ";");
+            fragment.user.setThemes(fragment.user.getThemes().replace(";;", ";"));
 
             String json = "{\"user\":{" +
-                    "\"themes\": \"" + fragment.user.themes.replace(deleting_theme + ";", "") + ";\"}}";
+                    "\"themes\": \"" + fragment.user.getThemes().replace(deleting_theme + ";", "") + ";\"}}";
 
             Log.d("json", json);
 
             RequestBody body = RequestBody.create(json, JSON);
-            Request request = new Request.Builder().url((main_url + "api/users/" + fragment.user.id)).put(body).build();
+            Request request = new Request.Builder().url((mainUrl + "api/users/" + fragment.user.getId())).put(body).build();
             try (Response response = client.newCall(request).execute()) {
                 response_str = response.body().string();
             } catch (IOException e) {
@@ -161,7 +169,7 @@ public class MakeRequests {
 
         @Override
         protected void onPreExecute() {
-            fragment.progress_bar.setVisibility(View.VISIBLE);
+            fragment.binding.progressCircular.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -172,21 +180,21 @@ public class MakeRequests {
                 if (obj.getString("status").equals("ok")) {
                     User user = null;
                     try {
-                        user = serialize_User(obj.getString("user"));
+                        user = serializeUser(obj.getString("user"));
 
                         try {
-                            user.themes = user.themes.replace(";;", ";");
-                            if (user.themes.charAt(0) == ';') {
-                                user.themes = user.themes.substring(1);
+                            user.setThemes(user.getThemes().replace(";;", ";"));
+                            if (user.getThemes().charAt(0) == ';') {
+                                user.setThemes(user.getThemes().substring(1));
                             }
                         } catch (Exception e) {
                         }
 
-                        fragment.progress_bar.setVisibility(View.INVISIBLE);
+                        fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
                         fragment.user = user;
                         fragment.clearThemes();
-                        fragment.adapter.themes_list = serialise_themes(user.themes.split(";"));
-                        fragment.recycler_view.getAdapter().notifyDataSetChanged();
+                        fragment.adapter.themes_list = serialiseThemes(user.getThemes().split(";"));
+                        fragment.binding.recyclerView.getAdapter().notifyDataSetChanged();
 
                         Toast.makeText(fragment.getContext(), "Тема успешно удвлена", Toast.LENGTH_SHORT).show();
                         return;
@@ -197,21 +205,21 @@ public class MakeRequests {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            fragment.progress_bar_alert.setVisibility(View.INVISIBLE);
+            fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
             Toast.makeText(fragment.getActivity(), "Что-то пошло не так", Toast.LENGTH_LONG).show();
         }
     }
 
-    class Sign_in_request extends AsyncTask<Void, Void, String> {
+    public class SignInRequest extends AsyncTask<Void, Void, String> {
 
-        Sign_in fragment;
+        FragmentSignIn fragment;
         boolean isFromUser;
 
-        Sign_in_request(Sign_in fragment) {
+        public SignInRequest(FragmentSignIn fragment) {
             this.fragment = fragment;
         }
 
-        public Sign_in_request(Sign_in fragment, boolean isFromUser) {
+        public SignInRequest(FragmentSignIn fragment, boolean isFromUser) {
             this.fragment = fragment;
             this.isFromUser = isFromUser;
         }
@@ -227,7 +235,7 @@ public class MakeRequests {
             Log.d("json", json);
 
             RequestBody body = RequestBody.create(json, JSON);
-            Request request = new Request.Builder().url((main_url + "api/user_check/")).post(body).build();
+            Request request = new Request.Builder().url((mainUrl + "api/user_check/")).post(body).build();
             try (Response response = client.newCall(request).execute()) {
                 response_str = response.body().string();
             } catch (IOException e) {
@@ -239,7 +247,7 @@ public class MakeRequests {
 
         @Override
         protected void onPreExecute() {
-            fragment.progress_bar.setVisibility(View.VISIBLE);
+            fragment.binding.progressCircular.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -249,18 +257,18 @@ public class MakeRequests {
                 obj = new JSONObject(server_response);
                 if (obj.getString("status").equals("ok")) {
 
-                    if (fragment.cb_remember_me.isChecked()) {
+                    if (fragment.binding.cbRememberMe.isChecked()) {
                         SharedPreferences pref = fragment.getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
                         SharedPreferences.Editor edt = pref.edit();
                         edt.putString("login", fragment.login);
                         edt.putString("password", fragment.password);
-                        edt.commit();
+                        edt.apply();
                     }
                     User user = null;
                     try {
-                        user = serialize_User(obj.getString("user"));
-                        fragment.goto_next_activity(user);
-                        fragment.progress_bar.setVisibility(View.INVISIBLE);
+                        user = serializeUser(obj.getString("user"));
+                        fragment.gotoNextActivity(user);
+                        fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
                         return;
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -269,16 +277,16 @@ public class MakeRequests {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            fragment.progress_bar.setVisibility(View.INVISIBLE);
+            fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
             Toast.makeText(fragment.getActivity(), "Возникла проблема с автоматической авторизацией", Toast.LENGTH_LONG).show();
         }
     }
 
-    class Sign_up_request extends AsyncTask<Void, Void, String> {
+    public class SignUpRequest extends AsyncTask<Void, Void, String> {
 
-        Sing_up fragment;
+        FragmentSingUp fragment;
 
-        Sign_up_request(Sing_up fragment) {
+        public SignUpRequest(FragmentSingUp fragment) {
             this.fragment = fragment;
         }
 
@@ -296,7 +304,7 @@ public class MakeRequests {
             Log.d("json", json);
 
             RequestBody body = RequestBody.create(json, JSON);
-            Request request = new Request.Builder().url((main_url + "api/users/")).post(body).build();
+            Request request = new Request.Builder().url((mainUrl + "api/users/")).post(body).build();
             try (Response response = client.newCall(request).execute()) {
                 response_str = response.body().string();
             } catch (IOException e) {
@@ -308,17 +316,17 @@ public class MakeRequests {
 
         @Override
         protected void onPreExecute() {
-            fragment.progress_bar.setVisibility(View.VISIBLE);
-            fragment.btn_sing_up.setEnabled(false);
-            fragment.btn_back.setEnabled(false);
+            fragment.binding.progressCircular.setVisibility(View.VISIBLE);
+            fragment.binding.btnSignUp.setEnabled(false);
+            fragment.binding.btnBack.setEnabled(false);
         }
 
         @Override
         protected void onPostExecute(String server_response) {
             JSONObject obj = null;
-            fragment.btn_sing_up.setEnabled(true);
-            fragment.btn_back.setEnabled(true);
-            fragment.progress_bar.setVisibility(View.INVISIBLE);
+            fragment.binding.btnSignUp.setEnabled(true);
+            fragment.binding.btnBack.setEnabled(true);
+            fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
             try {
                 obj = new JSONObject(server_response);
                 if (obj.getString("status").equals("ok")) {
@@ -346,11 +354,12 @@ public class MakeRequests {
         }
     }
 
-    class Load_user extends AsyncTask<Void, Void, String> {
+    /*
+    class LoadUser extends AsyncTask<Void, Void, String> {
 
         Settings fragment_set;
 
-        Load_user(Settings fragment_set) {
+        LoadUser(Settings fragment_set) {
             this.fragment_set = fragment_set;
         }
 
@@ -364,7 +373,7 @@ public class MakeRequests {
             Log.d("json", json);
 
             RequestBody body = RequestBody.create(json, JSON);
-            Request request = new Request.Builder().url((main_url + "api/user_check/")).post(body).build();
+            Request request = new Request.Builder().url((mainUrl + "api/user_check/")).post(body).build();
             try (Response response = client.newCall(request).execute()) {
                 response_str[0] = response.body().string();
             } catch (IOException e) {
@@ -411,18 +420,18 @@ public class MakeRequests {
             fragment_set.progressBar.setVisibility(View.INVISIBLE);
             fragment_set.layout_error.setVisibility(View.VISIBLE);
         }
-    }
+    }*/
 
-    class Find_news extends AsyncTask<Void, Void, String> {
+    public class FindNews extends AsyncTask<Void, Void, String> {
 
         String theme;
 
         final String[] status = {""};
         ArrayList<News> news_list = new ArrayList<>();
-        Searching fragment_searching;
+        FragmentSearching fragment_Fragment_searching;
 
-        public Find_news(Searching fragment_searching, String theme) {
-            this.fragment_searching = fragment_searching;
+        public FindNews(FragmentSearching fragment_Fragment_searching, String theme) {
+            this.fragment_Fragment_searching = fragment_Fragment_searching;
             this.theme = theme;
         }
 
@@ -432,8 +441,6 @@ public class MakeRequests {
 
             String status = "";
             JSONObject obj = null;
-            Log.d("response", s);
-
             try {
                 obj = new JSONObject(s);
                 status = obj.getString("status");
@@ -444,15 +451,15 @@ public class MakeRequests {
             if (status.equals("ok")) {
                 try {
 
-                    news_list = serialize_news(obj.getString("news"));
+                    news_list = serializeNews(obj.getString("news"));
 
                     if (news_list.size() != 0) {
-                        fragment_searching.adapter.news_array = news_list;
-                        fragment_searching.view_pager.setAdapter(fragment_searching.adapter);
-                        fragment_searching.view_pager.getAdapter().notifyDataSetChanged();
+                        fragment_Fragment_searching.adapter.setNewsArray(news_list);
+                        fragment_Fragment_searching.binding.viewPager.setAdapter(fragment_Fragment_searching.adapter);
+                        fragment_Fragment_searching.binding.viewPager.getAdapter().notifyDataSetChanged();
 
-                        fragment_searching.progressBar.setVisibility(View.INVISIBLE);
-                        fragment_searching.view_pager.setVisibility(View.VISIBLE);
+                        fragment_Fragment_searching.binding.progressCircular.setVisibility(View.INVISIBLE);
+                        fragment_Fragment_searching.binding.viewPager.setVisibility(View.VISIBLE);
                         return;
                     }
                 } catch (JSONException e) {
@@ -461,17 +468,17 @@ public class MakeRequests {
 
             }
 
-            fragment_searching.layout_error.setVisibility(View.VISIBLE);
-            fragment_searching.progressBar.setVisibility(View.INVISIBLE);
+            fragment_Fragment_searching.binding.errorLayout.setVisibility(View.VISIBLE);
+            fragment_Fragment_searching.binding.progressCircular.setVisibility(View.INVISIBLE);
         }
 
         @Override
         protected String doInBackground(Void... voids) {
             String response_str = "";
             OkHttpClient client = new OkHttpClient();
-            fragment_searching.user = update_user(fragment_searching.user);
+            fragment_Fragment_searching.user = updateUser(fragment_Fragment_searching.user);
 
-            Request request = new Request.Builder().url((main_url + "api/news/" + theme + "/")).get().build();
+            Request request = new Request.Builder().url((mainUrl + "api/news/" + theme + "/")).get().build();
             try (Response response = client.newCall(request).execute()) {
                 response_str = response.body().string();
                 Log.d("asd", response_str);
@@ -481,11 +488,11 @@ public class MakeRequests {
                     client = new OkHttpClient();
 
                     String json = "{\"user\":{" +
-                            "\"history\": \"" + fragment_searching.user.history + ";" + theme + "\" }}";
+                            "\"history\": \"" + fragment_Fragment_searching.user.getHistory() + ";" + theme + "\" }}";
                     Log.d("json", json);
 
                     RequestBody body = RequestBody.create(json, JSON);
-                    request = new Request.Builder().url((main_url + "api/users/" + fragment_searching.user.id)).put(body).build();
+                    request = new Request.Builder().url((mainUrl + "api/users/" + fragment_Fragment_searching.user.getId())).put(body).build();
                     try (Response response1 = client.newCall(request).execute()) {
                         String response_str1 = response1.body().string();
                         Log.d("asd", response_str1);
@@ -503,20 +510,20 @@ public class MakeRequests {
 
         @Override
         protected void onPreExecute() {
-            fragment_searching.image_view.setVisibility(View.INVISIBLE);
-            fragment_searching.view_pager.setVisibility(View.INVISIBLE);
-            fragment_searching.layout_error.setVisibility(View.INVISIBLE);
-            fragment_searching.progressBar.setVisibility(View.VISIBLE);
+            fragment_Fragment_searching.binding.imgHello.setVisibility(View.INVISIBLE);
+            fragment_Fragment_searching.binding.viewPager.setVisibility(View.INVISIBLE);
+            fragment_Fragment_searching.binding.errorLayout.setVisibility(View.INVISIBLE);
+            fragment_Fragment_searching.binding.progressCircular.setVisibility(View.VISIBLE);
         }
     }
 
-    class Find_top_news extends AsyncTask<Void, Void, String> {
+    public class FindTopNews extends AsyncTask<Void, Void, String> {
 
         final String[] status = {""};
         ArrayList<News> news_list = new ArrayList<>();
-        Top_News fragment;
+        FragmentTopNews fragment;
 
-        public Find_top_news(Top_News fragment) {
+        public FindTopNews(FragmentTopNews fragment) {
             this.fragment = fragment;
         }
 
@@ -537,15 +544,15 @@ public class MakeRequests {
 
             if (status.equals("ok")) {
                 try {
-                    news_list = serialize_news(obj.getString("news"));
+                    news_list = serializeNews(obj.getString("news"));
 
                     if (news_list.size() != 0) {
-                        fragment.adapter = new Top_news_adapter(fragment.getContext(), news_list);
-                        fragment.view_pager.setAdapter(fragment.adapter);
+                        fragment.adapter = new AdapterTopNews(fragment.getContext(), news_list);
+                        fragment.binding.viewPager.setAdapter(fragment.adapter);
                         //fragment.view_pager.getAdapter().notifyDataSetChanged();
-                        fragment.view_pager.setPadding(65, 0, 65, 0);
-                        fragment.progressBar.setVisibility(View.INVISIBLE);
-                        fragment.view_pager.setVisibility(View.VISIBLE);
+                        fragment.binding.viewPager.setPadding(65, 0, 65, 0);
+                        fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
+                        fragment.binding.viewPager.setVisibility(View.VISIBLE);
                         return;
                     }
                 } catch (JSONException e) {
@@ -553,9 +560,8 @@ public class MakeRequests {
                 }
 
             }
-
-            fragment.layout_error.setVisibility(View.VISIBLE);
-            fragment.progressBar.setVisibility(View.INVISIBLE);
+            fragment.binding.layoutError.setVisibility(View.VISIBLE);
+            fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
         }
 
         @Override
@@ -563,7 +569,7 @@ public class MakeRequests {
             String response_str = "";
             OkHttpClient client = new OkHttpClient();
 
-            Request request = new Request.Builder().url((main_url + "api/top_news/")).get().build();
+            Request request = new Request.Builder().url((mainUrl + "api/top_news/")).get().build();
             try (Response response = client.newCall(request).execute()) {
                 response_str = response.body().string();
                 Log.d("asd", response_str);
@@ -580,24 +586,26 @@ public class MakeRequests {
 
         @Override
         protected void onPreExecute() {
-            fragment.view_pager.setVisibility(View.INVISIBLE);
-            fragment.layout_error.setVisibility(View.INVISIBLE);
-            fragment.progressBar.setVisibility(View.VISIBLE);
+            fragment.binding.viewPager.setVisibility(View.INVISIBLE);
+            fragment.binding.layoutError.setVisibility(View.INVISIBLE);
+            fragment.binding.progressCircular.setVisibility(View.VISIBLE);
         }
     }
 
-    User serialize_User(String jsonString) {
+    User serializeUser(String jsonString) {
         JSONObject obj = null;
         try {
             obj = new JSONObject(jsonString);
-            return new User(Integer.valueOf(obj.getString("id")), obj.getString("name"), obj.getString("login"), obj.getString("password"), obj.getString("history"), obj.getString("themes"));
+            return new User(Integer.parseInt(obj.getString("id")), obj.getString("name"),
+                    obj.getString("login"), obj.getString("password"),
+                    obj.getString("history"), obj.getString("themes"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    ArrayList<News> serialize_news(String news) {
+    ArrayList<News> serializeNews(String news) {
         ArrayList<News> news_list = new ArrayList<>();
         JSONObject obj = null;
         try {
@@ -619,7 +627,7 @@ public class MakeRequests {
         return news_list;
     }
 
-    ArrayList<String> serialise_themes(String[] str) {
+    ArrayList<String> serialiseThemes(String[] str) {
         ArrayList<String> strings_list = new ArrayList<>();
         for (String str_one : str) {
             strings_list.add(str_one);
@@ -627,16 +635,16 @@ public class MakeRequests {
         return strings_list;
     }
 
-    User update_user(User user) {
+    User updateUser(User user) {
         final String[] response_str = new String[1];
         final MediaType JSON = MediaType.get("application/json; charset=utf-8");
         OkHttpClient client = new OkHttpClient();
 
-        String json = "{\"user\":{ \"login\": \"" + user.login + "\",\"password\": \"" + user.password + "\"}}";
+        String json = "{\"user\":{ \"login\": \"" + user.getLogin() + "\",\"password\": \"" + user.getPassword() + "\"}}";
         Log.d("json", json);
 
         RequestBody body = RequestBody.create(json, JSON);
-        Request request = new Request.Builder().url((main_url + "api/user_check/")).post(body).build();
+        Request request = new Request.Builder().url((mainUrl + "api/user_check/")).post(body).build();
         try (Response response = client.newCall(request).execute()) {
             response_str[0] = response.body().string();
         } catch (IOException e) {
@@ -644,12 +652,10 @@ public class MakeRequests {
         }
 
         try {
-            Log.d("asd", "success");
-            return user = serialize_User(new JSONObject(response_str[0]).getString("user"));
+            return user = serializeUser(new JSONObject(response_str[0]).getString("user"));
         } catch (JSONException e) {
             e.printStackTrace();
-        }
-        ;
+        };
         return user;
     }
 

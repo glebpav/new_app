@@ -5,26 +5,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.adapter.FragmentViewHolder;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.annotation.SuppressLint;
-import android.content.res.Resources;
-import android.hardware.usb.UsbRequest;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
+import com.example.news_app.fragments.FragmentSearching;
+import com.example.news_app.fragments.FragmentSettings;
+import com.example.news_app.fragments.FragmentTopNews;
+import com.example.news_app.fragments.FragmentTrackingTheme;
+import com.example.news_app.models.User;
 
-import java.util.List;
-import java.util.Set;
-import java.util.Timer;
-
-public class News_activity extends AppCompatActivity{
+public class ActivityNews extends AppCompatActivity{
 
     private final int NUM_PAGES = 4;
     MeowBottomNavigation meow;
@@ -32,9 +26,6 @@ public class News_activity extends AppCompatActivity{
     User user;
     ViewPager2 pager;
     ScreenSlidePageAdapter adapter;
-    long timer_now, timer_last ;
-    boolean was_released;
-
 
     final int SETTING_ID = 3;
     final int TOP_NEWS_ID = 2;
@@ -46,6 +37,7 @@ public class News_activity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_activity);
 
+
         meow = findViewById(R.id.meow);
         pager = findViewById(R.id.pager);
         layout = findViewById(R.id.NA);
@@ -55,7 +47,6 @@ public class News_activity extends AppCompatActivity{
         pager.setCurrentItem(0);
         pager.setUserInputEnabled(false);
         meow.show(SEARCH_ID,true);
-        was_released = false;
 
         meow.add(new MeowBottomNavigation.Model(SEARCH_ID, R.drawable.ic_baseline_find_replace_24));
         meow.add(new MeowBottomNavigation.Model(TRACKING_ID, R.drawable.ic_baseline_bookmarks_24));
@@ -66,12 +57,12 @@ public class News_activity extends AppCompatActivity{
         user = new User();
 
         if (arguments != null) {
-            user.id = arguments.getInt("id");
-            user.name = arguments.getString("name");
-            user.login = arguments.getString("login");
-            user.history = arguments.getString("history");
-            user.themes = arguments.getString("themes");
-            user.password = arguments.getString("password");
+            user.setId(arguments.getInt("id"));
+            user.setName(arguments.getString("name"));
+            user.setLogin(arguments.getString("login"));
+            user.setHistory(arguments.getString("history"));
+            user.setThemes(arguments.getString("themes"));
+            user.setPassword(arguments.getString("password"));
             Log.d("asd", String.valueOf(user));
         }
 
@@ -122,7 +113,7 @@ public class News_activity extends AppCompatActivity{
 
         public ScreenSlidePageAdapter(FragmentActivity fa) {
             super(fa);
-            Log.d("asd", "slide");
+            //Log.d("asd", "slide");
         }
 
         @NonNull
@@ -131,22 +122,20 @@ public class News_activity extends AppCompatActivity{
             Log.d("asdf", String.valueOf(position));
             switch (position) {
                 case 0:
-                    return new Searching(pager, user);
+                    return new FragmentSearching(pager, user);
                 case 1:
-                    return new Tracking(pager, user, meow);
+                    return new FragmentTrackingTheme(pager, user, meow);
                 case 2:
-                    return new Top_News();
+                    return new FragmentTopNews();
                 case 3:
-                    return new Settings(user, pager, meow);
+                    return new FragmentSettings(user, pager, meow);
                 default:
-                    return new Searching(pager, user);
+                    return new FragmentSearching(pager, user);
             }
         }
-
         @Override
         public int getItemCount() {
             return NUM_PAGES;
         }
     }
-
 }

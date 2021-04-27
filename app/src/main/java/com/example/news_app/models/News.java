@@ -1,8 +1,11 @@
-package com.example.news_app;
+package com.example.news_app.models;
 
 public class News {
 
-    String title, description, url, rating;
+    private String title;
+    private String description;
+    private String url;
+    private String rating;
 
     public News(String title, String description, String url, String rating) {
         this.title = title;

@@ -13,11 +13,10 @@
         android:theme="@style/AppTheme">
         <activity
             android:windowSoftInputMode="adjustPan"
-            android:name=".News_activity"></activity>
-        <activity android:name=".MainActivity">
+            android:name=".ActivityNews"></activity>
+        <activity android:name=".ActivityMain">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -1,9 +1,13 @@
-package com.example.news_app;
+package com.example.news_app.models;
 
 public class User {
 
-    int id;
-    String name, login, password, history, themes;
+    private int id;
+    private String name;
+    private String login;
+    private String password;
+    private String history;
+    private String themes;
 
     public User(int id, String name, String login, String password, String history, String themes) {
         this.id = id;

@@ -3,22 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Tracking">
+    tools:context=".fragments.FragmentTrackingTheme">
 
     <TextView
         android:id="@+id/tv_tracking"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:fontFamily="@font/monserrat"
-        android:gravity="center"
-        android:text="Закладки"
-        android:textSize="30sp"
-        android:textStyle="bold"/>
+        style="@style/topTitleText"
+        android:textColor="@color/dark_text"
+        android:text="Закладки"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycle_view"
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/tv_tracking"

@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app1="http://schemas.android.com/tools"
+    android:padding="10dp">
 
-    <soup.neumorphism.NeumorphCardView
-        style="@style/Widget.Neumorph.CardView"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/card_tile">
+        android:layout_height="wrap_content"
+        app1:cardCornerRadius="20dp"
+        android:id="@+id/card_tile"
+        app1:cardElevation="0dp"
+        app:cardCornerRadius="20dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/gradient_tile_news"
             android:padding="10dp">
 
             <TextView
@@ -24,34 +29,56 @@
                 android:textSize="25sp"
                 android:textAlignment="center"
                 android:id="@+id/tv_tile_title"
-                android:textColor="#000"/>
+                android:textColor="#000"
+                android:fontFamily="@font/monserrat"/>
 
 
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/btn_tile_more_inf"
+                android:layout_above="@+id/linear_footer_buttons"
                 android:id="@+id/tv_tile_rating"
                 android:text="позотивно"
                 android:textAlignment="center"
                 android:layout_marginBottom="10dp"
                 android:textSize="20dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:fontFamily="@font/monserrat"/>
 
-            <soup.neumorphism.NeumorphButton
-                style="@style/Widget.Neumorph.Button"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
+            <LinearLayout
+                android:id="@+id/linear_footer_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
                 android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
                 android:layout_marginBottom="10dp"
-                android:id="@+id/btn_tile_more_inf"
-                android:text="подробнее"
-                app:neumorph_shapeType="pressed"
-                />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="40dp"
+                android:paddingRight="40dp">
+
+                <soup.neumorphism.NeumorphImageButton
+                    android:id="@+id/btn_share_news"
+                    style="@style/Widget.Neumorph.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_baseline_share_24"
+                    app1:neumorph_backgroundColor="#FFF"
+                    app1:neumorph_shapeType="pressed" />
+
+
+                <soup.neumorphism.NeumorphImageButton
+                    android:id="@+id/btn_tile_more_inf"
+                    style="@style/Widget.Neumorph.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_read_more_24"
+                    app1:neumorph_backgroundColor="#FFF"
+                    app1:neumorph_shapeType="pressed" />
+
+            </LinearLayout>
         </RelativeLayout>
 
-    </soup.neumorphism.NeumorphCardView>
+    </androidx.cardview.widget.CardView>
 
 </RelativeLayout>
