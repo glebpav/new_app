@@ -354,13 +354,15 @@ public class MakeRequests {
         }
     }
 
-    /*
-    class LoadUser extends AsyncTask<Void, Void, String> {
+    public class LoadUser extends AsyncTask<Void, Void, String> {
 
-        Settings fragment_set;
+        private OnLoadUserListener mListener;
+        private String login, password;
 
-        LoadUser(Settings fragment_set) {
-            this.fragment_set = fragment_set;
+        public LoadUser(String login, String password, OnLoadUserListener mListener) {
+            this.login = login;
+            this.password = password;
+            this.mListener = mListener;
         }
 
         @Override
@@ -369,7 +371,7 @@ public class MakeRequests {
             final MediaType JSON = MediaType.get("application/json; charset=utf-8");
             OkHttpClient client = new OkHttpClient();
 
-            String json = "{\"user\":{ \"login\": \"" + fragment_set.user.login + "\",\"password\": \"" + fragment_set.user.password + "\"}}";
+            String json = "{\"user\":{ \"login\": \"" + login + "\",\"password\": \"" + password + "\"}}";
             Log.d("json", json);
 
             RequestBody body = RequestBody.create(json, JSON);
@@ -386,9 +388,10 @@ public class MakeRequests {
 
         @Override
         protected void onPreExecute() {
+            /*
             fragment_set.layout_success.setVisibility(View.INVISIBLE);
             fragment_set.layout_error.setVisibility(View.INVISIBLE);
-            fragment_set.progressBar.setVisibility(View.VISIBLE);
+            fragment_set.progressBar.setVisibility(View.VISIBLE);*/
         }
 
         @Override
@@ -397,16 +400,16 @@ public class MakeRequests {
             JSONObject obj = null;
             try {
                 obj = new JSONObject(response);
-
                 try {
                     if (obj.getString("status").equals("ok")) {
-
                         try {
-                            User user = serialize_User(obj.getString("user"));
+                            User user = serializeUser(obj.getString("user"));
+                            mListener.onResults(user);
+                            return;
+                            /*
                             fragment_set.progressBar.setVisibility(View.INVISIBLE);
                             fragment_set.layout_success.setVisibility(View.VISIBLE);
-                            fragment_set.change_fields(user);
-                            return;
+                            fragment_set.change_fields(user);*/
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -417,10 +420,9 @@ public class MakeRequests {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            fragment_set.progressBar.setVisibility(View.INVISIBLE);
-            fragment_set.layout_error.setVisibility(View.VISIBLE);
         }
-    }*/
+
+    }
 
     public class FindNews extends AsyncTask<Void, Void, String> {
 
@@ -428,10 +430,10 @@ public class MakeRequests {
 
         final String[] status = {""};
         ArrayList<News> news_list = new ArrayList<>();
-        FragmentSearching fragment_Fragment_searching;
+        FragmentSearching fragmentSearching;
 
-        public FindNews(FragmentSearching fragment_Fragment_searching, String theme) {
-            this.fragment_Fragment_searching = fragment_Fragment_searching;
+        public FindNews(FragmentSearching fragmentSearching, String theme) {
+            this.fragmentSearching = fragmentSearching;
             this.theme = theme;
         }
 
@@ -454,12 +456,12 @@ public class MakeRequests {
                     news_list = serializeNews(obj.getString("news"));
 
                     if (news_list.size() != 0) {
-                        fragment_Fragment_searching.adapter.setNewsArray(news_list);
-                        fragment_Fragment_searching.binding.viewPager.setAdapter(fragment_Fragment_searching.adapter);
-                        fragment_Fragment_searching.binding.viewPager.getAdapter().notifyDataSetChanged();
+                        fragmentSearching.getAdapter().setNewsArray(news_list);
+                        fragmentSearching.getBinding().viewPager.setAdapter(fragmentSearching.getAdapter());
+                        fragmentSearching.getBinding().viewPager.getAdapter().notifyDataSetChanged();
 
-                        fragment_Fragment_searching.binding.progressCircular.setVisibility(View.INVISIBLE);
-                        fragment_Fragment_searching.binding.viewPager.setVisibility(View.VISIBLE);
+                        fragmentSearching.getBinding().progressCircular.setVisibility(View.INVISIBLE);
+                        fragmentSearching.getBinding().viewPager.setVisibility(View.VISIBLE);
                         return;
                     }
                 } catch (JSONException e) {
@@ -468,15 +470,16 @@ public class MakeRequests {
 
             }
 
-            fragment_Fragment_searching.binding.errorLayout.setVisibility(View.VISIBLE);
-            fragment_Fragment_searching.binding.progressCircular.setVisibility(View.INVISIBLE);
+            fragmentSearching.getBinding().errorLayout.setVisibility(View.VISIBLE);
+            fragmentSearching.getBinding().progressCircular.setVisibility(View.INVISIBLE);
         }
 
         @Override
         protected String doInBackground(Void... voids) {
             String response_str = "";
             OkHttpClient client = new OkHttpClient();
-            fragment_Fragment_searching.user = updateUser(fragment_Fragment_searching.user);
+
+            fragmentSearching.setUser(updateUser(fragmentSearching.getUser()));
 
             Request request = new Request.Builder().url((mainUrl + "api/news/" + theme + "/")).get().build();
             try (Response response = client.newCall(request).execute()) {
@@ -488,11 +491,11 @@ public class MakeRequests {
                     client = new OkHttpClient();
 
                     String json = "{\"user\":{" +
-                            "\"history\": \"" + fragment_Fragment_searching.user.getHistory() + ";" + theme + "\" }}";
+                            "\"history\": \"" + fragmentSearching.getUser().getHistory() + ";" + theme + "\" }}";
                     Log.d("json", json);
 
                     RequestBody body = RequestBody.create(json, JSON);
-                    request = new Request.Builder().url((mainUrl + "api/users/" + fragment_Fragment_searching.user.getId())).put(body).build();
+                    request = new Request.Builder().url((mainUrl + "api/users/" + fragmentSearching.getUser().getId())).put(body).build();
                     try (Response response1 = client.newCall(request).execute()) {
                         String response_str1 = response1.body().string();
                         Log.d("asd", response_str1);
@@ -510,10 +513,10 @@ public class MakeRequests {
 
         @Override
         protected void onPreExecute() {
-            fragment_Fragment_searching.binding.imgHello.setVisibility(View.INVISIBLE);
-            fragment_Fragment_searching.binding.viewPager.setVisibility(View.INVISIBLE);
-            fragment_Fragment_searching.binding.errorLayout.setVisibility(View.INVISIBLE);
-            fragment_Fragment_searching.binding.progressCircular.setVisibility(View.VISIBLE);
+            fragmentSearching.getBinding().imgHello.setVisibility(View.INVISIBLE);
+            fragmentSearching.getBinding().viewPager.setVisibility(View.INVISIBLE);
+            fragmentSearching.getBinding().errorLayout.setVisibility(View.INVISIBLE);
+            fragmentSearching.getBinding().progressCircular.setVisibility(View.VISIBLE);
         }
     }
 
@@ -657,6 +660,10 @@ public class MakeRequests {
             e.printStackTrace();
         };
         return user;
+    }
+
+    public interface OnLoadUserListener {
+        void onResults(User user);
     }
 
 }

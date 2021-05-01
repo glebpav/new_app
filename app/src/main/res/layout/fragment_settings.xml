@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,185 +8,171 @@
     android:background="@drawable/rect_white"
     tools:context=".fragments.FragmentSettings">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbar"
-        android:layout_width="match_parent"
-        android:layout_height="330dp"
-        android:background="@drawable/rect_white"
-        android:fitsSystemWindows="true"
-        android:theme="@style/AppTheme"
-        app:elevation="0dp">
-
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="330dp"
+            android:background="@drawable/rect_white"
             android:fitsSystemWindows="true"
-            app:collapsedTitleGravity="center"
-            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
+            android:theme="@style/AppTheme"
+            app:elevation="0dp">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:title="name"></androidx.appcompat.widget.Toolbar>
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                app:collapsedTitleGravity="center"
+                app:expandedTitleGravity="center_horizontal|bottom"
+                app:expandedTitleMarginBottom="50dp"
+                app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
 
-            <com.chinodev.androidneomorphframelayout.NeomorphFrameLayout
-                android:id="@+id/frame1"
-                android:layout_width="160dp"
-                android:layout_height="160dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="70dp"
-                app:neomorph_background_color="@color/neomorph_background_color"
-                app:neomorph_corner_radius="16dp"
-                app:neomorph_highlight_color="@color/neomorph_highlight_color"
-                app:neomorph_shadow_color="@color/neomorph_shadow_color"
-                app:neomorph_shadow_type="outer"
-                app:neomorph_view_type="circular">
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:title="na1me"
+                    app:titleTextColor="@color/clear_white"></androidx.appcompat.widget.Toolbar>
 
-                <ImageView
-                    android:id="@+id/img_user"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:src="@drawable/user" />
-            </com.chinodev.androidneomorphframelayout.NeomorphFrameLayout>
+                <com.chinodev.androidneomorphframelayout.NeomorphFrameLayout
+                    android:id="@+id/frame1"
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="70dp"
+                    app:neomorph_background_color="@color/neomorph_background_color"
+                    app:neomorph_corner_radius="16dp"
+                    app:neomorph_highlight_color="@color/neomorph_highlight_color"
+                    app:neomorph_shadow_color="@color/neomorph_shadow_color"
+                    app:neomorph_shadow_type="outer"
+                    app:neomorph_view_type="circular">
 
-            <TextView
-                android:id="@+id/tv_name_user"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|bottom"
-                android:fontFamily="@font/monserrat"
-                android:text="Name"
-                android:textColor="#FFFF"
-                android:textSize="35sp"
-                android:textStyle="bold"
-                app:layout_scrollFlags="snap" />
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-    </com.google.android.material.appbar.AppBarLayout>
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/bg_settings"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+                    <ImageView
+                        android:id="@+id/img_user"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:src="@drawable/user" />
+                </com.chinodev.androidneomorphframelayout.NeomorphFrameLayout>
 
-        <RelativeLayout
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="10dp">
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="80dp"
-                android:orientation="vertical">
+            android:background="@drawable/bg_settings"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+            android:id="@+id/nested_scroll_view">
 
-                <LinearLayout
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:padding="10dp">
+
+                <soup.neumorphism.NeumorphCardView
+                    android:id="@+id/layout_user_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginRight="30dp">
+
+                    <LinearLayout
+                        android:id="@+id/linear1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/monserrat"
+                                android:gravity="bottom"
+                                android:text="Темы"
+                                android:textAlignment="center"
+                                android:textColor="#000000"
+                                android:textSize="20sp"
+                                tools:ignore="RtlCompat" />
+
+                            <TextView
+                                android:id="@+id/tv_count_themes"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/monserrat"
+                                android:text="12"
+                                android:textAlignment="center"
+                                android:textColor="#3C9BFF"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/monserrat"
+                                android:gravity="bottom"
+                                android:text="Закладки"
+                                android:textAlignment="center"
+                                android:textColor="#000000"
+                                android:textSize="20sp"
+                                tools:ignore="RtlCompat" />
+
+                            <TextView
+                                android:id="@+id/tv_count_tracking"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/monserrat"
+                                android:text="4"
+                                android:textAlignment="center"
+                                android:textColor="#3C9BFF"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </soup.neumorphism.NeumorphCardView>
+
+                <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_below="@+id/layout_user_info"
+                    android:layout_centerHorizontal="true"
+                    tools:listitem="@layout/item_settings"
+                    android:layout_marginTop="15dp"
+                    android:id="@+id/recycler_view_settings"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2"/>
 
-                    <soup.neumorphism.NeumorphCardView
-                        android:layout_width="130dp"
-                        android:layout_height="130dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginRight="10dp"
-                        android:background="@color/material_on_primary_emphasis_high_type" />
+            </RelativeLayout>
 
-                    <soup.neumorphism.NeumorphCardView
-                        android:layout_width="130dp"
-                        android:layout_height="130dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="20dp"
-                        android:background="@color/material_on_primary_emphasis_high_type" />
-                </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-                    <soup.neumorphism.NeumorphCardView
-                        android:layout_width="130dp"
-                        android:layout_height="130dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginRight="10dp"
-                        android:background="@color/material_on_primary_emphasis_high_type" />
 
-                    <soup.neumorphism.NeumorphCardView
-                        android:layout_width="130dp"
-                        android:layout_height="130dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="20dp"
-                        android:background="@color/material_on_primary_emphasis_high_type" />
-                </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <soup.neumorphism.NeumorphCardView
-                        android:layout_width="130dp"
-                        android:layout_height="130dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginRight="10dp"
-                        android:background="@color/material_on_primary_emphasis_high_type" />
-
-                    <soup.neumorphism.NeumorphCardView
-                        android:layout_width="130dp"
-                        android:layout_height="130dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="20dp"
-                        android:background="@color/material_on_primary_emphasis_high_type" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <soup.neumorphism.NeumorphCardView
-                        android:layout_width="130dp"
-                        android:layout_height="130dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginRight="10dp"
-                        android:background="@color/material_on_primary_emphasis_high_type" />
-
-                    <soup.neumorphism.NeumorphCardView
-                        android:layout_width="130dp"
-                        android:layout_height="130dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="20dp"
-                        android:background="@color/material_on_primary_emphasis_high_type" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <soup.neumorphism.NeumorphCardView
-                        android:layout_width="130dp"
-                        android:layout_height="130dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginRight="10dp"
-                        android:background="@color/material_on_primary_emphasis_high_type" />
-
-                    <soup.neumorphism.NeumorphCardView
-                        android:layout_width="130dp"
-                        android:layout_height="130dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="20dp"
-                        android:background="@color/material_on_primary_emphasis_high_type" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </RelativeLayout>
-
-    </androidx.core.widget.NestedScrollView>
-
+    </RelativeLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

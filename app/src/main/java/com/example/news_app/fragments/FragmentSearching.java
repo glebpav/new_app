@@ -5,30 +5,22 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.news_app.adapters.AdapterViewNews;
 import com.example.news_app.databinding.FragmentSearchingBinding;
 import com.example.news_app.network.MakeRequests;
-import com.example.news_app.R;
 import com.example.news_app.models.News;
 import com.example.news_app.models.User;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-
-import soup.neumorphism.NeumorphFloatingActionButton;
 
 import static com.example.news_app.databinding.FragmentSearchingBinding.*;
 
@@ -37,12 +29,27 @@ public class FragmentSearching extends Fragment {
 
     public ViewPager2 pager;
 
-    public User user;
-    public FragmentSearching fragment_search;
-    public MakeRequests requests;
-    public ArrayList<News> news_list;
-    public AdapterViewNews adapter;
-    public FragmentSearchingBinding binding;
+    private User user;
+    private FragmentSearching fragmentSearch;
+    private MakeRequests requests;
+    private ArrayList<News> newsList;
+
+    public AdapterViewNews getAdapter() {
+        return adapter;
+    }
+    public User getUser() {
+        return user;
+    }
+    public FragmentSearchingBinding getBinding () {
+        return binding;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    private AdapterViewNews adapter;
+    private FragmentSearchingBinding binding;
 
     public FragmentSearching(ViewPager2 pager, User user) {
         this.pager = pager;
@@ -53,21 +60,21 @@ public class FragmentSearching extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = inflate(inflater, container, false);
 
-        news_list = new ArrayList<>();
-        adapter = new AdapterViewNews(getContext(), news_list);
+        newsList = new ArrayList<>();
+        adapter = new AdapterViewNews(getContext(), newsList);
 
         binding.viewPager.setClipToPadding(false);
         binding.viewPager.setPadding(65,0,65,0);
         binding.viewPager.setAdapter(adapter);
 
-        binding.btnFind.setOnClickListener(btn_find_clicked);
+        binding.btnFind.setOnClickListener(btnFindClicked);
         requests = new MakeRequests("https://analisinf.pythonanywhere.com/");
-        fragment_search = this;
+        fragmentSearch = this;
 
         return binding.getRoot();
     }
 
-    View.OnClickListener btn_find_clicked = new View.OnClickListener() {
+    View.OnClickListener btnFindClicked = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             String theme = binding.etTheme.getText().toString();
@@ -75,8 +82,8 @@ public class FragmentSearching extends Fragment {
                 Toast.makeText(getActivity(), "Введите тему", Toast.LENGTH_SHORT).show();
                 return;
             }
-            MakeRequests.FindNews find_news = requests.new FindNews(fragment_search, theme);
-            find_news.execute();
+            MakeRequests.FindNews findNews = requests.new FindNews(fragmentSearch, theme);
+            findNews.execute();
         }
     };
 
@@ -85,13 +92,13 @@ public class FragmentSearching extends Fragment {
         super.onResume();
 
         SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-        String theme_from_page = pref.getString("SearchingTheme", "");
+        String themeFromPage = pref.getString("SearchingTheme", "");
 
-        if (theme_from_page.length() != 0){
-            MakeRequests.FindNews find_news = requests.new FindNews(fragment_search, theme_from_page);
+        if (themeFromPage.length() != 0){
+            MakeRequests.FindNews find_news = requests.new FindNews(fragmentSearch, themeFromPage);
             find_news.execute();
 
-            binding.etTheme.setText(theme_from_page);
+            binding.etTheme.setText(themeFromPage);
             SharedPreferences.Editor edt = pref.edit();
             edt.putString("SearchingTheme", "");
             edt.apply();

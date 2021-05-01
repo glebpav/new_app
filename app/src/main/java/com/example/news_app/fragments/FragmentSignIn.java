@@ -24,12 +24,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class FragmentSignIn extends Fragment {
 
-   /* public ImageButton btn_sign_in;
-    public Button btn_sign_up;
-    public EditText et_login, et_password;
-    public CheckBox cb_remember_me;
-    public ProgressBar progress_bar;*/
-
     public MakeRequests requests;
     public FragmentSignIn thisFragment;
     public String login, password;
@@ -47,12 +41,12 @@ public class FragmentSignIn extends Fragment {
         requests = new MakeRequests("https://analisinf.pythonanywhere.com/");
         thisFragment = this;
 
-        check_user();
+        checkUser();
 
         return binding.getRoot();
     }
 
-    void check_user() {
+    void checkUser() {
         SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
         login = pref.getString("login", "");
         password = pref.getString("password", "");
@@ -62,8 +56,6 @@ public class FragmentSignIn extends Fragment {
         Log.d("asd", password + " - " + password.length());
 
         if (login.length() == 0 || password.length() == 0) return;
-
-        Log.d("asd", "here");
 
         MakeRequests.SignInRequest sign_inRequest = requests.new SignInRequest(this);
         sign_inRequest.execute();

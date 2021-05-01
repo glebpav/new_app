@@ -25,15 +25,14 @@ public class FragmentSingUp extends Fragment {
     public FragmentSingUp singUpFragment;
 
     public String login, password, name;
-
     public FragmentSingUpBinding binding;
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSingUpBinding.inflate(inflater, container, false);
 
-        binding.btnSignUp.setOnClickListener(btn_sing_up_clicked);
-        binding.btnBack.setOnClickListener(btn_back_clicked);
+        binding.btnSignUp.setOnClickListener(btnSingUpClicked);
+        binding.btnBack.setOnClickListener(btnBackClicked);
 
         requests = new MakeRequests("https://analisinf.pythonanywhere.com/");
 
@@ -43,7 +42,7 @@ public class FragmentSingUp extends Fragment {
     }
 
 
-    View.OnClickListener btn_sing_up_clicked = new View.OnClickListener() {
+    View.OnClickListener btnSingUpClicked = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             login = binding.etLogin.getText().toString();
@@ -64,7 +63,7 @@ public class FragmentSingUp extends Fragment {
         }
     };
 
-    View.OnClickListener btn_back_clicked = new View.OnClickListener() {
+    View.OnClickListener btnBackClicked = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             getFragmentManager().beginTransaction().add(R.id.MA, new FragmentSignIn()).commit();
@@ -88,10 +87,10 @@ public class FragmentSingUp extends Fragment {
                         "$");
 
         if (password.isEmpty()) {
-            Toast.makeText(getContext(), "введите пароль", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.enter_name, Toast.LENGTH_SHORT).show();
             return false;
         } else if (!PASSWORD_PATTERN.matcher(password).matches()) {
-            Toast.makeText(getContext(), "пароль должен содержать цифры, символы, и быть не короче 6 символов", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), R.string.password_error, Toast.LENGTH_LONG).show();
             return false;
         }
         return true;

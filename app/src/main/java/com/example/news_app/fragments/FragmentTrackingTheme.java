@@ -52,7 +52,7 @@ public class FragmentTrackingTheme extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentTrackingBinding.inflate(inflater, container, false);
 
-        binding.btnAddTrackingTheme.setOnClickListener(btn_add_theme_clicked);
+        binding.btnAddTrackingTheme.setOnClickListener(btnAddThemeClicked);
 
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         binding.recyclerView.setLayoutManager(llm);
@@ -68,19 +68,19 @@ public class FragmentTrackingTheme extends Fragment {
         return binding.getRoot();
     }
 
-    View.OnClickListener btn_add_theme_clicked = new View.OnClickListener() {
+    View.OnClickListener btnAddThemeClicked = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme);
-            View view_dialog = LayoutInflater.from(getActivity()).inflate(
+            View viewDialog = LayoutInflater.from(getActivity()).inflate(
                     R.layout.add_theme,
-                    (RelativeLayout) view.findViewById(R.id.add_theme_layout)
+                    (RelativeLayout) binding.getRoot().findViewById(R.id.add_theme_layout)
             );
-            builder.setView(view_dialog);
+            builder.setView(viewDialog);
 
-            final TextInputEditText textInputEditText = view_dialog.findViewById(R.id.et_add_theme);
-            Button btn_dismiss = view_dialog.findViewById(R.id.btn_dismiss);
-            Button btn_apply = view_dialog.findViewById(R.id.btn_apply);
+            final TextInputEditText textInputEditText = viewDialog.findViewById(R.id.et_add_theme);
+            Button btn_dismiss = viewDialog.findViewById(R.id.btn_dismiss);
+            Button btn_apply = viewDialog.findViewById(R.id.btn_apply);
 
             alertDialog = builder.create();
 
@@ -103,8 +103,8 @@ public class FragmentTrackingTheme extends Fragment {
                         return;
                     }
                     addingTheme = theme;
-                    MakeRequests.AddTrackingTheme add_tracking_theme = requests.new AddTrackingTheme(fragment);
-                    add_tracking_theme.execute();
+                    MakeRequests.AddTrackingTheme addTrackingTheme = requests.new AddTrackingTheme(fragment);
+                    addTrackingTheme.execute();
                 }
             });
             alertDialog.show();
@@ -112,6 +112,7 @@ public class FragmentTrackingTheme extends Fragment {
     };
 
     public void clearThemes() {
+        if(user.getThemes().isEmpty()) return;
         user.setThemes(user.getThemes().replace(";;", ";"));
         if (user.getThemes().charAt(0) == ';') {
             user.setThemes(user.getThemes().substring(1));

@@ -1,13 +1,16 @@
 package com.example.news_app.fragments;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
@@ -18,14 +21,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.example.news_app.ActivityMain;
+import com.example.news_app.adapters.AdapterSettingTiles;
 import com.example.news_app.databinding.FragmentSettingsBinding;
+import com.example.news_app.enums.SettingsPoints;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.R;
 import com.example.news_app.models.User;
@@ -38,24 +41,18 @@ import java.util.Collections;
 import java.util.List;
 
 
- // Todo :: load information from site
-
-
 public class FragmentSettings extends Fragment {
 
     User user;
-    View view;
     MakeRequests requests;
     ArrayAdapter<String> adapter_history;
-    public FragmentSettingsBinding binding;
+    AdapterSettingTiles adapterSettingTiles;
+    FragmentSettingsBinding binding;
 
-    TextView tv_name, tv_count_themes, tv_count_tracking;
-    Button btn_sign_out, btn_change_name;
-    ProgressBar progressBar;
-    RelativeLayout layout_error, layout_success;
     ListView listHistory;
     ViewPager2 pager;
     MeowBottomNavigation meow;
+    ProgressDialog progressDialog;
 
     public FragmentSettings(User user, ViewPager2 pager, MeowBottomNavigation meow) {
         this.user = user;
@@ -68,97 +65,107 @@ public class FragmentSettings extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
 
-        String name = "hello";
-
-        /*Toolbar collapsingToolbarLayout = view.findViewById(R.id.toolbar);
-        collapsingToolbarLayout.setTitle(name);*/
-
-        /*tv_count_themes = view.findViewById(R.id.tv_count_themes);
-        tv_count_tracking = view.findViewById(R.id.tv_count_tracking);
-        tv_name = view.findViewById(R.id.tv_name_user);
-        btn_sign_out = view.findViewById(R.id.btn_sign_out);
-        btn_change_name = view.findViewById(R.id.btn_change_name);
-        layout_error = view.findViewById(R.id.layout_error);
-        layout_success = view.findViewById(R.id.layout_success);
-        progressBar = view.findViewById(R.id.progress_circular);
-        listHistory = view.findViewById(R.id.lv_history);
-
-        btn_sign_out.setOnClickListener(btn_sign_out_clicked);
-        btn_change_name.setOnClickListener(btn_change_name_clicked);
-
-        tv_name.setText(user.name);
-
-        tv_count_tracking.setText(String.valueOf(user.themes.split(";").length));
-        tv_count_themes.setText(String.valueOf(user.history.split(";").length));
-
         requests = new MakeRequests("https://analisinf.pythonanywhere.com/");
-*/
+
+        adapterSettingTiles = new AdapterSettingTiles(getContext(), onClickedSettingsItemListener);
+        binding.recyclerViewSettings.setAdapter(adapterSettingTiles);
+        binding.recyclerViewSettings.setLayoutManager(new GridLayoutManager(getContext(), 2));
+
         return binding.getRoot();
     }
 
-    View.OnClickListener btn_sign_out_clicked = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-            SharedPreferences.Editor edt = pref.edit();
-            edt.putString("login", "");
-            edt.putString("password", "");
-            edt.apply();
-            Log.d("asd",pref.getString("login", ""));
-            Log.d("asd",pref.getString("password", ""));
-            Intent intent = new Intent(getActivity(), ActivityMain.class);
-            startActivity(intent);
-        }
-    };
+    private void initFragment() {
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
 
-    View.OnClickListener btn_change_name_clicked = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme);
-            View view_dialog = LayoutInflater.from(getActivity()).inflate(
-                    R.layout.change_name,
-                    (RelativeLayout) view.findViewById(R.id.layout_dialog_container)
-            );
-            builder.setView(view_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
-            final TextInputEditText textInputEditText = view_dialog.findViewById(R.id.et_change_name);
-            Button btn_dismiss = view_dialog.findViewById(R.id.btn_dismiss);
-            Button btn_apply = view_dialog.findViewById(R.id.btn_apply);
+        binding.appbar.setVisibility(View.INVISIBLE);
+        binding.nestedScrollView.setVisibility(View.INVISIBLE);
+    }
 
-            textInputEditText.setText(user.getName());
-
-            final AlertDialog alertDialog = builder.create();
-
-            if (alertDialog.getWindow() != null) alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
-
-            btn_dismiss.setOnClickListener(new View.OnClickListener() {
+    AdapterSettingTiles.OnClickedSettingsItemListener onClickedSettingsItemListener = new
+            AdapterSettingTiles.OnClickedSettingsItemListener() {
                 @Override
-                public void onClick(View v) {
-                    alertDialog.dismiss();
+                public void onClicked(SettingsPoints point) {
+                    switch (point) {
+                        case LOG_OUT:
+                            logOut();
+                            break;
+                        case CHANGE_NAME:
+                            changeName();
+                            break;
+                        case SHOW_HISTORY:
+                            showHistory();
+                            break;
+                    }
                 }
-            });
+            };
 
-            btn_apply.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String name = String.valueOf(textInputEditText.getText());
-                    user.setName(name);
-                    tv_name.setText(user.getName());
-                    requests.changeUser(user);
-                    alertDialog.dismiss();
-                    Toast.makeText(getActivity(), "Имя пользователя изменено успешно", Toast.LENGTH_SHORT).show();
-                }
-            });
+    void logOut() {
+        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor edt = pref.edit();
+        edt.putString("login", "");
+        edt.putString("password", "");
+        edt.apply();
+        Log.d("asd", pref.getString("login", ""));
+        Log.d("asd", pref.getString("password", ""));
+        Intent intent = new Intent(getActivity(), ActivityMain.class);
+        startActivity(intent);
+    }
 
-            alertDialog.show();
-        }
-    };
+    void changeName() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme);
+        View view_dialog = LayoutInflater.from(getActivity()).inflate(
+                R.layout.change_name,
+                (RelativeLayout) binding.getRoot().findViewById(R.id.layout_dialog_container)
+        );
+        builder.setView(view_dialog);
 
-    void change_fields(final User user){
-        tv_count_tracking.setText(String.valueOf(user.getThemes().split(";").length));
-        tv_count_themes.setText(String.valueOf(user.getHistory().split(";").length));
+        final TextInputEditText textInputEditText = view_dialog.findViewById(R.id.et_change_name);
+        Button btn_dismiss = view_dialog.findViewById(R.id.btn_dismiss);
+        Button btn_apply = view_dialog.findViewById(R.id.btn_apply);
+
+        textInputEditText.setText(user.getName());
+
+        final AlertDialog alertDialog = builder.create();
+
+        if (alertDialog.getWindow() != null)
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+
+        btn_dismiss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+
+        btn_apply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = String.valueOf(textInputEditText.getText());
+                user.setName(name);
+                binding.toolbar.setTitle(user.getName());
+                requests.changeUser(user);
+                alertDialog.dismiss();
+                Toast.makeText(getActivity(), "Имя пользователя изменено успешно", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        alertDialog.show();
+    }
+
+    void showHistory() {
+        DialogFragmentHistory fragmentHistory = new DialogFragmentHistory();
+        fragmentHistory.show(getFragmentManager(), "FragmentDialog");
+    }
+
+    void change_fields(final User user) {
+        binding.tvCountTracking.setText(String.valueOf(user.getThemes().split(";").length));
+        binding.tvCountThemes.setText(String.valueOf(user.getHistory().split(";").length));
         //if (user.history.equals(";"))user.history = null;
-        List <String> list = Arrays.asList(user.getHistory().split(";"));
+        List<String> list = Arrays.asList(user.getHistory().split(";"));
         System.out.println(list);
         Collections.reverse(list);
         System.out.println(list);
@@ -184,7 +191,27 @@ public class FragmentSettings extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        /*MakeRequests.Load_user load_user = requests.new Load_user(this);
-        load_user.execute();*/
+
+        initFragment();
+
+        MakeRequests.OnLoadUserListener loadUserListener = new MakeRequests.OnLoadUserListener() {
+            @Override
+            public void onResults(User user) {
+                binding.collapsingToolbar.setTitle(user.getName());
+                binding.tvCountThemes.setText((!user.getHistory().isEmpty()) ?
+                        String.valueOf(user.getHistory().split(";").length) : "0");
+                binding.tvCountTracking.setText((!user.getThemes().isEmpty()) ?
+                        String.valueOf(user.getThemes().split(";").length) : "0");
+
+                progressDialog.dismiss();
+                binding.nestedScrollView.setVisibility(View.VISIBLE);
+                binding.appbar.setVisibility(View.VISIBLE);
+            }
+        };
+
+
+        requests.new LoadUser(user.getLogin(), user.getPassword(), loadUserListener).execute();
     }
+
+
 }
