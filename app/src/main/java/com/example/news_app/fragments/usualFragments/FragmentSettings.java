@@ -1,4 +1,4 @@
-package com.example.news_app.fragments;
+package com.example.news_app.fragments.usualFragments;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
@@ -29,6 +28,8 @@ import com.example.news_app.ActivityMain;
 import com.example.news_app.adapters.AdapterSettingTiles;
 import com.example.news_app.databinding.FragmentSettingsBinding;
 import com.example.news_app.enums.SettingsPoints;
+import com.example.news_app.fragments.dialogFragments.DialogFragmentHistory;
+import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.R;
 import com.example.news_app.models.User;
@@ -52,7 +53,7 @@ public class FragmentSettings extends Fragment {
     ListView listHistory;
     ViewPager2 pager;
     MeowBottomNavigation meow;
-    ProgressDialog progressDialog;
+    DialogFragmentProgressBar progressDialog;
 
     public FragmentSettings(User user, ViewPager2 pager, MeowBottomNavigation meow) {
         this.user = user;
@@ -70,17 +71,13 @@ public class FragmentSettings extends Fragment {
         adapterSettingTiles = new AdapterSettingTiles(getContext(), onClickedSettingsItemListener);
         binding.recyclerViewSettings.setAdapter(adapterSettingTiles);
         binding.recyclerViewSettings.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        progressDialog = new DialogFragmentProgressBar();
 
         return binding.getRoot();
     }
 
     private void initFragment() {
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.show();
-        progressDialog.setContentView(R.layout.progress_dialog);
-
-        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
+        progressDialog.show(getFragmentManager(), "FragmentSettings");
         binding.appbar.setVisibility(View.INVISIBLE);
         binding.nestedScrollView.setVisibility(View.INVISIBLE);
     }
@@ -193,25 +190,23 @@ public class FragmentSettings extends Fragment {
         super.onResume();
 
         initFragment();
-
-        MakeRequests.OnLoadUserListener loadUserListener = new MakeRequests.OnLoadUserListener() {
-            @Override
-            public void onResults(User user) {
-                binding.collapsingToolbar.setTitle(user.getName());
-                binding.tvCountThemes.setText((!user.getHistory().isEmpty()) ?
-                        String.valueOf(user.getHistory().split(";").length) : "0");
-                binding.tvCountTracking.setText((!user.getThemes().isEmpty()) ?
-                        String.valueOf(user.getThemes().split(";").length) : "0");
-
-                progressDialog.dismiss();
-                binding.nestedScrollView.setVisibility(View.VISIBLE);
-                binding.appbar.setVisibility(View.VISIBLE);
-            }
-        };
-
-
         requests.new LoadUser(user.getLogin(), user.getPassword(), loadUserListener).execute();
     }
+
+    MakeRequests.OnLoadUserListener loadUserListener = new MakeRequests.OnLoadUserListener() {
+        @Override
+        public void onResults(User user) {
+            binding.collapsingToolbar.setTitle(user.getName());
+            binding.tvCountThemes.setText((!user.getHistory().isEmpty()) ?
+                    String.valueOf(user.getHistory().split(";").length) : "0");
+            binding.tvCountTracking.setText((!user.getThemes().isEmpty()) ?
+                    String.valueOf(user.getThemes().split(";").length) : "0");
+
+            progressDialog.dismiss();
+            binding.nestedScrollView.setVisibility(View.VISIBLE);
+            binding.appbar.setVisibility(View.VISIBLE);
+        }
+    };
 
 
 }

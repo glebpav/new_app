@@ -8,5 +8,7 @@
     <string name="rename">новое имя</string>
     <string name="change_sources">источники</string>
     <string name="log_out">выйти</string>
-    <string name="loading">Загрузка...</string>
+    <string name="loading">Загрузка…</string>
+    <string name="user_created_successful">Пользователь создан успешно</string>
+    <string name="touble_with_autarisation">Возникла проблема с автоматической авторизацией</string>
 </resources>

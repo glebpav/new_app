@@ -1,4 +1,4 @@
-package com.example.news_app.fragments;
+package com.example.news_app.fragments.usualFragments;
 
 import android.os.Bundle;
 
@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.news_app.databinding.FragmentSingUpBinding;
+import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.R;
 
@@ -21,11 +22,11 @@ import java.util.regex.Pattern;
 
 public class FragmentSingUp extends Fragment {
 
-    public MakeRequests requests;
-    public FragmentSingUp singUpFragment;
+    private MakeRequests requests;
+    private DialogFragmentProgressBar progressBar;
 
-    public String login, password, name;
-    public FragmentSingUpBinding binding;
+    private String login, password, name;
+    private FragmentSingUpBinding binding;
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,8 +36,6 @@ public class FragmentSingUp extends Fragment {
         binding.btnBack.setOnClickListener(btnBackClicked);
 
         requests = new MakeRequests("https://analisinf.pythonanywhere.com/");
-
-        singUpFragment = this;
 
         return binding.getRoot();
     }
@@ -49,16 +48,20 @@ public class FragmentSingUp extends Fragment {
             password = binding.etPassword.getText().toString();
             name = binding.etName.getText().toString();
 
-            Log.d("asd", login);
-            Log.d("asd", password);
-
             if (!validateLogin(login) || !validatePassword(password))return;
             if (name.length() == 0) {
                 Toast.makeText(getContext(), "введите имя", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            MakeRequests.SignUpRequest sign_upRequest = requests.new SignUpRequest(singUpFragment);
+            progressBar = new DialogFragmentProgressBar();
+            progressBar.show(getFragmentManager(), "FragmentSingUp");
+            binding.btnBack.setClickable(false);
+            binding.btnSignUp.setClickable(false);
+            MakeRequests.SignUpRequest sign_upRequest = requests.new SignUpRequest(signUpListener,
+                    binding.etLogin.getText().toString(),
+                    binding.etName.getText().toString(),
+                    binding.etPassword.getText().toString());
             sign_upRequest.execute();
         }
     };
@@ -67,6 +70,23 @@ public class FragmentSingUp extends Fragment {
         @Override
         public void onClick(View v) {
             getFragmentManager().beginTransaction().add(R.id.MA, new FragmentSignIn()).commit();
+        }
+    };
+
+    MakeRequests.OnSignUpListener signUpListener = new MakeRequests.OnSignUpListener() {
+        @Override
+        public void onClick(String response) {
+            binding.btnSignUp.setClickable(true);
+            binding.btnBack.setClickable(true);
+            progressBar.dismiss();
+            Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
+        }
+        @Override
+        public void onClick(int responseId) {
+            binding.btnSignUp.setClickable(true);
+            binding.btnBack.setClickable(true);
+            progressBar.dismiss();
+            Toast.makeText(getContext(), getResources().getString(responseId), Toast.LENGTH_SHORT).show();
         }
     };
 

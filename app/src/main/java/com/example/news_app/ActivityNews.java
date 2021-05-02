@@ -12,10 +12,10 @@ import android.util.Log;
 import android.widget.RelativeLayout;
 
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
-import com.example.news_app.fragments.FragmentSearching;
-import com.example.news_app.fragments.FragmentSettings;
-import com.example.news_app.fragments.FragmentTopNews;
-import com.example.news_app.fragments.FragmentTrackingTheme;
+import com.example.news_app.fragments.usualFragments.FragmentSearching;
+import com.example.news_app.fragments.usualFragments.FragmentSettings;
+import com.example.news_app.fragments.usualFragments.FragmentTopNews;
+import com.example.news_app.fragments.usualFragments.FragmentTrackingTheme;
 import com.example.news_app.models.User;
 
 public class ActivityNews extends AppCompatActivity{

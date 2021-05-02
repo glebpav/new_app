@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.example.news_app.fragments.FragmentSignIn;
+import com.example.news_app.fragments.usualFragments.FragmentSignIn;
 
 public class ActivityMain extends AppCompatActivity {
 

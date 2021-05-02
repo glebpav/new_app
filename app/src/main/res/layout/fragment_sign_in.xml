@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg"
     android:orientation="vertical"
-    tools:context=".fragments.FragmentSignIn">
+    tools:context=".fragments.usualFragments.FragmentSignIn">
 
 
     <LinearLayout
@@ -66,27 +66,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="40dp"
-                        android:drawableLeft="@drawable/ic_mail_outline_black_24dp"
-                        android:drawablePadding="10dp"
                         android:hint="Логин"
-                        android:inputType="text"
-                        android:padding="20dp"
-                        android:textColorHint="#606060"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/monserrat"/>
+                        android:drawableLeft="@drawable/ic_mail_outline_black_24dp"
+                        style="@style/input_text_login"/>
 
                     <EditText
                         android:id="@+id/et_password"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/ic_lock_outline_black_24dp"
-                        android:drawablePadding="10dp"
                         android:hint="Пароль"
-                        android:inputType="textPassword"
-                        android:padding="20dp"
-                        android:textColorHint="#606060"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/monserrat"/>
+                        style="@style/input_text_login"/>
 
                     <CheckBox
                         android:id="@+id/cb_remember_me"
@@ -94,13 +84,15 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         android:text="Запомнить меня"
-                        android:fontFamily="@font/monserrat"/>
+                        android:fontFamily="@font/monserrat"
+                        android:layout_marginLeft="20dp"/>
 
                     <ImageButton
                         android:id="@+id/btn_sign_in"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="end"
+                        android:layout_marginRight="20dp"
                         android:background="@drawable/button_background"
                         android:src="@drawable/ic_arrow_forward_black_24dp" />
 

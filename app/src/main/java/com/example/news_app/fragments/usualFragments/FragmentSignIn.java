@@ -1,8 +1,9 @@
-package com.example.news_app.fragments;
+package com.example.news_app.fragments.usualFragments;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.news_app.ActivityNews;
+import com.example.news_app.adapters.AdapterSettingTiles;
+import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.R;
 import com.example.news_app.databinding.FragmentSignInBinding;
@@ -24,10 +27,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class FragmentSignIn extends Fragment {
 
-    public MakeRequests requests;
-    public FragmentSignIn thisFragment;
-    public String login, password;
-    public FragmentSignInBinding binding;
+    private MakeRequests requests;
+    private FragmentSignIn thisFragment;
+    private String login, password;
+    private FragmentSignInBinding binding;
+    private DialogFragmentProgressBar progressBar;
 
     final String url = "https://analisinf.pythonanywhere.com/";
 
@@ -38,7 +42,7 @@ public class FragmentSignIn extends Fragment {
         binding.btnSignIn.setOnClickListener(btnSignInClicked);
         binding.btnSignUp.setOnClickListener(btnSignUpClicked);
 
-        requests = new MakeRequests("https://analisinf.pythonanywhere.com/");
+        requests = new MakeRequests(url);
         thisFragment = this;
 
         checkUser();
@@ -52,19 +56,18 @@ public class FragmentSignIn extends Fragment {
         password = pref.getString("password", "");
         String status = "bad request";
 
-        Log.d("asd", login + " - " + login.length());
-        Log.d("asd", password + " - " + password.length());
-
         if (login.length() == 0 || password.length() == 0) return;
 
-        MakeRequests.SignInRequest sign_inRequest = requests.new SignInRequest(this);
-        sign_inRequest.execute();
+        progressBar = new DialogFragmentProgressBar();
+        progressBar.show(getFragmentManager(), "FragmentSingIn");
+        requests.new SignInRequest(login, password, singInListener).execute();
 
     }
 
     View.OnClickListener btnSignUpClicked = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            assert getFragmentManager() != null;
             getFragmentManager().beginTransaction().add(R.id.MA, new FragmentSingUp()).commit();
         }
     };
@@ -84,8 +87,10 @@ public class FragmentSignIn extends Fragment {
                 return;
             }
 
-            MakeRequests.SignInRequest sign_inRequest = requests.new SignInRequest(thisFragment, true);
-            sign_inRequest.execute();
+            progressBar = new DialogFragmentProgressBar();
+            assert getFragmentManager() != null;
+            progressBar.show(getFragmentManager(), "FragmentSignIn");
+            requests.new SignInRequest(login, password, singInListener).execute();
         }
     };
 
@@ -100,5 +105,27 @@ public class FragmentSignIn extends Fragment {
         intent.putExtra("password", user.getPassword());
         startActivity(intent);
     }
+
+    MakeRequests.OnSingInListener singInListener = new MakeRequests.OnSingInListener() {
+        @Override
+        public void onSingIn(User user) {
+
+            progressBar.dismiss();
+
+            if (user == null){
+                Toast.makeText(getContext(), getResources().getString(R.string.touble_with_autarisation), Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            if (binding.cbRememberMe.isChecked()) {
+                SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+                SharedPreferences.Editor edt = pref.edit();
+                edt.putString("login", login);
+                edt.putString("password", password);
+                edt.apply();
+            }
+            gotoNextActivity(user);
+        }
+    };
 
 }

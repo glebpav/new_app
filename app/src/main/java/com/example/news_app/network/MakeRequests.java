@@ -1,18 +1,15 @@
 package com.example.news_app.network;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.news_app.R;
 import com.example.news_app.adapters.AdapterTopNews;
-import com.example.news_app.fragments.FragmentSearching;
-import com.example.news_app.fragments.FragmentSignIn;
-import com.example.news_app.fragments.FragmentSingUp;
-import com.example.news_app.fragments.FragmentTopNews;
-import com.example.news_app.fragments.FragmentTrackingTheme;
+import com.example.news_app.fragments.usualFragments.FragmentSearching;
+import com.example.news_app.fragments.usualFragments.FragmentTopNews;
 import com.example.news_app.models.News;
 import com.example.news_app.models.User;
 
@@ -22,6 +19,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -67,29 +65,30 @@ public class MakeRequests {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class AddTrackingTheme extends AsyncTask<Void, Void, String> {
 
-        FragmentTrackingTheme fragment;
+        private OnAddTrackingThemeListener listener;
+        private String addingTheme;
+        private User user;
 
-        public AddTrackingTheme(FragmentTrackingTheme fragment) {
-            this.fragment = fragment;
+        public AddTrackingTheme(OnAddTrackingThemeListener listener, User user, String addingTheme) {
+            this.listener = listener;
+            this.user = user;
+            this.addingTheme = addingTheme;
         }
 
         @Override
         protected String doInBackground(Void... voids) {
             String response_str = "";
+            String json = "{\"user\":{" + "\"themes\": \"" + user.getThemes() + addingTheme + ";\"}}";
+
             MediaType JSON = MediaType.get("application/json; charset=utf-8");
-
             OkHttpClient client = new OkHttpClient();
-
-            String json = "{\"user\":{" +
-                    "\"themes\": \"" + fragment.user.getThemes() + fragment.addingTheme + ";\"}}";
-            Log.d("json", json);
-
             RequestBody body = RequestBody.create(json, JSON);
-            Request request = new Request.Builder().url((mainUrl + "api/users/" + fragment.user.getId())).put(body).build();
+            Request request = new Request.Builder().url((mainUrl + "api/users/" + user.getId())).put(body).build();
             try (Response response = client.newCall(request).execute()) {
-                response_str = response.body().string();
+                response_str = Objects.requireNonNull(response.body()).string();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -98,27 +97,13 @@ public class MakeRequests {
         }
 
         @Override
-        protected void onPreExecute() {
-            fragment.binding.progressCircular.setVisibility(View.VISIBLE);
-        }
-
-        @Override
         protected void onPostExecute(String server_response) {
-            JSONObject obj = null;
             try {
-                obj = new JSONObject(server_response);
+                JSONObject obj = new JSONObject(server_response);
                 if (obj.getString("status").equals("ok")) {
-                    User user = null;
                     try {
-                        user = serializeUser(obj.getString("user"));
-                        fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
-                        fragment.alertDialog.dismiss();
-                        fragment.user = user;
-                        fragment.adapter.themes_list = serialiseThemes(user.getThemes().split(";"));
-                        fragment.clearThemes();
-                        fragment.binding.recyclerView.getAdapter().notifyDataSetChanged();
-
-                        Toast.makeText(fragment.getContext(), "Тема успешно добавлена", Toast.LENGTH_SHORT).show();
+                        User user = serializeUser(obj.getString("user"));
+                        listener.onClick(user);
                         return;
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -127,39 +112,39 @@ public class MakeRequests {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
-            Toast.makeText(fragment.getActivity(), "Что-то пошло не так", Toast.LENGTH_LONG).show();
+            listener.onClick(null);
+            //fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
+            //Toast.makeText(fragment.getActivity(), "Что-то пошло не так", Toast.LENGTH_LONG).show();
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class DeleteTheme extends AsyncTask<Void, Void, String> {
 
-        FragmentTrackingTheme fragment;
-        String deleting_theme;
+        String deletingTheme;
+        OnAddTrackingThemeListener deleteTrackingThemeListener;
+        User user;
 
-        public DeleteTheme(FragmentTrackingTheme fragment, String deleting_theme) {
-            this.fragment = fragment;
-            this.deleting_theme = deleting_theme;
+        public DeleteTheme(String deletingTheme, User user, OnAddTrackingThemeListener deleteTrackingThemeListener) {
+            this.deletingTheme = deletingTheme;
+            this.user = user;
+            this.deleteTrackingThemeListener = deleteTrackingThemeListener;
         }
 
         @Override
         protected String doInBackground(Void... voids) {
             String response_str = "";
-            MediaType JSON = MediaType.get("application/json; charset=utf-8");
+            user.setThemes(user.getThemes().replace(";;", ";"));
+            String json = "{\"user\":{" +
+                    "\"themes\": \"" + user.getThemes().replace(deletingTheme + ";", "") + ";\"}}";
 
+            MediaType JSON = MediaType.get("application/json; charset=utf-8");
             OkHttpClient client = new OkHttpClient();
 
-            fragment.user.setThemes(fragment.user.getThemes().replace(";;", ";"));
-
-            String json = "{\"user\":{" +
-                    "\"themes\": \"" + fragment.user.getThemes().replace(deleting_theme + ";", "") + ";\"}}";
-
-            Log.d("json", json);
-
             RequestBody body = RequestBody.create(json, JSON);
-            Request request = new Request.Builder().url((mainUrl + "api/users/" + fragment.user.getId())).put(body).build();
+            Request request = new Request.Builder().url((mainUrl + "api/users/" + user.getId())).put(body).build();
             try (Response response = client.newCall(request).execute()) {
-                response_str = response.body().string();
+                response_str = Objects.requireNonNull(response.body()).string();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -168,35 +153,13 @@ public class MakeRequests {
         }
 
         @Override
-        protected void onPreExecute() {
-            fragment.binding.progressCircular.setVisibility(View.VISIBLE);
-        }
-
-        @Override
         protected void onPostExecute(String server_response) {
-            JSONObject obj = null;
             try {
-                obj = new JSONObject(server_response);
+                JSONObject obj = new JSONObject(server_response);
                 if (obj.getString("status").equals("ok")) {
-                    User user = null;
                     try {
-                        user = serializeUser(obj.getString("user"));
-
-                        try {
-                            user.setThemes(user.getThemes().replace(";;", ";"));
-                            if (user.getThemes().charAt(0) == ';') {
-                                user.setThemes(user.getThemes().substring(1));
-                            }
-                        } catch (Exception e) {
-                        }
-
-                        fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
-                        fragment.user = user;
-                        fragment.clearThemes();
-                        fragment.adapter.themes_list = serialiseThemes(user.getThemes().split(";"));
-                        fragment.binding.recyclerView.getAdapter().notifyDataSetChanged();
-
-                        Toast.makeText(fragment.getContext(), "Тема успешно удвлена", Toast.LENGTH_SHORT).show();
+                        User user = serializeUser(obj.getString("user"));
+                        deleteTrackingThemeListener.onClick(user);
                         return;
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -205,24 +168,22 @@ public class MakeRequests {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
-            Toast.makeText(fragment.getActivity(), "Что-то пошло не так", Toast.LENGTH_LONG).show();
+            deleteTrackingThemeListener.onClick(null);
         }
     }
 
     public class SignInRequest extends AsyncTask<Void, Void, String> {
 
-        FragmentSignIn fragment;
-        boolean isFromUser;
+        String login, password;
+        OnSingInListener listener;
 
-        public SignInRequest(FragmentSignIn fragment) {
-            this.fragment = fragment;
+        public SignInRequest(String login, String password, OnSingInListener listener) {
+            this.login = login;
+            this.password = password;
+            this.listener = listener;
         }
 
-        public SignInRequest(FragmentSignIn fragment, boolean isFromUser) {
-            this.fragment = fragment;
-            this.isFromUser = isFromUser;
-        }
+        public SignInRequest(){};
 
         @Override
         protected String doInBackground(Void... voids) {
@@ -231,7 +192,7 @@ public class MakeRequests {
 
             OkHttpClient client = new OkHttpClient();
 
-            String json = "{\"user\":{ \"login\": \"" + fragment.login + "\",\"password\": \"" + fragment.password + "\"}}";
+            String json = "{\"user\":{ \"login\": \"" + login + "\",\"password\": \"" + password + "\"}}";
             Log.d("json", json);
 
             RequestBody body = RequestBody.create(json, JSON);
@@ -246,17 +207,15 @@ public class MakeRequests {
         }
 
         @Override
-        protected void onPreExecute() {
-            fragment.binding.progressCircular.setVisibility(View.VISIBLE);
-        }
-
-        @Override
         protected void onPostExecute(String server_response) {
             JSONObject obj = null;
             try {
                 obj = new JSONObject(server_response);
                 if (obj.getString("status").equals("ok")) {
-
+                    User user = serializeUser(obj.getString("user"));
+                    listener.onSingIn(user);
+                    return;
+/*
                     if (fragment.binding.cbRememberMe.isChecked()) {
                         SharedPreferences pref = fragment.getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
                         SharedPreferences.Editor edt = pref.edit();
@@ -273,40 +232,48 @@ public class MakeRequests {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+
+ */
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            listener.onSingIn(null);
+            /*
             fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
-            Toast.makeText(fragment.getActivity(), "Возникла проблема с автоматической авторизацией", Toast.LENGTH_LONG).show();
+            Toast.makeText(fragment.getActivity(), "Возникла проблема с автоматической авторизацией", Toast.LENGTH_LONG).show();*/
         }
     }
 
     public class SignUpRequest extends AsyncTask<Void, Void, String> {
 
-        FragmentSingUp fragment;
+        private final OnSignUpListener listener;
+        private final String login;
+        private final String password;
+        private final String name;
 
-        public SignUpRequest(FragmentSingUp fragment) {
-            this.fragment = fragment;
+        public SignUpRequest(OnSignUpListener listener, String login, String name, String password) {
+            this.listener = listener;
+            this.login = login;
+            this.name = name;
+            this.password = password;
         }
 
         @Override
         protected String doInBackground(Void... voids) {
             String response_str = "";
-            MediaType JSON = MediaType.get("application/json; charset=utf-8");
-
-            OkHttpClient client = new OkHttpClient();
-
-            String json = "{\"user\":{ \"login\": \"" + fragment.login + "\"," +
-                    "\"name\": \"" + fragment.name + "\"," +
-                    "\"password\": \"" + fragment.password + "\", " +
+            String json = "{\"user\":{ \"login\": \"" + login + "\"," +
+                    "\"name\": \"" + name + "\"," +
+                    "\"password\": \"" + password + "\", " +
                     "\"themes\": \"\",\"history\": \"\" }}";
-            Log.d("json", json);
+
+            MediaType JSON = MediaType.get("application/json; charset=utf-8");
+            OkHttpClient client = new OkHttpClient();
 
             RequestBody body = RequestBody.create(json, JSON);
             Request request = new Request.Builder().url((mainUrl + "api/users/")).post(body).build();
             try (Response response = client.newCall(request).execute()) {
-                response_str = response.body().string();
+                response_str = Objects.requireNonNull(response.body()).string();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -315,32 +282,20 @@ public class MakeRequests {
         }
 
         @Override
-        protected void onPreExecute() {
-            fragment.binding.progressCircular.setVisibility(View.VISIBLE);
-            fragment.binding.btnSignUp.setEnabled(false);
-            fragment.binding.btnBack.setEnabled(false);
-        }
-
-        @Override
         protected void onPostExecute(String server_response) {
-            JSONObject obj = null;
-            fragment.binding.btnSignUp.setEnabled(true);
-            fragment.binding.btnBack.setEnabled(true);
-            fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
             try {
-                obj = new JSONObject(server_response);
+                JSONObject obj = new JSONObject(server_response);
                 if (obj.getString("status").equals("ok")) {
-                    Toast.makeText(fragment.getActivity(), "Пользователь создан успешно", Toast.LENGTH_SHORT).show();
+                    listener.onClick(R.string.user_created_successful);
                     return;
                 } else if (obj.getString("status").equals("bad response")) {
-                    Toast.makeText(fragment.getActivity(), obj.getString("trouble"), Toast.LENGTH_LONG).show();
+                    listener.onClick(obj.getString("trouble"));
                     return;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-            Toast.makeText(fragment.getActivity(), "Возникла проблема с автоматической авторизацией", Toast.LENGTH_LONG).show();
+            listener.onClick(R.string.touble_with_autarisation);
         }
 
         String deleteTheme(String fullStr, String deletingStr) {
@@ -354,10 +309,12 @@ public class MakeRequests {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class LoadUser extends AsyncTask<Void, Void, String> {
 
-        private OnLoadUserListener mListener;
-        private String login, password;
+        private final OnLoadUserListener mListener;
+        private final String login;
+        private final String password;
 
         public LoadUser(String login, String password, OnLoadUserListener mListener) {
             this.login = login;
@@ -387,14 +344,6 @@ public class MakeRequests {
         }
 
         @Override
-        protected void onPreExecute() {
-            /*
-            fragment_set.layout_success.setVisibility(View.INVISIBLE);
-            fragment_set.layout_error.setVisibility(View.INVISIBLE);
-            fragment_set.progressBar.setVisibility(View.VISIBLE);*/
-        }
-
-        @Override
         protected void onPostExecute(String response) {
             Log.d("response", response);
             JSONObject obj = null;
@@ -405,7 +354,6 @@ public class MakeRequests {
                         try {
                             User user = serializeUser(obj.getString("user"));
                             mListener.onResults(user);
-                            return;
                             /*
                             fragment_set.progressBar.setVisibility(View.INVISIBLE);
                             fragment_set.layout_success.setVisibility(View.VISIBLE);
@@ -658,12 +606,27 @@ public class MakeRequests {
             return user = serializeUser(new JSONObject(response_str[0]).getString("user"));
         } catch (JSONException e) {
             e.printStackTrace();
-        };
+        }
+        ;
         return user;
     }
 
     public interface OnLoadUserListener {
         void onResults(User user);
     }
+
+    public interface OnAddTrackingThemeListener {
+        void onClick(User user);
+    }
+
+    public interface OnSignUpListener {
+        void onClick(String response);
+        void onClick(int responseId);
+    }
+
+    public interface OnSingInListener{
+        void onSingIn (User user);
+    }
+
 
 }

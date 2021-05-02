@@ -1,4 +1,4 @@
-package com.example.news_app.fragments;
+package com.example.news_app.fragments.usualFragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
