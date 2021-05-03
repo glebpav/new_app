@@ -1,5 +1,11 @@
 package com.example.news_app.models;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
 public class News {
 
     private String title;
@@ -47,5 +53,25 @@ public class News {
 
     public void setRating(String rating) {
         this.rating = rating;
+    }
+
+    static public ArrayList<News> serializeNews(String news) {
+        ArrayList<News> news_list = new ArrayList<>();
+        try {
+            JSONArray news_array = new JSONArray(news);
+            for (int i = 0; i < news_array.length(); i++) {
+                JSONObject obj1 = (JSONObject) news_array.get(i);
+                News news1 = new News(
+                        obj1.getString("title"),
+                        obj1.getString("body"),
+                        obj1.getString("url"),
+                        obj1.getString("rating")
+                );
+                news_list.add(news1);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return news_list;
     }
 }

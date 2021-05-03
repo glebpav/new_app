@@ -35,7 +35,7 @@ public class FragmentSingUp extends Fragment {
         binding.btnSignUp.setOnClickListener(btnSingUpClicked);
         binding.btnBack.setOnClickListener(btnBackClicked);
 
-        requests = new MakeRequests("https://analisinf.pythonanywhere.com/");
+        requests = new MakeRequests();
 
         return binding.getRoot();
     }

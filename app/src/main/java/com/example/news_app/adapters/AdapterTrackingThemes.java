@@ -10,82 +10,72 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.news_app.R;
+import com.example.news_app.databinding.ItemSettingsBinding;
+import com.example.news_app.databinding.TrackingTileBinding;
 
 import java.util.List;
 
 import soup.neumorphism.NeumorphFloatingActionButton;
 
-public class AdapterTrackingThemes extends RecyclerView.Adapter<AdapterTrackingThemes.Tracking_themes_Holder> {
+public class AdapterTrackingThemes extends RecyclerView.Adapter<AdapterTrackingThemes.TrackingThemesHolder> {
 
-    public void setThemes_list(List<String> themes_list) {
-        this.themes_list = themes_list;
+    public void setThemesList(List<String> themesList) {
+        this.themesList = themesList;
     }
 
-    private List<String> themes_list;
-    private final OnDeleteItemClickdeListener onDeleteItemClickdeListener;
+    private List<String> themesList;
+    private final OnDeleteItemClickedListener onDeleteItemClickedListener;
     private final OnThemeSelectedListener onThemeSelectedListener;
 
-    public AdapterTrackingThemes(List<String> themes_list, OnDeleteItemClickdeListener onDeleteItemClickdeListener, OnThemeSelectedListener onThemeSelectedListener) {
-        this.themes_list = themes_list;
-        this.onDeleteItemClickdeListener = onDeleteItemClickdeListener;
+    public AdapterTrackingThemes(List<String> themesList, OnDeleteItemClickedListener onDeleteItemClickedListener,
+                                 OnThemeSelectedListener onThemeSelectedListener) {
+        this.themesList = themesList;
+        this.onDeleteItemClickedListener = onDeleteItemClickedListener;
         this.onThemeSelectedListener = onThemeSelectedListener;
     }
 
     @Override
-    public Tracking_themes_Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
+    public TrackingThemesHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        TrackingTileBinding binding = TrackingTileBinding.inflate(LayoutInflater.from(parent.getContext()),
+                parent, false);
 
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.tracking_tile, parent, false);
-
-        Tracking_themes_Holder tracking_themes_holder = new Tracking_themes_Holder(view);
-
-        return tracking_themes_holder;
+        return new TrackingThemesHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull Tracking_themes_Holder holder, int position) {
-        holder.bind(themes_list.get(position));
+    public void onBindViewHolder(@NonNull TrackingThemesHolder holder, int position) {
+        holder.binding.tvTrackingTheme.setText(themesList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return themes_list.size();
+        return themesList.size();
     }
 
-    class Tracking_themes_Holder extends RecyclerView.ViewHolder {
+    class TrackingThemesHolder extends RecyclerView.ViewHolder {
 
-        TextView tv_tracking_theme;
-        NeumorphFloatingActionButton btn_delete, btn_open;
+        TrackingTileBinding binding;
 
-        public Tracking_themes_Holder(@NonNull View itemView) {
-            super(itemView);
-
-            tv_tracking_theme = itemView.findViewById(R.id.tv_tracking_theme);
-            btn_delete = itemView.findViewById(R.id.btn_delete);
-            btn_open = itemView.findViewById(R.id.btn_open);
-
-            btn_delete.setOnClickListener(new View.OnClickListener() {
+        public TrackingThemesHolder(TrackingTileBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+            binding.btnDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onDeleteItemClickdeListener.onDeleteItem(themes_list.get(getAdapterPosition()));
+                    onDeleteItemClickedListener.onDeleteItem(themesList.get(getAdapterPosition()));
                 }
             });
 
-            btn_open.setOnClickListener(new View.OnClickListener() {
+            binding.btnOpen.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onThemeSelectedListener.onThemeSelected(themes_list.get(getAdapterPosition()));
+                    onThemeSelectedListener.onThemeSelected(themesList.get(getAdapterPosition()));
                 }
             });
         }
-
-        void bind(String theme) {
-            tv_tracking_theme.setText(theme);
-        }
     }
 
-    public interface OnDeleteItemClickdeListener {
+    public interface OnDeleteItemClickedListener {
         void onDeleteItem(String theme);
     }
 

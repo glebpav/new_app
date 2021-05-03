@@ -8,7 +8,8 @@
     <soup.neumorphism.NeumorphCardView
         android:layout_width="130dp"
         android:layout_height="130dp"
-        android:background="@color/material_on_primary_emphasis_high_type">
+        android:background="@color/material_on_primary_emphasis_high_type"
+        android:id="@+id/nuemorph_card_source">
 
         <RelativeLayout
             android:layout_width="match_parent"

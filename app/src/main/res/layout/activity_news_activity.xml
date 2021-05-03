@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     tools:context=".ActivityNews"
     android:id="@+id/NA"
-    android:background="@color/colorPrimary">
+    android:background="@color/colorPrimary"
+    android:screenOrientation="portrait">
 
 
     <androidx.viewpager2.widget.ViewPager2

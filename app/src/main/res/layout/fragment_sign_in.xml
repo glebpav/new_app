@@ -76,7 +76,8 @@
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/ic_lock_outline_black_24dp"
                         android:hint="Пароль"
-                        style="@style/input_text_login"/>
+                        style="@style/input_text_login"
+                        android:inputType="textPassword"/>
 
                     <CheckBox
                         android:id="@+id/cb_remember_me"

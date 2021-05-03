@@ -1,5 +1,8 @@
 package com.example.news_app.models;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class User {
 
     private int id;
@@ -9,16 +12,27 @@ public class User {
     private String history;
     private String themes;
 
-    public User(int id, String name, String login, String password, String history, String themes) {
+    private String sites;
+
+    public User(int id, String name, String login, String password, String history, String themes, String sites) {
         this.id = id;
         this.name = name;
         this.login = login;
         this.password = password;
         this.history = history;
         this.themes = themes;
+        this.sites = sites;
     }
 
     public User() {
+    }
+
+    public String getSites() {
+        return sites;
+    }
+
+    public void setSites(String sites) {
+        this.sites = sites;
     }
 
     public String getName() {
@@ -68,4 +82,18 @@ public class User {
     public void setThemes(String themes) {
         this.themes = themes;
     }
+
+    static public User serializeUser(String jsonString) {
+        try {
+            JSONObject obj = new JSONObject(jsonString);
+            return new User(Integer.parseInt(obj.getString("id")), obj.getString("name"),
+                    obj.getString("login"), obj.getString("password"),
+                    obj.getString("history"), obj.getString("themes"),
+                    obj.getString("sites"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

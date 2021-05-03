@@ -52,11 +52,13 @@ public class FragmentTrackingTheme extends Fragment {
         binding.recyclerView.setLayoutManager(llm);
 
         clearThemes();
+        clearThemes();
+
         adapter = new AdapterTrackingThemes(Arrays.asList(mUser.getThemes().split(";")),
-                onDeleteItemClickdeListener, onThemeSelectedListener);
+                onDeleteItemClickedListener, onThemeSelectedListener);
         binding.recyclerView.setAdapter(adapter);
 
-        requests = new MakeRequests("https://analisinf.pythonanywhere.com/");
+        requests = new MakeRequests();
 
         return binding.getRoot();
     }
@@ -91,7 +93,7 @@ public class FragmentTrackingTheme extends Fragment {
         public void onClick(User user) {
             if (user != null) {
                 mUser = user;
-                adapter.setThemes_list(Arrays.asList(mUser.getThemes().split(";")));
+                adapter.setThemesList(Arrays.asList(mUser.getThemes().split(";")));
                 adapter.notifyDataSetChanged();
             }
             dialogFragmentProgressBar.dismiss();
@@ -112,11 +114,12 @@ public class FragmentTrackingTheme extends Fragment {
         }
     };
 
-    AdapterTrackingThemes.OnDeleteItemClickdeListener onDeleteItemClickdeListener = new AdapterTrackingThemes.OnDeleteItemClickdeListener() {
+    AdapterTrackingThemes.OnDeleteItemClickedListener onDeleteItemClickedListener = new AdapterTrackingThemes.OnDeleteItemClickedListener() {
         @Override
         public void onDeleteItem(String theme) {
             dialogFragmentProgressBar = new DialogFragmentProgressBar();
             dialogFragmentProgressBar.show(getFragmentManager(), "FragmentTrackingTheme");
+            clearThemes();
             requests.new DeleteTheme(theme, mUser, trackingThemeChenchedListener).execute();
         }
     };

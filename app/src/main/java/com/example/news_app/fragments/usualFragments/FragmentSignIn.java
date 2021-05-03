@@ -33,8 +33,6 @@ public class FragmentSignIn extends Fragment {
     private FragmentSignInBinding binding;
     private DialogFragmentProgressBar progressBar;
 
-    final String url = "https://analisinf.pythonanywhere.com/";
-
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSignInBinding.inflate(inflater, container, false);
@@ -42,7 +40,7 @@ public class FragmentSignIn extends Fragment {
         binding.btnSignIn.setOnClickListener(btnSignInClicked);
         binding.btnSignUp.setOnClickListener(btnSignUpClicked);
 
-        requests = new MakeRequests(url);
+        requests = new MakeRequests();
         thisFragment = this;
 
         checkUser();

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.news_app.adapters.AdapterViewNews;
 import com.example.news_app.databinding.FragmentSearchingBinding;
+import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.models.News;
 import com.example.news_app.models.User;
@@ -27,32 +28,15 @@ import static com.example.news_app.databinding.FragmentSearchingBinding.*;
 
 public class FragmentSearching extends Fragment {
 
-    public ViewPager2 pager;
-
     private User user;
-    private FragmentSearching fragmentSearch;
     private MakeRequests requests;
-    private ArrayList<News> newsList;
-
-    public AdapterViewNews getAdapter() {
-        return adapter;
-    }
-    public User getUser() {
-        return user;
-    }
-    public FragmentSearchingBinding getBinding () {
-        return binding;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     private AdapterViewNews adapter;
     private FragmentSearchingBinding binding;
+    private DialogFragmentProgressBar fragmentProgressBar;
 
-    public FragmentSearching(ViewPager2 pager, User user) {
-        this.pager = pager;
+    public FragmentSearching(User user) {
+
         this.user = user;
     }
 
@@ -60,7 +44,7 @@ public class FragmentSearching extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = inflate(inflater, container, false);
 
-        newsList = new ArrayList<>();
+        ArrayList<News> newsList = new ArrayList<>();
         adapter = new AdapterViewNews(getContext(), newsList);
 
         binding.viewPager.setClipToPadding(false);
@@ -68,8 +52,7 @@ public class FragmentSearching extends Fragment {
         binding.viewPager.setAdapter(adapter);
 
         binding.btnFind.setOnClickListener(btnFindClicked);
-        requests = new MakeRequests("https://analisinf.pythonanywhere.com/");
-        fragmentSearch = this;
+        requests = new MakeRequests();
 
         return binding.getRoot();
     }
@@ -82,8 +65,7 @@ public class FragmentSearching extends Fragment {
                 Toast.makeText(getActivity(), "Введите тему", Toast.LENGTH_SHORT).show();
                 return;
             }
-            MakeRequests.FindNews findNews = requests.new FindNews(fragmentSearch, theme);
-            findNews.execute();
+            findNews(theme);
         }
     };
 
@@ -95,13 +77,37 @@ public class FragmentSearching extends Fragment {
         String themeFromPage = pref.getString("SearchingTheme", "");
 
         if (themeFromPage.length() != 0){
-            MakeRequests.FindNews find_news = requests.new FindNews(fragmentSearch, themeFromPage);
-            find_news.execute();
-
+            findNews(themeFromPage);
             binding.etTheme.setText(themeFromPage);
             SharedPreferences.Editor edt = pref.edit();
             edt.putString("SearchingTheme", "");
             edt.apply();
         }
     }
+
+    void findNews(String theme){
+        requests.new FindNews(theme, user, onFindNewsListener).execute();
+        fragmentProgressBar = new DialogFragmentProgressBar();
+        fragmentProgressBar.show(getFragmentManager(), "FragmentSearching");
+        binding.imgHello.setVisibility(View.INVISIBLE);
+        binding.viewPager.setVisibility(View.INVISIBLE);
+        binding.errorLayout.setVisibility(View.INVISIBLE);
+    }
+
+    MakeRequests.OnFindNewsListener onFindNewsListener = new MakeRequests.OnFindNewsListener() {
+        @Override
+        public void onFoundNews(ArrayList<News> listNews) {
+            fragmentProgressBar.dismiss();
+            if (listNews != null && listNews.size() != 0) {
+                adapter.setNewsArray(listNews);
+                adapter.notifyDataSetChanged();
+                binding.viewPager.setVisibility(View.VISIBLE);
+            }
+            else {
+                binding.errorLayout.setVisibility(View.VISIBLE);
+
+            }
+        }
+    };
+
 }

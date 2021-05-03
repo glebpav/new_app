@@ -79,7 +79,8 @@
                         android:layout_height="wrap_content"
                         android:hint="Пароль"
                         android:drawableLeft="@drawable/ic_lock_outline_black_24dp"
-                        style="@style/input_text_login"/>
+                        style="@style/input_text_login"
+                        android:inputType="textPassword"/>
 
 
                     <ImageButton

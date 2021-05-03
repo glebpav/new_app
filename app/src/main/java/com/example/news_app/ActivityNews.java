@@ -119,10 +119,9 @@ public class ActivityNews extends AppCompatActivity{
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            Log.d("asdf", String.valueOf(position));
             switch (position) {
                 case 0:
-                    return new FragmentSearching(pager, user);
+                    return new FragmentSearching(user);
                 case 1:
                     return new FragmentTrackingTheme(pager, user, meow);
                 case 2:
@@ -130,7 +129,7 @@ public class ActivityNews extends AppCompatActivity{
                 case 3:
                     return new FragmentSettings(user, pager, meow);
                 default:
-                    return new FragmentSearching(pager, user);
+                    return new FragmentSearching(user);
             }
         }
         @Override

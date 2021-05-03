@@ -4,22 +4,20 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.news_app.R;
 import com.example.news_app.adapters.AdapterTopNews;
-import com.example.news_app.fragments.usualFragments.FragmentSearching;
 import com.example.news_app.fragments.usualFragments.FragmentTopNews;
 import com.example.news_app.models.News;
 import com.example.news_app.models.User;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -29,11 +27,7 @@ import okhttp3.Response;
 
 public class MakeRequests {
 
-    String mainUrl;
-
-    public MakeRequests(String mainUrl) {
-        this.mainUrl = mainUrl;
-    }
+    final static String MAIN_URL = "https://analisinf.pythonanywhere.com/";
 
     public void changeUser(final User user) {
         final String[] responseStr = new String[1];
@@ -48,7 +42,7 @@ public class MakeRequests {
                 Log.d("json", json);
 
                 RequestBody body = RequestBody.create(json, JSON);
-                Request request = new Request.Builder().url((mainUrl + "api/users/" + user.getId())).put(body).build();
+                Request request = new Request.Builder().url((MAIN_URL + "api/users/" + user.getId())).put(body).build();
                 try (Response response = client.newCall(request).execute()) {
                     responseStr[0] = response.body().string();
                 } catch (IOException e) {
@@ -86,7 +80,7 @@ public class MakeRequests {
             MediaType JSON = MediaType.get("application/json; charset=utf-8");
             OkHttpClient client = new OkHttpClient();
             RequestBody body = RequestBody.create(json, JSON);
-            Request request = new Request.Builder().url((mainUrl + "api/users/" + user.getId())).put(body).build();
+            Request request = new Request.Builder().url((MAIN_URL + "api/users/" + user.getId())).put(body).build();
             try (Response response = client.newCall(request).execute()) {
                 response_str = Objects.requireNonNull(response.body()).string();
             } catch (IOException e) {
@@ -102,7 +96,7 @@ public class MakeRequests {
                 JSONObject obj = new JSONObject(server_response);
                 if (obj.getString("status").equals("ok")) {
                     try {
-                        User user = serializeUser(obj.getString("user"));
+                        User user = User.serializeUser(obj.getString("user"));
                         listener.onClick(user);
                         return;
                     } catch (JSONException e) {
@@ -142,7 +136,7 @@ public class MakeRequests {
             OkHttpClient client = new OkHttpClient();
 
             RequestBody body = RequestBody.create(json, JSON);
-            Request request = new Request.Builder().url((mainUrl + "api/users/" + user.getId())).put(body).build();
+            Request request = new Request.Builder().url((MAIN_URL + "api/users/" + user.getId())).put(body).build();
             try (Response response = client.newCall(request).execute()) {
                 response_str = Objects.requireNonNull(response.body()).string();
             } catch (IOException e) {
@@ -158,7 +152,7 @@ public class MakeRequests {
                 JSONObject obj = new JSONObject(server_response);
                 if (obj.getString("status").equals("ok")) {
                     try {
-                        User user = serializeUser(obj.getString("user"));
+                        User user = User.serializeUser(obj.getString("user"));
                         deleteTrackingThemeListener.onClick(user);
                         return;
                     } catch (JSONException e) {
@@ -196,7 +190,7 @@ public class MakeRequests {
             Log.d("json", json);
 
             RequestBody body = RequestBody.create(json, JSON);
-            Request request = new Request.Builder().url((mainUrl + "api/user_check/")).post(body).build();
+            Request request = new Request.Builder().url((MAIN_URL + "api/user_check/")).post(body).build();
             try (Response response = client.newCall(request).execute()) {
                 response_str = response.body().string();
             } catch (IOException e) {
@@ -212,7 +206,7 @@ public class MakeRequests {
             try {
                 obj = new JSONObject(server_response);
                 if (obj.getString("status").equals("ok")) {
-                    User user = serializeUser(obj.getString("user"));
+                    User user = User.serializeUser(obj.getString("user"));
                     listener.onSingIn(user);
                     return;
 /*
@@ -271,7 +265,7 @@ public class MakeRequests {
             OkHttpClient client = new OkHttpClient();
 
             RequestBody body = RequestBody.create(json, JSON);
-            Request request = new Request.Builder().url((mainUrl + "api/users/")).post(body).build();
+            Request request = new Request.Builder().url((MAIN_URL + "api/users/")).post(body).build();
             try (Response response = client.newCall(request).execute()) {
                 response_str = Objects.requireNonNull(response.body()).string();
             } catch (IOException e) {
@@ -332,7 +326,7 @@ public class MakeRequests {
             Log.d("json", json);
 
             RequestBody body = RequestBody.create(json, JSON);
-            Request request = new Request.Builder().url((mainUrl + "api/user_check/")).post(body).build();
+            Request request = new Request.Builder().url((MAIN_URL + "api/user_check/")).post(body).build();
             try (Response response = client.newCall(request).execute()) {
                 response_str[0] = response.body().string();
             } catch (IOException e) {
@@ -352,7 +346,7 @@ public class MakeRequests {
                 try {
                     if (obj.getString("status").equals("ok")) {
                         try {
-                            User user = serializeUser(obj.getString("user"));
+                            User user = User.serializeUser(obj.getString("user"));
                             mListener.onResults(user);
                             /*
                             fragment_set.progressBar.setVisibility(View.INVISIBLE);
@@ -372,19 +366,18 @@ public class MakeRequests {
 
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class FindNews extends AsyncTask<Void, Void, String> {
 
-        String theme;
+        private final String theme;
+        private User user;
+        private final OnFindNewsListener findNewsListener;
 
-        final String[] status = {""};
-        ArrayList<News> news_list = new ArrayList<>();
-        FragmentSearching fragmentSearching;
-
-        public FindNews(FragmentSearching fragmentSearching, String theme) {
-            this.fragmentSearching = fragmentSearching;
+        public FindNews(String theme, User user, OnFindNewsListener findNewsListener) {
             this.theme = theme;
+            this.user = user;
+            this.findNewsListener = findNewsListener;
         }
-
 
         @Override
         protected void onPostExecute(String s) {
@@ -400,71 +393,56 @@ public class MakeRequests {
 
             if (status.equals("ok")) {
                 try {
-
-                    news_list = serializeNews(obj.getString("news"));
-
-                    if (news_list.size() != 0) {
-                        fragmentSearching.getAdapter().setNewsArray(news_list);
-                        fragmentSearching.getBinding().viewPager.setAdapter(fragmentSearching.getAdapter());
-                        fragmentSearching.getBinding().viewPager.getAdapter().notifyDataSetChanged();
-
-                        fragmentSearching.getBinding().progressCircular.setVisibility(View.INVISIBLE);
-                        fragmentSearching.getBinding().viewPager.setVisibility(View.VISIBLE);
+                    ArrayList<News> newsList = News.serializeNews(obj.getString("news"));
+                    if (newsList.size() != 0) {
+                        findNewsListener.onFoundNews(newsList);
                         return;
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
-
-            fragmentSearching.getBinding().errorLayout.setVisibility(View.VISIBLE);
-            fragmentSearching.getBinding().progressCircular.setVisibility(View.INVISIBLE);
+            findNewsListener.onFoundNews(null);
         }
 
         @Override
         protected String doInBackground(Void... voids) {
             String response_str = "";
-            OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .build();
 
-            fragmentSearching.setUser(updateUser(fragmentSearching.getUser()));
+            user = updateUser(user);
 
-            Request request = new Request.Builder().url((mainUrl + "api/news/" + theme + "/")).get().build();
+            Request request = new Request.Builder().url((MAIN_URL + "api/news/" + theme + "/" +
+                    user.getId())).get().build();
+            Log.d("TAG", "doInBackground: " + (MAIN_URL + "api/news/" + theme + "/" +
+                    user.getId()));
             try (Response response = client.newCall(request).execute()) {
                 response_str = response.body().string();
-                Log.d("asd", response_str);
                 if (new JSONObject(response_str).getString("status").equals("ok")) {
                     final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
                     client = new OkHttpClient();
 
-                    String json = "{\"user\":{" +
-                            "\"history\": \"" + fragmentSearching.getUser().getHistory() + ";" + theme + "\" }}";
-                    Log.d("json", json);
+                    String json = "{\"user\":{" + "\"history\": \"" +
+                            user.getHistory() + ";" + theme + "\" }}";
 
                     RequestBody body = RequestBody.create(json, JSON);
-                    request = new Request.Builder().url((mainUrl + "api/users/" + fragmentSearching.getUser().getId())).put(body).build();
+                    request = new Request.Builder().url((MAIN_URL + "api/users/" +
+                            user.getId())).put(body).build();
                     try (Response response1 = client.newCall(request).execute()) {
                         String response_str1 = response1.body().string();
-                        Log.d("asd", response_str1);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return response_str;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            fragmentSearching.getBinding().imgHello.setVisibility(View.INVISIBLE);
-            fragmentSearching.getBinding().viewPager.setVisibility(View.INVISIBLE);
-            fragmentSearching.getBinding().errorLayout.setVisibility(View.INVISIBLE);
-            fragmentSearching.getBinding().progressCircular.setVisibility(View.VISIBLE);
         }
     }
 
@@ -495,7 +473,7 @@ public class MakeRequests {
 
             if (status.equals("ok")) {
                 try {
-                    news_list = serializeNews(obj.getString("news"));
+                    news_list = News.serializeNews(obj.getString("news"));
 
                     if (news_list.size() != 0) {
                         fragment.adapter = new AdapterTopNews(fragment.getContext(), news_list);
@@ -520,7 +498,7 @@ public class MakeRequests {
             String response_str = "";
             OkHttpClient client = new OkHttpClient();
 
-            Request request = new Request.Builder().url((mainUrl + "api/top_news/")).get().build();
+            Request request = new Request.Builder().url((MAIN_URL + "api/top_news/")).get().build();
             try (Response response = client.newCall(request).execute()) {
                 response_str = response.body().string();
                 Log.d("asd", response_str);
@@ -543,59 +521,14 @@ public class MakeRequests {
         }
     }
 
-    User serializeUser(String jsonString) {
-        JSONObject obj = null;
-        try {
-            obj = new JSONObject(jsonString);
-            return new User(Integer.parseInt(obj.getString("id")), obj.getString("name"),
-                    obj.getString("login"), obj.getString("password"),
-                    obj.getString("history"), obj.getString("themes"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    ArrayList<News> serializeNews(String news) {
-        ArrayList<News> news_list = new ArrayList<>();
-        JSONObject obj = null;
-        try {
-            //obj = new JSONObject(news);
-            JSONArray news_array = new JSONArray(news);
-            for (int i = 0; i < news_array.length(); i++) {
-                JSONObject obj1 = (JSONObject) news_array.get(i);
-                News news1 = new News(
-                        obj1.getString("title"),
-                        obj1.getString("body"),
-                        obj1.getString("url"),
-                        obj1.getString("rating")
-                );
-                news_list.add(news1);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return news_list;
-    }
-
-    ArrayList<String> serialiseThemes(String[] str) {
-        ArrayList<String> strings_list = new ArrayList<>();
-        for (String str_one : str) {
-            strings_list.add(str_one);
-        }
-        return strings_list;
-    }
-
     User updateUser(User user) {
-        final String[] response_str = new String[1];
-        final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-        OkHttpClient client = new OkHttpClient();
-
         String json = "{\"user\":{ \"login\": \"" + user.getLogin() + "\",\"password\": \"" + user.getPassword() + "\"}}";
-        Log.d("json", json);
+        final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+        final String[] response_str = new String[1];
 
+        OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(json, JSON);
-        Request request = new Request.Builder().url((mainUrl + "api/user_check/")).post(body).build();
+        Request request = new Request.Builder().url((MAIN_URL + "api/user_check/")).post(body).build();
         try (Response response = client.newCall(request).execute()) {
             response_str[0] = response.body().string();
         } catch (IOException e) {
@@ -603,11 +536,10 @@ public class MakeRequests {
         }
 
         try {
-            return user = serializeUser(new JSONObject(response_str[0]).getString("user"));
+            return User.serializeUser(new JSONObject(response_str[0]).getString("user"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ;
         return user;
     }
 
@@ -626,6 +558,10 @@ public class MakeRequests {
 
     public interface OnSingInListener{
         void onSingIn (User user);
+    }
+
+    public interface OnFindNewsListener{
+        void onFoundNews(ArrayList<News> listNews);
     }
 
 

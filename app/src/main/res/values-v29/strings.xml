@@ -12,4 +12,8 @@
     <string name="loading">Загрузка...</string>
     <string name="user_created_successful">Пользователь создан успешно</string>
     <string name="touble_with_autarisation">Возникла проблема с автоматической авторизацией</string>
+    <string name="rbk">РБК</string>
+    <string name="lenta">Лента</string>
+    <string name="ria">РИА</string>
+    <string name="meduza">Медуза</string>
 </resources>

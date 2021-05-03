@@ -8,35 +8,46 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.news_app.databinding.ItemHistorySrtBinding;
 import com.example.news_app.databinding.ItemSettingsBinding;
 import com.example.news_app.enums.SettingsPoints;
-import com.example.news_app.models.SettingTile;
+import com.example.news_app.enums.Sources;
+import com.example.news_app.models.User;
 
-import java.util.ArrayList;
+import soup.neumorphism.ShapeType;
 
-public class AdapterSettingTiles extends RecyclerView.Adapter<AdapterSettingTiles.ViewHolder> {
+public class AdapterSourcesTiles extends RecyclerView.Adapter<AdapterSourcesTiles.ViewHolder>{
 
-    private Context context;
-    private OnClickedSettingsItemListener mListener;
 
-    public AdapterSettingTiles(Context context, OnClickedSettingsItemListener mListener) {
+    private final Context context;
+    private User user;
+    private final OnClickedSourcesItemListener mListener;
+
+    public AdapterSourcesTiles(User user, Context context, OnClickedSourcesItemListener mListener) {
+        this.user = user;
         this.context = context;
         this.mListener = mListener;
     }
 
     @NonNull
     @Override
-      public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AdapterSourcesTiles.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemSettingsBinding binding = ItemSettingsBinding.inflate(LayoutInflater.from(parent.getContext()),
                 parent, false);
-        return new ViewHolder(binding);
+        return new AdapterSourcesTiles.ViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        final SettingsPoints point = SettingsPoints.values()[position];
+        final Sources point = Sources.values()[position];
         holder.binding.imgTileSettings.setImageResource(point.getIdIc());
         holder.binding.tvTileSettings.setText(context.getResources().getString(point.getIdUnderText()));
+
+        for(String domen : user.getSites().split(";"))
+            if (domen.equals(context.getResources().getString(point.getIdDomen()))){
+                holder.binding.nuemorphCardSource.setShapeType(ShapeType.PRESSED);
+                break;
+            }
 
         holder.binding.layoutItem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,11 +56,12 @@ public class AdapterSettingTiles extends RecyclerView.Adapter<AdapterSettingTile
             }
         });
 
+
     }
 
     @Override
     public int getItemCount() {
-        return SettingsPoints.values().length;
+        return Sources.values().length;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -61,8 +73,7 @@ public class AdapterSettingTiles extends RecyclerView.Adapter<AdapterSettingTile
         }
     }
 
-    public interface OnClickedSettingsItemListener {
-        void onClicked(SettingsPoints point);
+    public interface OnClickedSourcesItemListener {
+        void onClicked(Sources point);
     }
-
 }

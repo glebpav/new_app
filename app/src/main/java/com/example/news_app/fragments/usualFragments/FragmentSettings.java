@@ -1,7 +1,6 @@
 package com.example.news_app.fragments.usualFragments;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,6 +29,7 @@ import com.example.news_app.databinding.FragmentSettingsBinding;
 import com.example.news_app.enums.SettingsPoints;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentHistory;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
+import com.example.news_app.fragments.dialogFragments.DialogFragmentSources;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.R;
 import com.example.news_app.models.User;
@@ -44,9 +44,8 @@ import java.util.List;
 
 public class FragmentSettings extends Fragment {
 
-    User user;
+    User mUser;
     MakeRequests requests;
-    ArrayAdapter<String> adapter_history;
     AdapterSettingTiles adapterSettingTiles;
     FragmentSettingsBinding binding;
 
@@ -54,19 +53,20 @@ public class FragmentSettings extends Fragment {
     ViewPager2 pager;
     MeowBottomNavigation meow;
     DialogFragmentProgressBar progressDialog;
+    DialogFragmentHistory fragmentHistory;
+    DialogFragmentSources fragmentSources;
 
     public FragmentSettings(User user, ViewPager2 pager, MeowBottomNavigation meow) {
-        this.user = user;
+        this.mUser = user;
         this.meow = meow;
         this.pager = pager;
     }
-
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
 
-        requests = new MakeRequests("https://analisinf.pythonanywhere.com/");
+        requests = new MakeRequests();
 
         adapterSettingTiles = new AdapterSettingTiles(getContext(), onClickedSettingsItemListener);
         binding.recyclerViewSettings.setAdapter(adapterSettingTiles);
@@ -96,6 +96,9 @@ public class FragmentSettings extends Fragment {
                         case SHOW_HISTORY:
                             showHistory();
                             break;
+                        case CHANGE_SOURCES:
+                            changeSources();
+                            break;
                     }
                 }
             };
@@ -124,7 +127,7 @@ public class FragmentSettings extends Fragment {
         Button btn_dismiss = view_dialog.findViewById(R.id.btn_dismiss);
         Button btn_apply = view_dialog.findViewById(R.id.btn_apply);
 
-        textInputEditText.setText(user.getName());
+        textInputEditText.setText(mUser.getName());
 
         final AlertDialog alertDialog = builder.create();
 
@@ -142,9 +145,9 @@ public class FragmentSettings extends Fragment {
             @Override
             public void onClick(View v) {
                 String name = String.valueOf(textInputEditText.getText());
-                user.setName(name);
-                binding.toolbar.setTitle(user.getName());
-                requests.changeUser(user);
+                mUser.setName(name);
+                binding.toolbar.setTitle(mUser.getName());
+                requests.changeUser(mUser);
                 alertDialog.dismiss();
                 Toast.makeText(getActivity(), "Имя пользователя изменено успешно", Toast.LENGTH_SHORT).show();
             }
@@ -154,8 +157,16 @@ public class FragmentSettings extends Fragment {
     }
 
     void showHistory() {
-        DialogFragmentHistory fragmentHistory = new DialogFragmentHistory();
+        List<String> list = Arrays.asList(mUser.getHistory().split(";"));
+        Collections.reverse(list);
+        fragmentHistory = new DialogFragmentHistory(list, adapterTileHistoryClickedListener);
         fragmentHistory.show(getFragmentManager(), "FragmentDialog");
+    }
+
+    void changeSources(){
+        fragmentSources = new DialogFragmentSources();
+        fragmentSources.setUser(mUser);
+        fragmentSources.show(getActivity().getFragmentManager(), "FragmentSettings");
     }
 
     void change_fields(final User user) {
@@ -190,7 +201,7 @@ public class FragmentSettings extends Fragment {
         super.onResume();
 
         initFragment();
-        requests.new LoadUser(user.getLogin(), user.getPassword(), loadUserListener).execute();
+        requests.new LoadUser(mUser.getLogin(), mUser.getPassword(), loadUserListener).execute();
     }
 
     MakeRequests.OnLoadUserListener loadUserListener = new MakeRequests.OnLoadUserListener() {
@@ -201,12 +212,29 @@ public class FragmentSettings extends Fragment {
                     String.valueOf(user.getHistory().split(";").length) : "0");
             binding.tvCountTracking.setText((!user.getThemes().isEmpty()) ?
                     String.valueOf(user.getThemes().split(";").length) : "0");
+            mUser = user;
 
             progressDialog.dismiss();
             binding.nestedScrollView.setVisibility(View.VISIBLE);
             binding.appbar.setVisibility(View.VISIBLE);
         }
     };
+
+    DialogFragmentHistory.OnAdapterTileHistoryClickedListener adapterTileHistoryClickedListener =
+            new DialogFragmentHistory.OnAdapterTileHistoryClickedListener() {
+                @Override
+                public void onClicked(int position) {
+                    SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor edt = pref.edit();
+                    edt.putString("SearchingTheme", mUser.getHistory().split(";")
+                            [(mUser.getHistory().split(";")).length - position - 1]);
+                    edt.commit();
+
+                    fragmentHistory.dismiss();
+                    pager.setCurrentItem(0);
+                    meow.show(0, true);
+                }
+            };
 
 
 }

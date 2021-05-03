@@ -25,7 +25,7 @@ public class FragmentTopNews extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentTopNewsBinding.inflate(inflater, container, false);
 
-        requests = new MakeRequests("https://analisinf.pythonanywhere.com/");
+        requests = new MakeRequests();
         MakeRequests.FindTopNews find_topNews = requests.new FindTopNews(this);
         find_topNews.execute();
 

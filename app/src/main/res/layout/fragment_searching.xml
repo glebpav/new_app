@@ -14,17 +14,17 @@
 
         <TextView
             android:id="@+id/tv_search"
+            style="@style/topTitleText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Поиск новостей"
-            style="@style/topTitleText"
-            android:textColor="@color/dark_text"/>
+            android:textColor="@color/dark_text" />
 
         <LinearLayout
+            android:id="@+id/linear1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_search"
-            android:id="@+id/linear1">
+            android:layout_below="@+id/tv_search">
 
             <soup.neumorphism.NeumorphCardView
                 style="@style/Widget.Neumorph.CardView"
@@ -39,7 +39,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginStart="10dp"
-                    android:background="@android:color/transparent" />
+                    android:background="@android:color/transparent"
+                    android:textColor="@color/dark_text" />
 
             </soup.neumorphism.NeumorphCardView>
 
@@ -48,72 +49,62 @@
                 style="@style/Widget.Neumorph.FloatingActionButton"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:src="@drawable/ic_baseline_find_replace_24"
-                android:scaleType="center">
+                android:scaleType="center"
+                android:src="@drawable/ic_baseline_find_replace_24">
 
             </soup.neumorphism.NeumorphFloatingActionButton>
 
         </LinearLayout>
 
         <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/view_pager"
             android:layout_below="@id/linear1"
-            android:visibility="invisible"
-            android:foregroundGravity="center"
-            android:overScrollMode="never"
-            android:clipToPadding="false"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
-            >
+            android:clipToPadding="false"
+            android:foregroundGravity="center"
+            android:overScrollMode="never"
+            android:visibility="invisible"/>
 
-            <RelativeLayout
-                android:id="@+id/error_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="invisible">
-
-                <ImageView
-                    android:id="@+id/img_error"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="300dp"
-                    android:src="@drawable/error" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/img_error"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="20dp"
-                    android:text="Упс, что-то пошло не так"
-                    android:textColor="#FF0A0A"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-            </RelativeLayout>
-        </androidx.viewpager.widget.ViewPager>
-
-        <ProgressBar
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="370dp"
-            android:layout_centerHorizontal="true"
-            android:visibility="invisible"
-            android:id="@+id/progress_circular"
-            />
-        <ImageView
+        <RelativeLayout
+            android:id="@+id/error_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/find4"
+            android:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/img_error"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="300dp"
+                android:src="@drawable/error" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/img_error"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:text="@string/something_went_wrong"
+                android:textColor="@color/negative_color"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/img_hello"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:alpha="0.3"
             android:padding="40dp"
             android:scaleType="fitEnd"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:id="@+id/img_hello"
-            android:alpha="0.3"/>
+            android:src="@drawable/find4" />
 
     </RelativeLayout>
 </RelativeLayout>
