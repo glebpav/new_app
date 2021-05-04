@@ -59,113 +59,6 @@ public class MakeRequests {
         }
     }
 
-    @SuppressLint("StaticFieldLeak")
-    public class AddTrackingTheme extends AsyncTask<Void, Void, String> {
-
-        private OnAddTrackingThemeListener listener;
-        private String addingTheme;
-        private User user;
-
-        public AddTrackingTheme(OnAddTrackingThemeListener listener, User user, String addingTheme) {
-            this.listener = listener;
-            this.user = user;
-            this.addingTheme = addingTheme;
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            String response_str = "";
-            String json = "{\"user\":{" + "\"themes\": \"" + user.getThemes() + addingTheme + ";\"}}";
-
-            MediaType JSON = MediaType.get("application/json; charset=utf-8");
-            OkHttpClient client = new OkHttpClient();
-            RequestBody body = RequestBody.create(json, JSON);
-            Request request = new Request.Builder().url((MAIN_URL + "api/users/" + user.getId())).put(body).build();
-            try (Response response = client.newCall(request).execute()) {
-                response_str = Objects.requireNonNull(response.body()).string();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Log.d("asd", response_str);
-            return response_str;
-        }
-
-        @Override
-        protected void onPostExecute(String server_response) {
-            try {
-                JSONObject obj = new JSONObject(server_response);
-                if (obj.getString("status").equals("ok")) {
-                    try {
-                        User user = User.serializeUser(obj.getString("user"));
-                        listener.onClick(user);
-                        return;
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            listener.onClick(null);
-            //fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
-            //Toast.makeText(fragment.getActivity(), "Что-то пошло не так", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    public class DeleteTheme extends AsyncTask<Void, Void, String> {
-
-        String deletingTheme;
-        OnAddTrackingThemeListener deleteTrackingThemeListener;
-        User user;
-
-        public DeleteTheme(String deletingTheme, User user, OnAddTrackingThemeListener deleteTrackingThemeListener) {
-            this.deletingTheme = deletingTheme;
-            this.user = user;
-            this.deleteTrackingThemeListener = deleteTrackingThemeListener;
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            String response_str = "";
-            user.setThemes(user.getThemes().replace(";;", ";"));
-            String json = "{\"user\":{" +
-                    "\"themes\": \"" + user.getThemes().replace(deletingTheme + ";", "") + ";\"}}";
-
-            MediaType JSON = MediaType.get("application/json; charset=utf-8");
-            OkHttpClient client = new OkHttpClient();
-
-            RequestBody body = RequestBody.create(json, JSON);
-            Request request = new Request.Builder().url((MAIN_URL + "api/users/" + user.getId())).put(body).build();
-            try (Response response = client.newCall(request).execute()) {
-                response_str = Objects.requireNonNull(response.body()).string();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Log.d("asd", response_str);
-            return response_str;
-        }
-
-        @Override
-        protected void onPostExecute(String server_response) {
-            try {
-                JSONObject obj = new JSONObject(server_response);
-                if (obj.getString("status").equals("ok")) {
-                    try {
-                        User user = User.serializeUser(obj.getString("user"));
-                        deleteTrackingThemeListener.onClick(user);
-                        return;
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            deleteTrackingThemeListener.onClick(null);
-        }
-    }
-
     public class SignInRequest extends AsyncTask<Void, Void, String> {
 
         String login, password;
@@ -289,7 +182,7 @@ public class MakeRequests {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            listener.onClick(R.string.touble_with_autarisation);
+            listener.onClick(R.string.trouble_with_autarisation);
         }
 
         String deleteTheme(String fullStr, String deletingStr) {
@@ -301,6 +194,113 @@ public class MakeRequests {
             }
             return fullStr;
         }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public class AddTrackingTheme extends AsyncTask<Void, Void, String> {
+
+        private OnAddTrackingThemeListener listener;
+        private String addingTheme;
+
+        private User user;
+
+        public AddTrackingTheme(OnAddTrackingThemeListener listener, User user, String addingTheme) {
+            this.listener = listener;
+            this.user = user;
+            this.addingTheme = addingTheme;
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            String response_str = "";
+            String json = "{\"user\":{" + "\"themes\": \"" + user.getThemes() + addingTheme + ";\"}}";
+
+            MediaType JSON = MediaType.get("application/json; charset=utf-8");
+            OkHttpClient client = new OkHttpClient();
+            RequestBody body = RequestBody.create(json, JSON);
+            Request request = new Request.Builder().url((MAIN_URL + "api/users/" + user.getId())).put(body).build();
+            try (Response response = client.newCall(request).execute()) {
+                response_str = Objects.requireNonNull(response.body()).string();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.d("asd", response_str);
+            return response_str;
+        }
+        @Override
+        protected void onPostExecute(String server_response) {
+            try {
+                JSONObject obj = new JSONObject(server_response);
+                if (obj.getString("status").equals("ok")) {
+                    try {
+                        User user = User.serializeUser(obj.getString("user"));
+                        listener.onClick(user);
+                        return;
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            listener.onClick(null);
+        }
+
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public class DeleteTheme extends AsyncTask<Void, Void, String> {
+
+        String deletingTheme;
+        OnAddTrackingThemeListener deleteTrackingThemeListener;
+
+        User user;
+
+        public DeleteTheme(String deletingTheme, User user, OnAddTrackingThemeListener deleteTrackingThemeListener) {
+            this.deletingTheme = deletingTheme;
+            this.user = user;
+            this.deleteTrackingThemeListener = deleteTrackingThemeListener;
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            String response_str = "";
+            user.setThemes(user.getThemes().replace(";;", ";"));
+            String json = "{\"user\":{" +
+                    "\"themes\": \"" + user.getThemes().replace(deletingTheme + ";", "") + ";\"}}";
+
+            MediaType JSON = MediaType.get("application/json; charset=utf-8");
+            OkHttpClient client = new OkHttpClient();
+
+            RequestBody body = RequestBody.create(json, JSON);
+            Request request = new Request.Builder().url((MAIN_URL + "api/users/" + user.getId())).put(body).build();
+            try (Response response = client.newCall(request).execute()) {
+                response_str = Objects.requireNonNull(response.body()).string();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.d("asd", response_str);
+            return response_str;
+        }
+        @Override
+        protected void onPostExecute(String server_response) {
+            try {
+                JSONObject obj = new JSONObject(server_response);
+                if (obj.getString("status").equals("ok")) {
+                    try {
+                        User user = User.serializeUser(obj.getString("user"));
+                        deleteTrackingThemeListener.onClick(user);
+                        return;
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            deleteTrackingThemeListener.onClick(null);
+        }
+
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -502,12 +502,7 @@ public class MakeRequests {
             try (Response response = client.newCall(request).execute()) {
                 response_str = response.body().string();
                 Log.d("asd", response_str);
-                if (new JSONObject(response_str).getString("status").equals("ok")) {
-                    final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-                }
             } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
                 e.printStackTrace();
             }
             return response_str;
@@ -519,6 +514,60 @@ public class MakeRequests {
             fragment.binding.layoutError.setVisibility(View.INVISIBLE);
             fragment.binding.progressCircular.setVisibility(View.VISIBLE);
         }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public class UpdateUserAsync extends AsyncTask<Void, Void, String> {
+
+        private final OnUserChangedListener listener;
+        private final User user;
+
+        public UpdateUserAsync(OnUserChangedListener listener, User user) {
+            this.listener = listener;
+            this.user = user;
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            String response_str = "";
+            String json =
+                    "{\"user\":{"
+                    + "\"login\": \"" + user.getLogin() + "\" ,"
+                    + "\"password\": \"" + user.getPassword() + "\" ,"
+                    + "\"name\": \"" + user.getName() + "\" ,"
+                    + "\"history\": \"" + user.getHistory() + "\" ,"
+                    + "\"sites\": \"" + user.getSites() + "\" ,"
+                    + "\"themes\": \"" + user.getThemes() +"\""
+                    + "}}";
+
+            Log.d("json", json);
+
+            MediaType JSON = MediaType.get("application/json; charset=utf-8");
+            OkHttpClient client = new OkHttpClient();
+            RequestBody body = RequestBody.create(json, JSON);
+            Request request = new Request.Builder().url((MAIN_URL + "api/users/" + user.getId())).put(body).build();
+            try (Response response = client.newCall(request).execute()) {
+                response_str = Objects.requireNonNull(response.body()).string();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.d("asd", response_str);
+            return response_str;
+        }
+        @Override
+        protected void onPostExecute(String server_response) {
+            try {
+                JSONObject obj = new JSONObject(server_response);
+                if (obj.getString("status").equals("ok")) {
+                    listener.onChanged(server_response);
+                    return;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            listener.onChanged(null);
+        }
+
     }
 
     User updateUser(User user) {
@@ -564,5 +613,8 @@ public class MakeRequests {
         void onFoundNews(ArrayList<News> listNews);
     }
 
+    public interface OnUserChangedListener {
+        void onChanged(String serverResponse);
+    }
 
 }

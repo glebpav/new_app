@@ -47,8 +47,17 @@ public class DialogFragmentHistory extends DialogFragment {
         binding.recyclerView.setAdapter(adapterHistoryTiles);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        binding.btnApply.setOnClickListener(btnApplyClicked);
+
         return binding.getRoot();
     }
+
+    View.OnClickListener btnApplyClicked = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            getDialog().dismiss();
+        }
+    };
 
     AdapterHistoryTiles.OnClickHistoryItemListener historyItemListener = new AdapterHistoryTiles.OnClickHistoryItemListener() {
         @Override

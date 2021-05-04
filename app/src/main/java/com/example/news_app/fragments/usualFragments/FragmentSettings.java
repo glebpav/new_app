@@ -1,10 +1,8 @@
 package com.example.news_app.fragments.usualFragments;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -17,23 +15,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.example.news_app.ActivityMain;
+import com.example.news_app.R;
 import com.example.news_app.adapters.AdapterSettingTiles;
 import com.example.news_app.databinding.FragmentSettingsBinding;
 import com.example.news_app.enums.SettingsPoints;
+import com.example.news_app.fragments.dialogFragments.DialogFragmentChangeName;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentHistory;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentSources;
 import com.example.news_app.network.MakeRequests;
-import com.example.news_app.R;
 import com.example.news_app.models.User;
-import com.google.android.material.textfield.TextInputEditText;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -52,7 +48,8 @@ public class FragmentSettings extends Fragment {
     ListView listHistory;
     ViewPager2 pager;
     MeowBottomNavigation meow;
-    DialogFragmentProgressBar progressDialog;
+    DialogFragmentProgressBar fragmentProgress;
+    DialogFragmentChangeName fragmentChangeName;
     DialogFragmentHistory fragmentHistory;
     DialogFragmentSources fragmentSources;
 
@@ -71,13 +68,13 @@ public class FragmentSettings extends Fragment {
         adapterSettingTiles = new AdapterSettingTiles(getContext(), onClickedSettingsItemListener);
         binding.recyclerViewSettings.setAdapter(adapterSettingTiles);
         binding.recyclerViewSettings.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        progressDialog = new DialogFragmentProgressBar();
+        fragmentProgress = new DialogFragmentProgressBar();
 
         return binding.getRoot();
     }
 
     private void initFragment() {
-        progressDialog.show(getFragmentManager(), "FragmentSettings");
+        fragmentProgress.show(getFragmentManager(), "FragmentSettings");
         binding.appbar.setVisibility(View.INVISIBLE);
         binding.nestedScrollView.setVisibility(View.INVISIBLE);
     }
@@ -116,44 +113,8 @@ public class FragmentSettings extends Fragment {
     }
 
     void changeName() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme);
-        View view_dialog = LayoutInflater.from(getActivity()).inflate(
-                R.layout.change_name,
-                (RelativeLayout) binding.getRoot().findViewById(R.id.layout_dialog_container)
-        );
-        builder.setView(view_dialog);
-
-        final TextInputEditText textInputEditText = view_dialog.findViewById(R.id.et_change_name);
-        Button btn_dismiss = view_dialog.findViewById(R.id.btn_dismiss);
-        Button btn_apply = view_dialog.findViewById(R.id.btn_apply);
-
-        textInputEditText.setText(mUser.getName());
-
-        final AlertDialog alertDialog = builder.create();
-
-        if (alertDialog.getWindow() != null)
-            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
-
-        btn_dismiss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alertDialog.dismiss();
-            }
-        });
-
-        btn_apply.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String name = String.valueOf(textInputEditText.getText());
-                mUser.setName(name);
-                binding.toolbar.setTitle(mUser.getName());
-                requests.changeUser(mUser);
-                alertDialog.dismiss();
-                Toast.makeText(getActivity(), "Имя пользователя изменено успешно", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        alertDialog.show();
+        fragmentChangeName = new DialogFragmentChangeName(btnChangedClickedListener, mUser.getName());
+        fragmentChangeName.show(getFragmentManager(), "FragmentSettings");
     }
 
     void showHistory() {
@@ -163,9 +124,10 @@ public class FragmentSettings extends Fragment {
         fragmentHistory.show(getFragmentManager(), "FragmentDialog");
     }
 
-    void changeSources(){
+    void changeSources() {
         fragmentSources = new DialogFragmentSources();
         fragmentSources.setUser(mUser);
+        fragmentSources.setSourcesChangedListener(sourcesChangedListener);
         fragmentSources.show(getActivity().getFragmentManager(), "FragmentSettings");
     }
 
@@ -214,7 +176,7 @@ public class FragmentSettings extends Fragment {
                     String.valueOf(user.getThemes().split(";").length) : "0");
             mUser = user;
 
-            progressDialog.dismiss();
+            fragmentProgress.dismiss();
             binding.nestedScrollView.setVisibility(View.VISIBLE);
             binding.appbar.setVisibility(View.VISIBLE);
         }
@@ -228,7 +190,7 @@ public class FragmentSettings extends Fragment {
                     SharedPreferences.Editor edt = pref.edit();
                     edt.putString("SearchingTheme", mUser.getHistory().split(";")
                             [(mUser.getHistory().split(";")).length - position - 1]);
-                    edt.commit();
+                    edt.apply();
 
                     fragmentHistory.dismiss();
                     pager.setCurrentItem(0);
@@ -236,5 +198,46 @@ public class FragmentSettings extends Fragment {
                 }
             };
 
+    DialogFragmentChangeName.OnBtnChangedClickedListener btnChangedClickedListener = new
+            DialogFragmentChangeName.OnBtnChangedClickedListener() {
+                @Override
+                public void onClicked(String name) {
+                    Log.d("TAG", "OnBtnChangedClickedListener - onClicked");
+                    mUser.setName(name);
+                    fragmentProgress = new DialogFragmentProgressBar();
+                    fragmentProgress.show(getFragmentManager(), "OnBtnChangedClickedListener");
+                    requests.new UpdateUserAsync(onUserChangedListener, mUser).execute();
+                }
+
+                final MakeRequests.OnUserChangedListener onUserChangedListener = new MakeRequests.OnUserChangedListener() {
+                    @Override
+                    public void onChanged(String serverResponse) {
+                        Log.d("TAG", "onUserChangedListener - onChanged");
+                        binding.collapsingToolbar.setTitle(mUser.getName());
+                        fragmentProgress.dismiss();
+                        fragmentChangeName.dismiss();
+                    }
+                };
+            };
+
+    DialogFragmentSources.OnSourcesChangedListener sourcesChangedListener = new DialogFragmentSources.OnSourcesChangedListener() {
+        @Override
+        public void onChanged(User user) {
+            mUser.setSites(user.getSites());
+            fragmentProgress = new DialogFragmentProgressBar();
+            fragmentProgress.show(getFragmentManager(), "OnSourcesChangedListener");
+            requests.new UpdateUserAsync(onUserChangedListener, mUser).execute();
+        }
+
+        final MakeRequests.OnUserChangedListener onUserChangedListener = new MakeRequests.OnUserChangedListener() {
+            @Override
+            public void onChanged(String serverResponse) {
+                Log.d("TAG", "onUserChangedListener - onChanged");
+                fragmentProgress.dismiss();
+                Toast.makeText(getContext(), getResources().getString(R.string.succesfull_changed), Toast.LENGTH_SHORT).show();
+            }
+        };
+
+    };
 
 }

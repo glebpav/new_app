@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +25,16 @@ public class DialogFragmentSources extends DialogFragment {
     DialogFragmentSourcesBinding binding;
     AdapterSourcesTiles adapterSourcesTiles;
 
+    OnSourcesChangedListener sourcesChangedListener;
+
     User user;
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setSourcesChangedListener(OnSourcesChangedListener sourcesChangedListener) {
+        this.sourcesChangedListener = sourcesChangedListener;
     }
 
     @Nullable
@@ -59,10 +66,21 @@ public class DialogFragmentSources extends DialogFragment {
 
     AdapterSourcesTiles.OnClickedSourcesItemListener sourcesItemListener = new AdapterSourcesTiles.OnClickedSourcesItemListener() {
         @Override
-        public void onClicked(Sources point) {
+        public void onClicked(Sources point, boolean wasUsed) {
+            Log.d("LISTENER", "onClicked");
+            if (wasUsed) {
+                user.setSites(user.getSites().replace(getDialog().getContext().getString
+                        (point.getIdDomen()), ""));
+                user.setSites(user.getSites().replace(";;", ";"));
+            } else
+                user.setSites(user.getSites() + getDialog().getContext().getString(point.getIdDomen())+ ";");
 
+            sourcesChangedListener.onChanged(user);
         }
     };
 
+    public interface OnSourcesChangedListener{
+        void onChanged(User user);
+    }
 
 }

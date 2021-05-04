@@ -25,7 +25,6 @@
             android:text="@string/sources"
             android:textColor="#FFF"
             android:textSize="30sp"
-            android:textStyle="bold"
             android:id="@+id/tv_sources_title"/>
 
         <androidx.recyclerview.widget.RecyclerView

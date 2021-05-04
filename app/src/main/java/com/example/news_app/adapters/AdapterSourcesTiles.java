@@ -21,6 +21,7 @@ public class AdapterSourcesTiles extends RecyclerView.Adapter<AdapterSourcesTile
 
     private final Context context;
     private User user;
+    Boolean isUsed;
     private final OnClickedSourcesItemListener mListener;
 
     public AdapterSourcesTiles(User user, Context context, OnClickedSourcesItemListener mListener) {
@@ -38,21 +39,27 @@ public class AdapterSourcesTiles extends RecyclerView.Adapter<AdapterSourcesTile
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final Sources point = Sources.values()[position];
         holder.binding.imgTileSettings.setImageResource(point.getIdIc());
         holder.binding.tvTileSettings.setText(context.getResources().getString(point.getIdUnderText()));
 
+        isUsed = false;
+
         for(String domen : user.getSites().split(";"))
             if (domen.equals(context.getResources().getString(point.getIdDomen()))){
                 holder.binding.nuemorphCardSource.setShapeType(ShapeType.PRESSED);
+                isUsed = true;
                 break;
             }
 
         holder.binding.layoutItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onClicked(point);
+                mListener.onClicked(point, isUsed);
+                isUsed = !isUsed;
+                holder.binding.nuemorphCardSource.setShapeType
+                        (isUsed?ShapeType.PRESSED:ShapeType.DEFAULT);
             }
         });
 
@@ -74,6 +81,6 @@ public class AdapterSourcesTiles extends RecyclerView.Adapter<AdapterSourcesTile
     }
 
     public interface OnClickedSourcesItemListener {
-        void onClicked(Sources point);
+        void onClicked(Sources point, boolean wasUsed);
     }
 }
