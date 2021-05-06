@@ -7,6 +7,7 @@
     <string name="change_sources">источники</string>
     <string name="sources">Источники</string>
     <string name="add_bookmark">Добавить закладку</string>
+    <string name="warning">Внимание !</string>
 
     <!-- Responses from site -->
 
@@ -24,16 +25,25 @@
     <string name="rbk">РБК</string>
     <string name="meduza_domen">Meduza</string>
     <string name="meduza">Meduza</string>
+    <string name="in_future"> --- </string>
+
+    <!-- Toast's texts -->
+
+    <string name="password_error">пароль должен содержать цифры, символы, и быть не короче 6 символов</string>
+    <string name="succesfull_changed">Успешно изменено</string>
+    <string name="enter_name">введите пароль</string>
+
+    <!-- Button's texts -->
+
+    <string name="log_out">выйти</string>
+    <string name="understand">Понятно</string>
+    <string name="cancel">Отмена</string>
 
     <!-- unsorted strings -->
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="enter_name">введите пароль</string>
-    <string name="password_error">пароль должен содержать цифры, символы, и быть не короче 6 символов</string>
     <string name="rename">новое имя</string>
-    <string name="log_out">выйти</string>
-    <string name="understand">Понятно</string>
     <string name="loading">Загрузка…</string>
-    <string name="succesfull_changed">Успешно изменено</string>
+    <string name="are_you_sure">Вы уверены, что хотите выйти?</string>
 
 </resources>

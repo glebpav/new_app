@@ -30,12 +30,12 @@ public class FragmentTrackingTheme extends Fragment {
     private MakeRequests requests;
     private AdapterTrackingThemes adapter;
 
-    private ViewPager2 pager;
-    private MeowBottomNavigation meow;
+    private final ViewPager2 pager;
+    private final MeowBottomNavigation meow;
     private FragmentTrackingBinding binding;
 
-    DialogFragmentAddTheme dialogFragmentAddTheme;
-    DialogFragmentProgressBar dialogFragmentProgressBar;
+    private DialogFragmentAddTheme dialogFragmentAddTheme;
+    private DialogFragmentProgressBar dialogFragmentProgressBar;
 
     public FragmentTrackingTheme(ViewPager2 pager, User user, MeowBottomNavigation meow) {
         this.mUser = user;
@@ -84,20 +84,24 @@ public class FragmentTrackingTheme extends Fragment {
         public void onClick(String theme) {
             dialogFragmentProgressBar = new DialogFragmentProgressBar();
             dialogFragmentProgressBar.show(getFragmentManager(), "FragmentTrackingTheme");
-            requests.new AddTrackingTheme(trackingThemeChenchedListener, mUser, theme).execute();
+            mUser.setThemes(mUser.getThemes() + ";" + theme);
+            requests.new UpdateUserAsync(onUserChangedListener, mUser).execute();
         }
     };
 
-    MakeRequests.OnAddTrackingThemeListener trackingThemeChenchedListener = new MakeRequests.OnAddTrackingThemeListener() {
+    MakeRequests.OnUserChangedListener onUserChangedListener = new MakeRequests.OnUserChangedListener() {
         @Override
-        public void onClick(User user) {
-            if (user != null) {
-                mUser = user;
-                adapter.setThemesList(Arrays.asList(mUser.getThemes().split(";")));
-                adapter.notifyDataSetChanged();
-            }
+        public void onChanged(String serverResponse) {
+            clearThemes();
+            adapter.setThemesList(Arrays.asList(mUser.getThemes().split(";")));
+            adapter.notifyDataSetChanged();
             dialogFragmentProgressBar.dismiss();
-            dialogFragmentAddTheme.dismiss();
+
+            try {
+                dialogFragmentAddTheme.dismiss();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     };
 
@@ -119,8 +123,9 @@ public class FragmentTrackingTheme extends Fragment {
         public void onDeleteItem(String theme) {
             dialogFragmentProgressBar = new DialogFragmentProgressBar();
             dialogFragmentProgressBar.show(getFragmentManager(), "FragmentTrackingTheme");
+            mUser.setThemes(mUser.getThemes().replace(theme, ""));
             clearThemes();
-            requests.new DeleteTheme(theme, mUser, trackingThemeChenchedListener).execute();
+            requests.new UpdateUserAsync(onUserChangedListener, mUser).execute();
         }
     };
 

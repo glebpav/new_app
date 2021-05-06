@@ -9,26 +9,54 @@ import android.view.ViewGroup;
 
 import com.example.news_app.adapters.AdapterTopNews;
 import com.example.news_app.databinding.FragmentTopNewsBinding;
+import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
+import com.example.news_app.models.News;
 import com.example.news_app.network.MakeRequests;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+
 
 public class FragmentTopNews extends Fragment {
 
-    public MakeRequests requests;
-    public AdapterTopNews adapter;
+    private MakeRequests requests;
+    private AdapterTopNews adapter;
+    private DialogFragmentProgressBar fragmentProgressBar;
 
-    public FragmentTopNewsBinding binding;
+    private FragmentTopNewsBinding binding;
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentTopNewsBinding.inflate(inflater, container, false);
 
+        binding.viewPager.setVisibility(View.INVISIBLE);
+        binding.layoutError.setVisibility(View.INVISIBLE);
+        fragmentProgressBar = new DialogFragmentProgressBar();
+        fragmentProgressBar.show(getFragmentManager(), "FragmentTopNews");
+
         requests = new MakeRequests();
-        MakeRequests.FindTopNews find_topNews = requests.new FindTopNews(this);
+        MakeRequests.FindTopNews find_topNews = requests.new FindTopNews(onFindTopNewsListener);
         find_topNews.execute();
 
         return binding.getRoot();
     }
+
+    MakeRequests.OnFindTopNewsListener onFindTopNewsListener = new MakeRequests.OnFindTopNewsListener() {
+        @Override
+        public void onFind(ArrayList<News> listNews) {
+            if (listNews != null && listNews.size() != 0) {
+                adapter = new AdapterTopNews(getContext(), listNews);
+                binding.viewPager.setAdapter(adapter);
+                binding.viewPager.setPadding(65, 0, 65, 0);
+                binding.progressCircular.setVisibility(View.INVISIBLE);
+                binding.viewPager.setVisibility(View.VISIBLE);
+            }
+            else {
+                binding.layoutError.setVisibility(View.VISIBLE);
+                binding.progressCircular.setVisibility(View.INVISIBLE);
+            }
+        }
+    };
+
 }

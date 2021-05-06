@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,15 +98,15 @@ public class FragmentSearching extends Fragment {
     MakeRequests.OnFindNewsListener onFindNewsListener = new MakeRequests.OnFindNewsListener() {
         @Override
         public void onFoundNews(ArrayList<News> listNews) {
+            Log.d("onFindNewsListener", "onFoundNews");
             fragmentProgressBar.dismiss();
-            if (listNews != null && listNews.size() != 0) {
+            if (listNews != null) {
                 adapter.setNewsArray(listNews);
-                adapter.notifyDataSetChanged();
+                binding.viewPager.setAdapter(adapter);
                 binding.viewPager.setVisibility(View.VISIBLE);
             }
             else {
                 binding.errorLayout.setVisibility(View.VISIBLE);
-
             }
         }
     };

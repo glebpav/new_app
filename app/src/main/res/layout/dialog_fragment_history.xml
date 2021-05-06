@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -26,15 +27,31 @@
             android:textSize="30sp"
             android:id="@+id/tv_title_history"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/Id_const_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_title_history"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="15dp"
-            tools:listitem="@layout/item_history_srt"
-            android:layout_marginBottom="30dp"/>
+            >
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintBottom_toBottomOf="@+id/Id_const_layout"
+                app:layout_constraintEnd_toEndOf="@+id/Id_const_layout"
+                app:layout_constraintHeight_max="350dp"
+                app:layout_constraintHeight_min="30dp"
+                app:layout_constraintStart_toStartOf="@+id/Id_const_layout"
+                app:layout_constraintTop_toTopOf="@+id/Id_const_layout"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="55dp"
+                tools:listitem="@layout/item_history_srt"
+                android:layout_marginBottom="30dp"
+                >
+            </androidx.recyclerview.widget.RecyclerView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </RelativeLayout>
 
     <Button

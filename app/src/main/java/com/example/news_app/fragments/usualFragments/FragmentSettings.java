@@ -22,12 +22,14 @@ import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.example.news_app.ActivityMain;
 import com.example.news_app.R;
 import com.example.news_app.adapters.AdapterSettingTiles;
+import com.example.news_app.databinding.DialogFragmentSureToLogOutBinding;
 import com.example.news_app.databinding.FragmentSettingsBinding;
 import com.example.news_app.enums.SettingsPoints;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentChangeName;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentHistory;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentSources;
+import com.example.news_app.fragments.dialogFragments.DialogFragmentSureToLogOut;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.models.User;
 
@@ -42,16 +44,17 @@ public class FragmentSettings extends Fragment {
 
     User mUser;
     MakeRequests requests;
-    AdapterSettingTiles adapterSettingTiles;
     FragmentSettingsBinding binding;
+    AdapterSettingTiles adapterSettingTiles;
 
-    ListView listHistory;
     ViewPager2 pager;
+    ListView listHistory;
     MeowBottomNavigation meow;
-    DialogFragmentProgressBar fragmentProgress;
-    DialogFragmentChangeName fragmentChangeName;
     DialogFragmentHistory fragmentHistory;
     DialogFragmentSources fragmentSources;
+    DialogFragmentProgressBar fragmentProgress;
+    DialogFragmentChangeName fragmentChangeName;
+    DialogFragmentSureToLogOut fragmentSureToLogOut;
 
     public FragmentSettings(User user, ViewPager2 pager, MeowBottomNavigation meow) {
         this.mUser = user;
@@ -101,15 +104,22 @@ public class FragmentSettings extends Fragment {
             };
 
     void logOut() {
-        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-        SharedPreferences.Editor edt = pref.edit();
-        edt.putString("login", "");
-        edt.putString("password", "");
-        edt.apply();
-        Log.d("asd", pref.getString("login", ""));
-        Log.d("asd", pref.getString("password", ""));
-        Intent intent = new Intent(getActivity(), ActivityMain.class);
-        startActivity(intent);
+        DialogFragmentSureToLogOut.OnLogOutBtnClickedListener onLogOutBtnClickedListener = new DialogFragmentSureToLogOut.OnLogOutBtnClickedListener() {
+            @Override
+            public void onClicked() {
+                SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+                SharedPreferences.Editor edt = pref.edit();
+                edt.putString("login", "");
+                edt.putString("password", "");
+                edt.apply();
+                fragmentSureToLogOut.dismiss();
+                Intent intent = new Intent(getActivity(), ActivityMain.class);
+                startActivity(intent);
+            }
+        };
+        fragmentSureToLogOut = new DialogFragmentSureToLogOut();
+        fragmentSureToLogOut.setLogOutBtnClickedListener(onLogOutBtnClickedListener);
+        fragmentSureToLogOut.show(getActivity().getFragmentManager(), "FragmentSetting");
     }
 
     void changeName() {
@@ -125,6 +135,7 @@ public class FragmentSettings extends Fragment {
     }
 
     void changeSources() {
+        mUser.setSites(mUser.getSites().replace("null", "").replace(";;", ";"));
         fragmentSources = new DialogFragmentSources();
         fragmentSources.setUser(mUser);
         fragmentSources.setSourcesChangedListener(sourcesChangedListener);
@@ -239,5 +250,6 @@ public class FragmentSettings extends Fragment {
         };
 
     };
+
 
 }
