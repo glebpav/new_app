@@ -8,5 +8,7 @@
     <color name="negative_color">#D50000</color>
     <color name="clear_white">#FFF</color>
     <color name="dark_text">#676767</color>
+    <color name="dark_blue">#285FBA</color>
+    <color name="dark_purple">#7535AD</color>
 
 </resources>

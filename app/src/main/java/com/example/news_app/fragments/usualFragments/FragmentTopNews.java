@@ -45,16 +45,15 @@ public class FragmentTopNews extends Fragment {
     MakeRequests.OnFindTopNewsListener onFindTopNewsListener = new MakeRequests.OnFindTopNewsListener() {
         @Override
         public void onFind(ArrayList<News> listNews) {
+            fragmentProgressBar.dismiss();
             if (listNews != null && listNews.size() != 0) {
                 adapter = new AdapterTopNews(getContext(), listNews);
                 binding.viewPager.setAdapter(adapter);
                 binding.viewPager.setPadding(65, 0, 65, 0);
-                binding.progressCircular.setVisibility(View.INVISIBLE);
                 binding.viewPager.setVisibility(View.VISIBLE);
             }
             else {
                 binding.layoutError.setVisibility(View.VISIBLE);
-                binding.progressCircular.setVisibility(View.INVISIBLE);
             }
         }
     };

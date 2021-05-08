@@ -20,7 +20,7 @@
         android:layout_below="@+id/tv_tracking"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="80dp"
-        tools:listitem="@layout/tracking_tile" />
+        tools:listitem="@layout/item_tracking_news" />
 
     <soup.neumorphism.NeumorphButton
         android:id="@+id/btn_add_tracking_theme"

@@ -24,7 +24,7 @@
             android:id="@+id/v_top"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@drawable/change_name_top" />
+            android:background="@drawable/deep_gradient_top" />
 
         <TextView
             android:layout_width="wrap_content"

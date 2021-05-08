@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.news_app.adapters.AdapterViewNews;
+import com.example.news_app.adapters.AdapterNews;
 import com.example.news_app.databinding.FragmentSearchingBinding;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
 import com.example.news_app.network.MakeRequests;
@@ -32,7 +31,7 @@ public class FragmentSearching extends Fragment {
     private User user;
     private MakeRequests requests;
 
-    private AdapterViewNews adapter;
+    private AdapterNews adapter;
     private FragmentSearchingBinding binding;
     private DialogFragmentProgressBar fragmentProgressBar;
 
@@ -46,7 +45,7 @@ public class FragmentSearching extends Fragment {
         binding = inflate(inflater, container, false);
 
         ArrayList<News> newsList = new ArrayList<>();
-        adapter = new AdapterViewNews(getContext(), newsList);
+        adapter = new AdapterNews(getContext(), newsList);
 
         binding.viewPager.setClipToPadding(false);
         binding.viewPager.setPadding(65,0,65,0);

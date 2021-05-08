@@ -29,8 +29,9 @@ public class MakeRequests {
 
     public class SignInRequest extends AsyncTask<Void, Void, String> {
 
-        private String login, password;
-        private OnSingInListener listener;
+        private final String login;
+        private final String password;
+        private final OnSingInListener listener;
 
         public SignInRequest(String login, String password, OnSingInListener listener) {
             this.login = login;
@@ -43,14 +44,17 @@ public class MakeRequests {
             String response_str = "";
             MediaType JSON = MediaType.get("application/json; charset=utf-8");
             String json = "{\"user\":{ \"login\": \"" + login + "\",\"password\": \"" + password + "\"}}";
-            Log.d("json", json);
 
-            OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .build();
 
             RequestBody body = RequestBody.create(json, JSON);
             Request request = new Request.Builder().url((MAIN_URL + "api/user_check/")).post(body).build();
             try (Response response = client.newCall(request).execute()) {
-                response_str = response.body().string();
+                response_str = Objects.requireNonNull(response.body()).string();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -59,40 +63,17 @@ public class MakeRequests {
 
         @Override
         protected void onPostExecute(String server_response) {
-            JSONObject obj = null;
             try {
-                obj = new JSONObject(server_response);
+                JSONObject obj = new JSONObject(server_response);
                 if (obj.getString("status").equals("ok")) {
                     User user = User.serializeUser(obj.getString("user"));
                     listener.onSingIn(user);
                     return;
-/*
-                    if (fragment.binding.cbRememberMe.isChecked()) {
-                        SharedPreferences pref = fragment.getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor edt = pref.edit();
-                        edt.putString("login", fragment.login);
-                        edt.putString("password", fragment.password);
-                        edt.apply();
-                    }
-                    User user = null;
-                    try {
-                        user = serializeUser(obj.getString("user"));
-                        fragment.gotoNextActivity(user);
-                        fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
-                        return;
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
- */
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             listener.onSingIn(null);
-            /*
-            fragment.binding.progressCircular.setVisibility(View.INVISIBLE);
-            Toast.makeText(fragment.getActivity(), "Возникла проблема с автоматической авторизацией", Toast.LENGTH_LONG).show();*/
         }
     }
 
@@ -119,7 +100,11 @@ public class MakeRequests {
                     "\"themes\": \"\",\"history\": \"\" }}";
 
             MediaType JSON = MediaType.get("application/json; charset=utf-8");
-            OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .build();
 
             RequestBody body = RequestBody.create(json, JSON);
             Request request = new Request.Builder().url((MAIN_URL + "api/users/")).post(body).build();
@@ -128,7 +113,6 @@ public class MakeRequests {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return response_str;
         }
 
@@ -149,15 +133,6 @@ public class MakeRequests {
             listener.onClick(R.string.trouble_with_autarisation);
         }
 
-        String deleteTheme(String fullStr, String deletingStr) {
-            String outStr = "";
-            for (int i = 0; i < fullStr.length(); i++) {
-                if (fullStr.charAt(i) == deletingStr.charAt(0))
-                    while (fullStr.charAt(i) != 0) i++;
-                outStr += fullStr.charAt(i);
-            }
-            return fullStr;
-        }
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -180,7 +155,6 @@ public class MakeRequests {
             OkHttpClient client = new OkHttpClient();
 
             String json = "{\"user\":{ \"login\": \"" + login + "\",\"password\": \"" + password + "\"}}";
-            Log.d("json", json);
 
             RequestBody body = RequestBody.create(json, JSON);
             Request request = new Request.Builder().url((MAIN_URL + "api/user_check/")).post(body).build();
@@ -191,36 +165,20 @@ public class MakeRequests {
             }
 
             return response_str[0];
-
         }
 
         @Override
         protected void onPostExecute(String response) {
-            Log.d("response", response);
-            JSONObject obj = null;
             try {
-                obj = new JSONObject(response);
-                try {
-                    if (obj.getString("status").equals("ok")) {
-                        try {
-                            User user = User.serializeUser(obj.getString("user"));
-                            mListener.onResults(user);
-                            /*
-                            fragment_set.progressBar.setVisibility(View.INVISIBLE);
-                            fragment_set.layout_success.setVisibility(View.VISIBLE);
-                            fragment_set.change_fields(user);*/
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                JSONObject obj = new JSONObject(response);
+                if (obj.getString("status").equals("ok")) {
+                    User user = User.serializeUser(obj.getString("user"));
+                    mListener.onResults(user);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -238,26 +196,18 @@ public class MakeRequests {
 
         @Override
         protected void onPostExecute(String s) {
-
-            String status = "";
-            JSONObject obj = null;
             try {
-                obj = new JSONObject(s);
-                status = obj.getString("status");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            if (status.equals("ok")) {
-                try {
+                JSONObject obj = new JSONObject(s);
+                String status = obj.getString("status");
+                if (status.equals("ok")) {
                     ArrayList<News> newsList = News.serializeNews(obj.getString("news"));
                     if (newsList.size() != 0) {
                         findNewsListener.onFoundNews(newsList);
                         return;
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
             findNewsListener.onFoundNews(null);
         }
@@ -332,14 +282,10 @@ public class MakeRequests {
                 JSONObject obj = new JSONObject(s);
                 String status = obj.getString("status");
                 if (status.equals("ok")) {
-                    try {
-                        newsList = News.serializeNews(obj.getString("news"));
-                        if (newsList.size() != 0) {
-                            findTopNewsListener.onFind(newsList);
-                            return;
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    newsList = News.serializeNews(obj.getString("news"));
+                    if (newsList.size() != 0) {
+                        findTopNewsListener.onFind(newsList);
+                        return;
                     }
                 }
             } catch (JSONException e) {
@@ -347,7 +293,6 @@ public class MakeRequests {
             }
             findTopNewsListener.onFind(null);
         }
-
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -374,8 +319,6 @@ public class MakeRequests {
                             + "\"themes\": \"" + user.getThemes() + "\""
                             + "}}";
 
-            Log.d("json", json);
-
             MediaType JSON = MediaType.get("application/json; charset=utf-8");
             OkHttpClient client = new OkHttpClient();
             RequestBody body = RequestBody.create(json, JSON);
@@ -385,7 +328,6 @@ public class MakeRequests {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Log.d("asd", response_str);
             return response_str;
         }
 
@@ -429,7 +371,6 @@ public class MakeRequests {
 
     public interface OnSignUpListener {
         void onClick(String response);
-
         void onClick(int responseId);
     }
 

@@ -14,40 +14,47 @@ import androidx.cardview.widget.CardView;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.news_app.R;
-import com.example.news_app.databinding.ItemHotArticleBinding;
+import com.example.news_app.databinding.ItemArticleBinding;
+import com.example.news_app.databinding.ItemTrackingNewsBinding;
 import com.example.news_app.models.News;
 
 import java.util.ArrayList;
 
 import soup.neumorphism.NeumorphImageButton;
 
-public class AdapterTopNews extends PagerAdapter {
+public class AdapterNews extends PagerAdapter {
 
-    private Context mContext;
-    private ArrayList<News> list_news;
-    private LayoutInflater layoutInflater;
-    private ItemHotArticleBinding binding;
+    private final Context mContext;
+    private ArrayList<News> newsArray;
+    private ItemArticleBinding binding;
 
-    public AdapterTopNews(Context mContext, ArrayList<News> list_news) {
-        this.mContext = mContext;
-        this.list_news = list_news;
+
+    public void setNewsArray(ArrayList<News> newsArray) {
+        this.newsArray = newsArray;
+    }
+
+    public AdapterNews(Context context, ArrayList<News> newsArray) {
+        mContext = context;
+        this.newsArray = new ArrayList<>();
+        this.newsArray = newsArray;
     }
 
     @Override
     public int getCount() {
-        return list_news.size();
+        return newsArray.size();
     }
 
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        layoutInflater = LayoutInflater.from(mContext);
-        binding = ItemHotArticleBinding.inflate(layoutInflater, container, false);
+        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+        binding = ItemArticleBinding.inflate(layoutInflater, container, false);
 
-        final News article = list_news.get(position);
+        final News article = newsArray.get(position);
         double rating = Double.parseDouble(article.getRating());
 
         binding.tvTileTitle.setText(article.getTitle());
+        binding.tvTileDescription.setText(article.getDescription());
         binding.gradientLineBottom.setBackgroundResource(position%2==0?R.drawable.deep_gradient_bottom1:R.drawable.deep_gradient_bottom2);
 
         binding.btnTileMoreInf.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +75,7 @@ public class AdapterTopNews extends PagerAdapter {
         });
 
         set_rating_value(rating);
-        container.addView(binding.getRoot(), 0);
+        container.addView(binding.getRoot());
         return binding.getRoot();
     }
 
@@ -80,7 +87,6 @@ public class AdapterTopNews extends PagerAdapter {
         } else {
             binding.tvTileRating.setText("Позитивно");
         }
-
     }
 
     @Override

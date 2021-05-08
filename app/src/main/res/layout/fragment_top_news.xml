@@ -14,13 +14,6 @@
         style="@style/topTitleText"
         android:textColor="@color/dark_text"/>
 
-    <ProgressBar
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerInParent="true"
-        android:visibility="invisible"
-        android:id="@+id/progress_circular"/>
-
     <RelativeLayout
         android:id="@+id/layout_error"
         android:layout_width="match_parent"
@@ -50,9 +43,13 @@
 
     <androidx.viewpager.widget.ViewPager
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:overScrollMode="never"
+        android:layout_height="450dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
         android:clipToPadding="false"
+        android:foregroundGravity="center"
+        android:overScrollMode="never"
+        android:visibility="invisible"
         android:layout_centerInParent="true"
         android:id="@+id/view_pager"/>
 
