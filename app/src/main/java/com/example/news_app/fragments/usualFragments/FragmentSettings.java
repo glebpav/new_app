@@ -22,7 +22,6 @@ import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.example.news_app.ActivityMain;
 import com.example.news_app.R;
 import com.example.news_app.adapters.AdapterSettingTiles;
-import com.example.news_app.databinding.DialogFragmentSureToLogOutBinding;
 import com.example.news_app.databinding.FragmentSettingsBinding;
 import com.example.news_app.enums.SettingsPoints;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentChangeName;
@@ -250,7 +249,7 @@ public class FragmentSettings extends Fragment {
             public void onChanged(String serverResponse) {
                 Log.d("TAG", "onUserChangedListener - onChanged");
                 fragmentProgress.dismiss();
-                Toast.makeText(getContext(), getResources().getString(R.string.succesfull_changed), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getResources().getString(R.string.successful_changed), Toast.LENGTH_SHORT).show();
             }
         };
 

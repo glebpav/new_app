@@ -3,6 +3,8 @@ package com.example.news_app.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class User {
 
     private int id;
@@ -86,9 +88,12 @@ public class User {
     static public User serializeUser(String jsonString) {
         try {
             JSONObject obj = new JSONObject(jsonString);
-            return new User(Integer.parseInt(obj.getString("id")), obj.getString("name"),
-                    obj.getString("login"), obj.getString("password"),
-                    obj.getString("history"), obj.getString("themes"),
+            return new User(Integer.parseInt(obj.getString("id")),
+                    obj.getString("name"),
+                    obj.getString("login"),
+                    obj.getString("password"),
+                    obj.getString("history"),
+                    obj.getString("themes"),
                     obj.getString("sites"));
         } catch (JSONException e) {
             e.printStackTrace();

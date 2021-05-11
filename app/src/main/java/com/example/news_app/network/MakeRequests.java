@@ -3,7 +3,6 @@ package com.example.news_app.network;
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
 
 import com.example.news_app.R;
 import com.example.news_app.models.News;
@@ -130,7 +129,7 @@ public class MakeRequests {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            listener.onClick(R.string.trouble_with_autarisation);
+            listener.onClick(R.string.trouble_with_authorization);
         }
 
     }

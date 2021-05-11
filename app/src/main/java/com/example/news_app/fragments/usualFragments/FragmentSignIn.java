@@ -98,6 +98,7 @@ public class FragmentSignIn extends Fragment {
         intent.putExtra("history", user.getHistory());
         intent.putExtra("themes", user.getThemes());
         intent.putExtra("password", user.getPassword());
+        intent.putExtra("sites", user.getSites());
         startActivity(intent);
     }
 
@@ -108,7 +109,7 @@ public class FragmentSignIn extends Fragment {
             progressBar.dismiss();
 
             if (user == null){
-                Toast.makeText(getContext(), getResources().getString(R.string.trouble_with_autarisation), Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), getResources().getString(R.string.trouble_with_authorization), Toast.LENGTH_LONG).show();
                 return;
             }
 

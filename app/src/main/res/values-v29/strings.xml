@@ -13,25 +13,25 @@
     <!-- Responses from site -->
 
     <string name="user_created_successful">Пользователь создан успешно</string>
-    <string name="trouble_with_autarisation">Возникла проблема с автоматической авторизацией</string>
+    <string name="trouble_with_authorization">Возникла проблема с автоматической авторизацией</string>
     <string name="something_went_wrong">Упс, что-то пошло не так</string>
 
     <!-- DOMENS/TEXTS for sites -->
 
-    <string name="lenta_domen">Lenta</string>
+    <string name="lenta_domain">Lenta</string>
     <string name="lenta">Lenta</string>
-    <string name="ria_domen">РИА Новости</string>
+    <string name="ria_domain">РИА Новости</string>
     <string name="ria">РИА</string>
-    <string name="rbk_domen">РБК</string>
+    <string name="rbk_domain">РБК</string>
     <string name="rbk">РБК</string>
-    <string name="meduza_domen">Meduza</string>
+    <string name="meduza_domain">Meduza</string>
     <string name="meduza">Meduza</string>
     <string name="in_future"> --- </string>
 
     <!-- Toast's texts -->
 
     <string name="password_error">пароль должен содержать цифры, символы, и быть не короче 6 символов</string>
-    <string name="succesfull_changed">Успешно изменено</string>
+    <string name="successful_changed">Успешно изменено</string>
     <string name="enter_name">введите пароль</string>
 
     <!-- Button's texts -->

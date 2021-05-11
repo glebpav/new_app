@@ -63,7 +63,7 @@ public class ActivityNews extends AppCompatActivity{
             user.setHistory(arguments.getString("history"));
             user.setThemes(arguments.getString("themes"));
             user.setPassword(arguments.getString("password"));
-            Log.d("asd", String.valueOf(user));
+            user.setSites(arguments.getString("sites"));
         }
 
         meow.setOnClickMenuListener(new MeowBottomNavigation.ClickListener() {
@@ -113,7 +113,6 @@ public class ActivityNews extends AppCompatActivity{
 
         public ScreenSlidePageAdapter(FragmentActivity fa) {
             super(fa);
-            //Log.d("asd", "slide");
         }
 
         @NonNull

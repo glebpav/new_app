@@ -4,10 +4,10 @@ import com.example.news_app.R;
 
 public enum Sources {
 
-    RBK(R.drawable.rbk, R.string.rbk, R.string.rbk_domen),
-    LENTA(R.drawable.lenta, R.string.lenta, R.string.lenta_domen),
-    RIA(R.drawable.ria, R.string.ria, R.string.ria_domen),
-    MEDUSA(R.drawable.meduza, R.string.meduza, R.string.meduza_domen);
+    RBK(R.drawable.rbk, R.string.rbk, R.string.rbk_domain),
+    LENTA(R.drawable.lenta, R.string.lenta, R.string.lenta_domain),
+    RIA(R.drawable.ria, R.string.ria, R.string.ria_domain),
+    MEDUSA(R.drawable.meduza, R.string.meduza, R.string.meduza_domain);
 
     private final int idIc;
     private final int idUnderText;

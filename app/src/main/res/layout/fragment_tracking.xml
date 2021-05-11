@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         style="@style/topTitleText"
         android:textColor="@color/dark_text"
-        android:text="Закладки"/>
+        android:text="@string/bookmarks"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
