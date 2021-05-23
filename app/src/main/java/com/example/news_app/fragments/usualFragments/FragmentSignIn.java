@@ -49,7 +49,6 @@ public class FragmentSignIn extends Fragment {
         SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
         login = pref.getString("login", "");
         password = pref.getString("password", "");
-        String status = "bad request";
 
         if (login.length() == 0 || password.length() == 0) return;
 
@@ -109,7 +108,8 @@ public class FragmentSignIn extends Fragment {
             progressBar.dismiss();
 
             if (user == null){
-                Toast.makeText(getContext(), getResources().getString(R.string.trouble_with_authorization), Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), getResources().getString(R.string.trouble_with_authorization),
+                        Toast.LENGTH_LONG).show();
                 return;
             }
 
