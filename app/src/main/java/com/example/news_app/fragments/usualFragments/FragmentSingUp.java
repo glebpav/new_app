@@ -19,6 +19,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Pattern;
 
+import static com.example.news_app.R.string.no_internet;
+
 
 public class FragmentSingUp extends Fragment {
 
@@ -58,11 +60,16 @@ public class FragmentSingUp extends Fragment {
             progressBar.show(getFragmentManager(), "FragmentSingUp");
             binding.btnBack.setClickable(false);
             binding.btnSignUp.setClickable(false);
-            MakeRequests.SignUpRequest sign_upRequest = requests.new SignUpRequest(signUpListener,
+
+            if (!requests.isInternetAvailable(getContext())){
+                Toast.makeText(getContext(), no_internet, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            MakeRequests.SignUpRequest signUpRequest = requests.new SignUpRequest(signUpListener,
                     binding.etLogin.getText().toString(),
                     binding.etName.getText().toString(),
                     binding.etPassword.getText().toString());
-            sign_upRequest.execute();
+            signUpRequest.execute();
         }
     };
 

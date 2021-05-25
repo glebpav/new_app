@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import com.example.news_app.databinding.FragmentSignInBinding;
 import com.example.news_app.models.User;
 
 import org.jetbrains.annotations.NotNull;
+
+import static com.example.news_app.R.string.no_internet;
 
 
 public class FragmentSignIn extends Fragment {
@@ -81,6 +84,10 @@ public class FragmentSignIn extends Fragment {
                 return;
             }
 
+            if (!requests.isInternetAvailable(getContext())){
+                Toast.makeText(getContext(), no_internet, Toast.LENGTH_SHORT).show();
+                return;
+            }
             progressBar = new DialogFragmentProgressBar();
             assert getFragmentManager() != null;
             progressBar.show(getFragmentManager(), "FragmentSignIn");
