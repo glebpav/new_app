@@ -1,10 +1,11 @@
-package com.example.news_app;
+package com.example.news_app.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.news_app.R;
 import com.example.news_app.fragments.usualFragments.FragmentSignIn;
 
 public class ActivityMain extends AppCompatActivity {

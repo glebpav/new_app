@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ActivityNews"
+    tools:context=".activities.ActivityNews"
     android:id="@+id/NA"
     android:background="@color/colorPrimary"
     android:screenOrientation="portrait">

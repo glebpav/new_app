@@ -1,4 +1,4 @@
-package com.example.news_app;
+package com.example.news_app.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.RelativeLayout;
 
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
+import com.example.news_app.R;
 import com.example.news_app.fragments.usualFragments.FragmentSearching;
 import com.example.news_app.fragments.usualFragments.FragmentSettings;
 import com.example.news_app.fragments.usualFragments.FragmentTopNews;
