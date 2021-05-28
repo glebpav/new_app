@@ -47,7 +47,6 @@ public class FragmentSettings extends Fragment {
     private FragmentSettingsBinding binding;
     private AdapterSettingTiles adapterSettingTiles;
 
-    private ListView listHistory;
     private final ViewPager2 pager;
     private final MeowBottomNavigation meow;
     private DialogFragmentHistory fragmentHistory;
@@ -142,48 +141,21 @@ public class FragmentSettings extends Fragment {
         fragmentSources.show(getActivity().getFragmentManager(), "FragmentSettings");
     }
 
-    void change_fields(final User user) {
-        binding.tvCountTracking.setText(String.valueOf(user.getThemes().split(";").length));
-        binding.tvCountThemes.setText(String.valueOf(user.getHistory().split(";").length));
-        //if (user.history.equals(";"))user.history = null;
-        List<String> list = Arrays.asList(user.getHistory().split(";"));
-        System.out.println(list);
-        Collections.reverse(list);
-        System.out.println(list);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_list_item_1, list.toArray(new String[0]));
-        listHistory.setAdapter(adapter);
-
-        listHistory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SharedPreferences pref = Objects.requireNonNull(getActivity()).
-                        getSharedPreferences("pref", Context.MODE_PRIVATE);
-                SharedPreferences.Editor edt = pref.edit();
-                edt.putString("SearchingTheme", user.getHistory().split(";")
-                        [(user.getHistory().split(";")).length - position - 1]);
-                edt.apply();
-
-                pager.setCurrentItem(0);
-                meow.show(0, true);
-            }
-        });
-    }
-
     @Override
     public void onResume() {
         super.onResume();
         initFragment();
-
         MakeRequests.OnLoadUserListener loadUserListener = new MakeRequests.OnLoadUserListener() {
             @Override
             public void onResults(User user) {
-                binding.collapsingToolbar.setTitle(user.getName());
-                binding.tvCountThemes.setText((!user.getHistory().isEmpty()) ?
-                        String.valueOf(user.getHistory().split(";").length) : "0");
-                binding.tvCountTracking.setText((!user.getThemes().isEmpty()) ?
-                        String.valueOf(user.getThemes().split(";").length) : "0");
                 mUser = user;
+                mUser.clearThemes();
+                mUser.fillListHistory();
+                mUser.fillListThemes();
+
+                binding.collapsingToolbar.setTitle(user.getName());
+                binding.tvCountThemes.setText(String.valueOf(mUser.getListHistory().size()));
+                binding.tvCountTracking.setText(String.valueOf(mUser.getListThemes().size()));
 
                 fragmentProgress.dismiss();
                 binding.nestedScrollView.setVisibility(View.VISIBLE);
@@ -193,8 +165,6 @@ public class FragmentSettings extends Fragment {
 
         requests.new LoadUser(mUser.getLogin(), mUser.getPassword(), loadUserListener).execute();
     }
-
-
 
     DialogFragmentHistory.OnAdapterTileHistoryClickedListener adapterTileHistoryClickedListener =
             new DialogFragmentHistory.OnAdapterTileHistoryClickedListener() {

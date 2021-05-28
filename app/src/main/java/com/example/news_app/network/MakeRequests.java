@@ -220,23 +220,32 @@ public class MakeRequests {
 
         @Override
         protected String doInBackground(Void... voids) {
-            String response_str = "";
+            String responseStr = "";
             OkHttpClient client = new OkHttpClient.Builder()
                     .connectTimeout(10, TimeUnit.SECONDS)
                     .writeTimeout(10, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS)
                     .build();
 
-            user = updateUser(user);
+            String json1 = "{\"user\":{ \"login\": \"" + user.getLogin() + "\",\"password\": \"" + user.getPassword() + "\"}}";
+            final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+            final String[] responseStr1 = new String[1];
+
+            OkHttpClient client1 = new OkHttpClient();
+            RequestBody body1 = RequestBody.create(json1, JSON);
+            Request request1 = new Request.Builder().url((MAIN_URL + "api/user_check/")).post(body1).build();
+            try (Response response = client1.newCall(request1).execute()) {
+                responseStr1[0] = Objects.requireNonNull(response.body()).string();
+                user = User.serializeUser(new JSONObject(responseStr1[0]).getString("user"));
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
 
             Request request = new Request.Builder().url((MAIN_URL + "api/news/" + theme + "/" +
                     user.getId())).get().build();
-            Log.d("TAG", "doInBackground: " + (MAIN_URL + "api/news/" + theme + "/" +
-                    user.getId()));
             try (Response response = client.newCall(request).execute()) {
-                response_str = response.body().string();
-                if (new JSONObject(response_str).getString("status").equals("ok")) {
-                    final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+                responseStr = response.body().string();
+                if (new JSONObject(responseStr).getString("status").equals("ok")) {
 
                     client = new OkHttpClient();
 
@@ -247,7 +256,6 @@ public class MakeRequests {
                     request = new Request.Builder().url((MAIN_URL + "api/users/" +
                             user.getId())).put(body).build();
                     try (Response response1 = client.newCall(request).execute()) {
-                        String response_str1 = response1.body().string();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -255,7 +263,7 @@ public class MakeRequests {
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
-            return response_str;
+            return responseStr;
         }
     }
 
@@ -351,28 +359,6 @@ public class MakeRequests {
             listener.onChanged(null);
         }
 
-    }
-
-    User updateUser(User user) {
-        String json = "{\"user\":{ \"login\": \"" + user.getLogin() + "\",\"password\": \"" + user.getPassword() + "\"}}";
-        final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-        final String[] response_str = new String[1];
-
-        OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(json, JSON);
-        Request request = new Request.Builder().url((MAIN_URL + "api/user_check/")).post(body).build();
-        try (Response response = client.newCall(request).execute()) {
-            response_str[0] = Objects.requireNonNull(response.body()).string();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            return User.serializeUser(new JSONObject(response_str[0]).getString("user"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return user;
     }
 
     public boolean isInternetAvailable(Context context) {

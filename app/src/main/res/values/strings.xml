@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">News findeR demo</string>
+
+    <string name="app_name">News findeR</string>
 
     <!-- Headers for fragments -->
 
@@ -32,6 +33,7 @@
     <!-- Toast's texts -->
 
     <string name="password_error">пароль должен содержать цифры, символы, и быть не короче 6 символов</string>
+    <string name="no_internet">Отсутствует подключение к интернету</string>
     <string name="successful_changed">Успешно изменено</string>
     <string name="enter_name">введите пароль</string>
 
@@ -40,6 +42,7 @@
     <string name="log_out">выйти</string>
     <string name="understand">Понятно</string>
     <string name="cancel">Отмена</string>
+    <string name="add">добавить</string>
 
     <!-- unsorted strings -->
 
@@ -47,6 +50,5 @@
     <string name="rename">новое имя</string>
     <string name="loading">Загрузка…</string>
     <string name="are_you_sure">Вы уверены, что хотите выйти?</string>
-    <string name="no_internet">Отсутствует подключение к интернету</string>
 
 </resources>

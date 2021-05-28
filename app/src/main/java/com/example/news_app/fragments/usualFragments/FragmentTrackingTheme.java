@@ -51,8 +51,7 @@ public class FragmentTrackingTheme extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         binding.recyclerView.setLayoutManager(llm);
 
-        clearThemes();
-        clearThemes();
+        mUser.clearThemes();
 
         adapter = new AdapterTrackingThemes(Arrays.asList(mUser.getThemes().split(";")),
                 onDeleteItemClickedListener, onThemeSelectedListener);
@@ -71,13 +70,7 @@ public class FragmentTrackingTheme extends Fragment {
         }
     };
 
-    public void clearThemes() {
-        if (mUser.getThemes().isEmpty()) return;
-        mUser.setThemes(mUser.getThemes().replace(";;", ";"));
-        if (mUser.getThemes().charAt(0) == ';') {
-            mUser.setThemes(mUser.getThemes().substring(1));
-        }
-    }
+
 
     DialogFragmentAddTheme.OnBtnApplyClickListener btnApplyClickListener = new DialogFragmentAddTheme.OnBtnApplyClickListener() {
         @Override
@@ -92,7 +85,7 @@ public class FragmentTrackingTheme extends Fragment {
     MakeRequests.OnUserChangedListener onUserChangedListener = new MakeRequests.OnUserChangedListener() {
         @Override
         public void onChanged(String serverResponse) {
-            clearThemes();
+            mUser.clearThemes();
             adapter.setThemesList(Arrays.asList(mUser.getThemes().split(";")));
             adapter.notifyDataSetChanged();
             dialogFragmentProgressBar.dismiss();
@@ -124,10 +117,8 @@ public class FragmentTrackingTheme extends Fragment {
             dialogFragmentProgressBar = new DialogFragmentProgressBar();
             dialogFragmentProgressBar.show(getFragmentManager(), "FragmentTrackingTheme");
             mUser.setThemes(mUser.getThemes().replace(theme, ""));
-            clearThemes();
+            mUser.clearThemes();
             requests.new UpdateUserAsync(onUserChangedListener, mUser).execute();
         }
     };
-
-
 }
