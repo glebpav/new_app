@@ -21,7 +21,42 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="80dp"
         tools:listitem="@layout/item_tracking_news"
-        />
+        android:visibility="invisible"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="30dp"
+        android:background="@drawable/bg_tumbleweed"
+        android:id="@+id/layout_no_tracking_theme"
+        android:visibility="visible"
+        android:elevation="20dp">
+
+        <pl.droidsonroids.gif.GifImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/tumbleweed"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/img_tumbleweed"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/is_empty_now"
+            android:textSize="20sp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/tv_is_empty_now"
+            android:layout_below="@+id/img_tumbleweed"
+            android:layout_marginTop="10dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_new"
+            android:textSize="20sp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/tv_is_empty_now"/>
+
+    </RelativeLayout>
 
     <soup.neumorphism.NeumorphButton
         android:id="@+id/btn_add_tracking_theme"

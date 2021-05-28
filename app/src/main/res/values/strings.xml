@@ -50,5 +50,7 @@
     <string name="rename">новое имя</string>
     <string name="loading">Загрузка…</string>
     <string name="are_you_sure">Вы уверены, что хотите выйти?</string>
+    <string name="is_empty_now">Здесь пока пусто</string>
+    <string name="add_new">добавьте новую тему</string>
 
 </resources>

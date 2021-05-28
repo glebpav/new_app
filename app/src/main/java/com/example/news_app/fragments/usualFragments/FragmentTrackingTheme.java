@@ -52,6 +52,10 @@ public class FragmentTrackingTheme extends Fragment {
         binding.recyclerView.setLayoutManager(llm);
 
         mUser.clearThemes();
+        mUser.fillListThemes();
+
+        if (mUser.getListThemes().size() == 0) binding.layoutNoTrackingTheme.setVisibility(View.VISIBLE);
+        else binding.recyclerView.setVisibility(View.VISIBLE);
 
         adapter = new AdapterTrackingThemes(Arrays.asList(mUser.getThemes().split(";")),
                 onDeleteItemClickedListener, onThemeSelectedListener);
@@ -90,6 +94,15 @@ public class FragmentTrackingTheme extends Fragment {
             adapter.notifyDataSetChanged();
             dialogFragmentProgressBar.dismiss();
 
+            mUser.fillListThemes();
+            if (mUser.getListThemes().size() == 0){
+                binding.recyclerView.setVisibility(View.INVISIBLE);
+                binding.layoutNoTrackingTheme.setVisibility(View.VISIBLE);
+            }
+            else {
+                binding.layoutNoTrackingTheme.setVisibility(View.INVISIBLE);
+                binding.recyclerView.setVisibility(View.VISIBLE);
+            }
             try {
                 dialogFragmentAddTheme.dismiss();
             } catch (Exception e) {
