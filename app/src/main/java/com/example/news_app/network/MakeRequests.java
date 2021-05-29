@@ -15,10 +15,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +28,7 @@ import okhttp3.Response;
 public class MakeRequests {
 
     final static String MAIN_URL = "https://analisinf.pythonanywhere.com/";
+    final static String TAG = "MAKE_REQUEST_SPACE";
 
     public class SignInRequest extends AsyncTask<Void, Void, String> {
 
@@ -70,8 +67,10 @@ public class MakeRequests {
         @Override
         protected void onPostExecute(String server_response) {
             try {
+                Log.d(TAG, "onPostExecute: " + server_response);
                 JSONObject obj = new JSONObject(server_response);
                 if (obj.getString("status").equals("ok")) {
+                    Log.d(TAG, "onPostExecute : " + obj.getString("user"));
                     User user = User.serializeUser(obj.getString("user"));
                     listener.onSingIn(user);
                     return;
@@ -365,17 +364,14 @@ public class MakeRequests {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (wifiInfo != null && wifiInfo.isConnected()) {
-            return true;
+            return false;
         }
         wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         if (wifiInfo != null && wifiInfo.isConnected()) {
-            return true;
+            return false;
         }
         wifiInfo = cm.getActiveNetworkInfo();
-        if (wifiInfo != null && wifiInfo.isConnected()) {
-            return true;
-        }
-        return false;
+        return wifiInfo == null || !wifiInfo.isConnected();
 
     }
 
@@ -395,7 +391,6 @@ public class MakeRequests {
 
     public interface OnFindNewsListener {
         void onFoundNews(ArrayList<News> listNews);
-
     }
 
     public interface OnFindTopNewsListener {
@@ -404,7 +399,6 @@ public class MakeRequests {
 
     public interface OnUserChangedListener {
         void onChanged(String serverResponse);
-
     }
 
 }

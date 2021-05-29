@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.example.news_app.activities.ActivityMain;
 import com.example.news_app.R;
+import com.example.news_app.adapters.AdapterCurrencyTile;
 import com.example.news_app.adapters.AdapterSettingTiles;
 import com.example.news_app.databinding.FragmentSettingsBinding;
 import com.example.news_app.enums.SettingsPoints;
@@ -29,11 +30,14 @@ import com.example.news_app.fragments.dialogFragments.DialogFragmentHistory;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentSources;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentSureToLogOut;
+import com.example.news_app.models.CentBankCurrency;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.models.User;
+import com.example.news_app.network.course.ParseCourse;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +50,7 @@ public class FragmentSettings extends Fragment {
     private MakeRequests requests;
     private FragmentSettingsBinding binding;
     private AdapterSettingTiles adapterSettingTiles;
+    private AdapterCurrencyTile adapterCurrencyTile;
 
     private final ViewPager2 pager;
     private final MeowBottomNavigation meow;
@@ -68,8 +73,11 @@ public class FragmentSettings extends Fragment {
         requests = new MakeRequests();
 
         adapterSettingTiles = new AdapterSettingTiles(getContext(), onClickedSettingsItemListener);
+        adapterCurrencyTile = new AdapterCurrencyTile(null);
         binding.recyclerViewSettings.setAdapter(adapterSettingTiles);
+        binding.recyclerViewCurrency.setAdapter(adapterCurrencyTile);
         binding.recyclerViewSettings.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        binding.recyclerViewCurrency.setLayoutManager(new GridLayoutManager(getContext(), 2));
         fragmentProgress = new DialogFragmentProgressBar();
 
         return binding.getRoot();
@@ -145,10 +153,31 @@ public class FragmentSettings extends Fragment {
     public void onResume() {
         super.onResume();
         initFragment();
+
+        final ParseCourse.OnParseCourseListener parseCourseListener = new ParseCourse.OnParseCourseListener() {
+            @Override
+            public void onFound(ArrayList<CentBankCurrency> listCurrency) {
+                mUser.fillListCurrency();
+                ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
+                for (int i = 0; i < listCurrency.size(); i++) {
+                    for (int j = 0; j < mUser.getListCurrency().size(); j++) {
+                        if (listCurrency.get(i).getCharCode().equals(mUser.getListCurrency().get(j))){
+                            outputListCurrency.add(listCurrency.get(i));
+                            break;
+                        }
+                    }
+                }
+
+                adapterCurrencyTile.setListCurrency(outputListCurrency);
+                adapterCurrencyTile.notifyDataSetChanged();
+            }
+        };
+
         MakeRequests.OnLoadUserListener loadUserListener = new MakeRequests.OnLoadUserListener() {
             @Override
             public void onResults(User user) {
                 mUser = user;
+                new ParseCourse(parseCourseListener).execute();
                 mUser.clearThemes();
                 mUser.fillListHistory();
                 mUser.fillListThemes();
@@ -160,8 +189,10 @@ public class FragmentSettings extends Fragment {
                 fragmentProgress.dismiss();
                 binding.nestedScrollView.setVisibility(View.VISIBLE);
                 binding.appbar.setVisibility(View.VISIBLE);
+
             }
         };
+
 
         requests.new LoadUser(mUser.getLogin(), mUser.getPassword(), loadUserListener).execute();
     }

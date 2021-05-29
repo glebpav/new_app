@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,7 +60,7 @@ public class FragmentSingUp extends Fragment {
             binding.btnBack.setClickable(false);
             binding.btnSignUp.setClickable(false);
 
-            if (!requests.isInternetAvailable(getContext())){
+            if (requests.isInternetAvailable(getContext())){
                 Toast.makeText(getContext(), no_internet, Toast.LENGTH_SHORT).show();
                 return;
             }

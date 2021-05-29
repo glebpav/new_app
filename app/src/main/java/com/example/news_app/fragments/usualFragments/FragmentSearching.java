@@ -36,7 +36,6 @@ public class FragmentSearching extends Fragment {
     private DialogFragmentProgressBar fragmentProgressBar;
 
     public FragmentSearching(User user) {
-
         this.user = user;
     }
 

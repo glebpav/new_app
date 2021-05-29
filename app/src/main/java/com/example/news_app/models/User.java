@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 public class User {
@@ -20,12 +21,14 @@ public class User {
     private String history;
     private String themes;
     private String sites;
+    private String currency;
 
     // data for mobile use
     private ArrayList<String> listHistory;
     private ArrayList<String> listThemes;
+    private ArrayList<String> listCurrency;
 
-    public User(int id, String name, String login, String password, String history, String themes, String sites) {
+    public User(int id, String name, String login, String password, String history, String themes, String sites, String currency) {
         this.id = id;
         this.name = name;
         this.login = login;
@@ -33,6 +36,7 @@ public class User {
         this.history = history;
         this.themes = themes;
         this.sites = sites;
+        this.currency = currency;
     }
 
     public User() {
@@ -40,6 +44,10 @@ public class User {
 
     public String getSites() {
         return sites;
+    }
+
+    public ArrayList<String> getListCurrency() {
+        return listCurrency;
     }
 
     public void setSites(String sites) {
@@ -102,6 +110,14 @@ public class User {
         return listThemes;
     }
 
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
 
     public void fillListThemes() {
         Log.d(TAG, "user themes : " + themes);
@@ -112,6 +128,18 @@ public class User {
             Log.d(TAG, str);
             if (str.length() != 0 && !listThemes.contains(str))
                 listThemes.add(str);
+        }
+    }
+
+    public void fillListCurrency() {
+        Log.d(TAG, "user currency : " + currency);
+        Log.d(TAG, String.valueOf(currency.split(";").length));
+        listCurrency = new ArrayList<>();
+        if (!currency.contains(";") && currency.length() != 0) listCurrency.add(currency);
+        for (String str : currency.split(";")) {
+            Log.d(TAG, str);
+            if (str.length() != 0 && !listCurrency.contains(str))
+                listCurrency.add(str);
         }
     }
 
@@ -152,7 +180,8 @@ public class User {
                     obj.getString("password"),
                     obj.getString("history"),
                     obj.getString("themes"),
-                    obj.getString("sites"));
+                    obj.getString("sites"),
+                    obj.getString("currency"));
         } catch (JSONException e) {
             e.printStackTrace();
         }

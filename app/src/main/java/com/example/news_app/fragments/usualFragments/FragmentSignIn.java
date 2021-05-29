@@ -27,7 +27,6 @@ import static com.example.news_app.R.string.no_internet;
 public class FragmentSignIn extends Fragment {
 
     private MakeRequests requests;
-    private FragmentSignIn thisFragment;
     private String login, password;
     private FragmentSignInBinding binding;
     private DialogFragmentProgressBar progressBar;
@@ -40,7 +39,6 @@ public class FragmentSignIn extends Fragment {
         binding.btnSignUp.setOnClickListener(btnSignUpClicked);
 
         requests = new MakeRequests();
-        thisFragment = this;
 
         checkUser();
 
@@ -83,7 +81,7 @@ public class FragmentSignIn extends Fragment {
                 return;
             }
 
-            if (!requests.isInternetAvailable(getContext())){
+            if (requests.isInternetAvailable(getContext())){
                 Toast.makeText(getContext(), no_internet, Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -104,6 +102,7 @@ public class FragmentSignIn extends Fragment {
         intent.putExtra("themes", user.getThemes());
         intent.putExtra("password", user.getPassword());
         intent.putExtra("sites", user.getSites());
+        intent.putExtra("currency", user.getSites());
         startActivity(intent);
     }
 
