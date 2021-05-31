@@ -13,9 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
@@ -28,6 +25,7 @@ import com.example.news_app.enums.SettingsPoints;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentChangeName;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentHistory;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
+import com.example.news_app.fragments.dialogFragments.DialogFragmentSelectCurrency;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentSources;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentSureToLogOut;
 import com.example.news_app.models.CentBankCurrency;
@@ -41,10 +39,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 
 public class FragmentSettings extends Fragment {
+
+    private static final String TAG = "FRAGMENT_SETTINGS_SPACE";
+    private ArrayList <CentBankCurrency> mListCurrency;
 
     private User mUser;
     private MakeRequests requests;
@@ -59,6 +59,7 @@ public class FragmentSettings extends Fragment {
     private DialogFragmentProgressBar fragmentProgress;
     private DialogFragmentChangeName fragmentChangeName;
     private DialogFragmentSureToLogOut fragmentSureToLogOut;
+    private DialogFragmentSelectCurrency fragmentSelectCurrency;
 
     public FragmentSettings(User user, ViewPager2 pager, MeowBottomNavigation meow) {
         this.mUser = user;
@@ -106,6 +107,9 @@ public class FragmentSettings extends Fragment {
                         case CHANGE_SOURCES:
                             changeSources();
                             break;
+                        case CHANGE_CURRENCY:
+                            changeCurrency();
+                            break;
                     }
                 }
             };
@@ -149,6 +153,12 @@ public class FragmentSettings extends Fragment {
         fragmentSources.show(getActivity().getFragmentManager(), "FragmentSettings");
     }
 
+    void changeCurrency() {
+        Log.d(TAG, "changeCurrency: " + mListCurrency.size());
+        fragmentSelectCurrency = new DialogFragmentSelectCurrency(mListCurrency);
+        fragmentSelectCurrency.show(getFragmentManager(), "FragmentSettings");
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -158,11 +168,13 @@ public class FragmentSettings extends Fragment {
             @Override
             public void onFound(ArrayList<CentBankCurrency> listCurrency) {
                 mUser.fillListCurrency();
+                mListCurrency = listCurrency;
                 ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
                 for (int i = 0; i < listCurrency.size(); i++) {
                     for (int j = 0; j < mUser.getListCurrency().size(); j++) {
                         if (listCurrency.get(i).getCharCode().equals(mUser.getListCurrency().get(j))){
                             outputListCurrency.add(listCurrency.get(i));
+                            listCurrency.get(i).setHidden(false);
                             break;
                         }
                     }

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools">
+
+    <soup.neumorphism.NeumorphCardView
+        android:id="@+id/nuemorph_card"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:padding="20dp"
+        app:neumorph_shapeType="pressed">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/btn_add">
+
+                <TextView
+                    android:id="@+id/tv_currency_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textAlignment="center"
+                    android:fontFamily="@font/monserrat"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_centerHorizontal="true"
+                    tool:text="Очень длинное название валюты" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_below="@+id/tv_currency_name"
+                    android:layout_centerHorizontal="true">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:textStyle="bold"
+                    android:id="@+id/tv_currency_char_code"
+                    tool:text="USD"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/tv_value"
+                    android:layout_marginStart="5dp"
+                    tool:text="12.23"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+
+            <soup.neumorphism.NeumorphFloatingActionButton
+                style="@style/Widget.Neumorph.FloatingActionButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:textSize="30sp"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/ic_baseline_add_24"
+                android:scaleType="center"
+                android:id="@+id/btn_add"
+                app:neumorph_shapeType="flat"/>
+        </RelativeLayout>
+    </soup.neumorphism.NeumorphCardView>
+
+</RelativeLayout>

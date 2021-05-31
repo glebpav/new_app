@@ -9,6 +9,8 @@
     <color name="clear_white">#FFF</color>
     <color name="dark_text">#676767</color>
     <color name="dark_blue">#285FBA</color>
+    <color name="light_blue">#A6C7FF</color>
     <color name="dark_purple">#7535AD</color>
+    <color name="light_purple">#DAB2FB</color>
 
 </resources>

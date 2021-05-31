@@ -7,6 +7,7 @@
     <string name="history">История</string>
     <string name="change_sources">Источники</string>
     <string name="sources">Источники</string>
+    <string name="currency_title">Курсы валют</string>
     <string name="add_bookmark">Добавить закладку</string>
     <string name="warning">Внимание !</string>
     <string name="bookmarks">Закладки</string>
@@ -53,5 +54,8 @@
     <string name="are_you_sure">Вы уверены, что хотите выйти?</string>
     <string name="is_empty_now">Здесь пока пусто</string>
     <string name="add_new">добавьте новую тему</string>
+    <string name="sort_to">сортировать :</string>
+    <string name="alphabet">алфавит</string>
+    <string name="choice">выбор</string>
 
 </resources>

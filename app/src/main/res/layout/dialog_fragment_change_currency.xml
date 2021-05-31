@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/layout_currency"
+        android:background="@drawable/bg_milk_color">
+
+        <View
+            android:id="@+id/v_top"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/deep_gradient_top" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/v_top"
+            android:padding="5dp"
+            android:id="@+id/layout_sorting_top"
+            android:background="@drawable/light_gradient_top">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:textColor="@color/clear_white"
+                android:text="@string/sort_to"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:textColor="@color/clear_white"
+                android:id="@+id/tv_sort_alphabet"
+                android:text="@string/alphabet"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:textColor="@color/clear_white"
+                android:id="@+id/tv_sort_choice"
+                android:text="@string/choice"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="@string/currency_title"
+            android:textColor="#FFF"
+            android:textSize="30sp"
+            android:id="@+id/tv_sources_title"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/Id_const_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layout_sorting_top"
+            >
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintBottom_toBottomOf="@+id/Id_const_layout"
+                app:layout_constraintEnd_toEndOf="@+id/Id_const_layout"
+                app:layout_constraintHeight_max="500dp"
+                app:layout_constraintStart_toStartOf="@+id/Id_const_layout"
+                app:layout_constraintTop_toTopOf="@+id/Id_const_layout"
+                android:layout_centerHorizontal="true"
+
+                tools:listitem="@layout/item_currency_table"
+                tools:itemCount="20"
+                android:layout_marginBottom="30dp"
+                >
+            </androidx.recyclerview.widget.RecyclerView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
+    <Button
+        android:id="@+id/btn_apply"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_below="@+id/layout_currency"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginTop="-15dp"
+        android:background="@drawable/change_name_btn_ok"
+        android:text="@string/understand"
+        android:textColor="#FFF"
+        android:textSize="15sp" />
+
+</RelativeLayout>

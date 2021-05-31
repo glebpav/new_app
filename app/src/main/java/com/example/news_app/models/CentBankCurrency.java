@@ -11,7 +11,9 @@ public class CentBankCurrency {
     private Integer nominal;
     private Integer numCode;
 
-    public CentBankCurrency(){}
+    public CentBankCurrency(){
+        isHidden = true;
+    }
 
     public CentBankCurrency(double value, String name, String charCode, Integer nominal, Integer numCode) {
         this.value = value;
@@ -19,6 +21,7 @@ public class CentBankCurrency {
         this.charCode = charCode;
         this.nominal = nominal;
         this.numCode = numCode;
+        isHidden = true;
     }
 
     public String getName() {
