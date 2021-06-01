@@ -329,7 +329,8 @@ public class MakeRequests {
                             + "\"name\": \"" + user.getName() + "\" ,"
                             + "\"history\": \"" + user.getHistory() + "\" ,"
                             + "\"sites\": \"" + user.getSites() + "\" ,"
-                            + "\"themes\": \"" + user.getThemes() + "\""
+                            + "\"themes\": \"" + user.getThemes() + "\" ,"
+                            + "\"currency\": \"" + user.getCurrency() + "\""
                             + "}}";
 
             MediaType JSON = MediaType.get("application/json; charset=utf-8");

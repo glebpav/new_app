@@ -30,15 +30,23 @@ import java.util.Objects;
 public class DialogFragmentSelectCurrency extends DialogFragment {
 
     private static final String TAG = "DIALOG_FRAGMENT_CURRENCY_SPACE";
-    ArrayList <CentBankCurrency> listCurrency;
-    DialogFragmentChangeCurrencyBinding binding;
-    AdapterCurrencyTableTile adapterCurrencyTableTile;
-    ComparatorCurrencyAlphabet comparatorAlphabet;
-    ComparatorCurrencyChoice comparatorChoice;
+    private final OnCurrencySelectedListener mCurrencySelectedListener;
+    private ArrayList <CentBankCurrency> listCurrency;
+    private DialogFragmentChangeCurrencyBinding binding;
+    private AdapterCurrencyTableTile adapterCurrencyTableTile;
+    private ComparatorCurrencyAlphabet comparatorAlphabet;
+    private ComparatorCurrencyChoice comparatorChoice;
+
+    public void setListCurrency(ArrayList<CentBankCurrency> listCurrency) {
+        this.listCurrency = listCurrency;
+        adapterCurrencyTableTile.setListCurrency(listCurrency);
+        adapterCurrencyTableTile.notifyDataSetChanged();
+    }
 
     @SuppressLint("LongLogTag")
-    public DialogFragmentSelectCurrency(ArrayList<CentBankCurrency> listCurrency) {
+    public DialogFragmentSelectCurrency(ArrayList<CentBankCurrency> listCurrency, OnCurrencySelectedListener mCurrencySelectedListener) {
         this.listCurrency = listCurrency;
+        this.mCurrencySelectedListener = mCurrencySelectedListener;
         for (CentBankCurrency currency:listCurrency)
             Log.d(TAG, "DialogFragmentSelectCurrency: " + currency.isHidden());
     }
@@ -53,7 +61,7 @@ public class DialogFragmentSelectCurrency extends DialogFragment {
             getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         }
 
-        adapterCurrencyTableTile = new AdapterCurrencyTableTile(listCurrency);
+        adapterCurrencyTableTile = new AdapterCurrencyTableTile(listCurrency, currencySelectedListener);
         binding.recyclerView.setAdapter(adapterCurrencyTableTile);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         comparatorAlphabet = new ComparatorCurrencyAlphabet();
@@ -89,6 +97,18 @@ public class DialogFragmentSelectCurrency extends DialogFragment {
         });
 
         return binding.getRoot();
+    }
+
+    AdapterCurrencyTableTile.OnCurrencySelectedListener currencySelectedListener = new AdapterCurrencyTableTile.OnCurrencySelectedListener() {
+        @Override
+        public void onSelected(CentBankCurrency currency) {
+            mCurrencySelectedListener.onSelected(currency);
+
+        }
+    };
+
+    public interface OnCurrencySelectedListener{
+        void onSelected(CentBankCurrency currency);
     }
 
 }

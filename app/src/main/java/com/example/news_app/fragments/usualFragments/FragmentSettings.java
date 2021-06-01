@@ -44,7 +44,7 @@ import java.util.List;
 public class FragmentSettings extends Fragment {
 
     private static final String TAG = "FRAGMENT_SETTINGS_SPACE";
-    private ArrayList <CentBankCurrency> mListCurrency;
+    private ArrayList<CentBankCurrency> mListCurrency;
 
     private User mUser;
     private MakeRequests requests;
@@ -155,7 +155,7 @@ public class FragmentSettings extends Fragment {
 
     void changeCurrency() {
         Log.d(TAG, "changeCurrency: " + mListCurrency.size());
-        fragmentSelectCurrency = new DialogFragmentSelectCurrency(mListCurrency);
+        fragmentSelectCurrency = new DialogFragmentSelectCurrency(mListCurrency, currencySelectedListener);
         fragmentSelectCurrency.show(getFragmentManager(), "FragmentSettings");
     }
 
@@ -172,7 +172,7 @@ public class FragmentSettings extends Fragment {
                 ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
                 for (int i = 0; i < listCurrency.size(); i++) {
                     for (int j = 0; j < mUser.getListCurrency().size(); j++) {
-                        if (listCurrency.get(i).getCharCode().equals(mUser.getListCurrency().get(j))){
+                        if (listCurrency.get(i).getCharCode().equals(mUser.getListCurrency().get(j))) {
                             outputListCurrency.add(listCurrency.get(i));
                             listCurrency.get(i).setHidden(false);
                             break;
@@ -247,26 +247,72 @@ public class FragmentSettings extends Fragment {
                 };
             };
 
-    DialogFragmentSources.OnSourcesChangedListener sourcesChangedListener = new DialogFragmentSources.OnSourcesChangedListener() {
-        @Override
-        public void onChanged(User user) {
-            mUser.setSites(user.getSites());
-            fragmentProgress = new DialogFragmentProgressBar();
-            assert getFragmentManager() != null;
-            fragmentProgress.show(getFragmentManager(), "OnSourcesChangedListener");
-            requests.new UpdateUserAsync(onUserChangedListener, mUser).execute();
-        }
+    DialogFragmentSources.OnSourcesChangedListener sourcesChangedListener = new
+            DialogFragmentSources.OnSourcesChangedListener() {
+                @Override
+                public void onChanged(User user) {
+                    mUser.setSites(user.getSites());
+                    fragmentProgress = new DialogFragmentProgressBar();
+                    assert getFragmentManager() != null;
+                    fragmentProgress.show(getFragmentManager(), "OnSourcesChangedListener");
+                    requests.new UpdateUserAsync(onUserChangedListener, mUser).execute();
+                }
 
-        final MakeRequests.OnUserChangedListener onUserChangedListener = new MakeRequests.OnUserChangedListener() {
-            @Override
-            public void onChanged(String serverResponse) {
-                Log.d("TAG", "onUserChangedListener - onChanged");
-                fragmentProgress.dismiss();
-                Toast.makeText(getContext(), getResources().getString(R.string.successful_changed), Toast.LENGTH_SHORT).show();
-            }
-        };
+                final MakeRequests.OnUserChangedListener onUserChangedListener = new MakeRequests.OnUserChangedListener() {
+                    @Override
+                    public void onChanged(String serverResponse) {
+                        Log.d("TAG", "onUserChangedListener - onChanged");
+                        fragmentProgress.dismiss();
+                        Toast.makeText(getContext(), getResources().getString(R.string.successful_changed), Toast.LENGTH_SHORT).show();
+                    }
+                };
 
-    };
+            };
 
+    DialogFragmentSelectCurrency.OnCurrencySelectedListener currencySelectedListener = new
+            DialogFragmentSelectCurrency.OnCurrencySelectedListener() {
+                @Override
+                public void onSelected(CentBankCurrency currency) {
+                    Log.d(TAG, "onSelected: " + currency.getName() + " (isHidden - " + currency.isHidden() + ")");
 
+                    if (!currency.isHidden()) {
+                        mUser.getListCurrency().remove(currency.getCharCode());
+                        mListCurrency.get(mListCurrency.indexOf(currency)).setHidden(true);
+                    } else {
+                        mUser.getListCurrency().add(currency.getCharCode());
+                        mListCurrency.get(mListCurrency.indexOf(currency)).setHidden(false);
+                    }
+
+                    for (String str : mUser.getListCurrency())
+                        Log.d(TAG, "onSelected: " + str);
+                    mUser.reformCurrencyString();
+                    Log.d(TAG, "onSelected: " + mListCurrency.get(mListCurrency.indexOf(currency)).getName() + " (isHidden - " + mListCurrency.get(mListCurrency.indexOf(currency)).isHidden() + ")");
+                    Log.d(TAG, "onSelected: " + mUser.getCurrency());
+
+                    fragmentProgress = new DialogFragmentProgressBar();
+                    fragmentProgress.show(getFragmentManager(), "OnSourcesChangedListener");
+                    requests.new UpdateUserAsync(onUserChangedListener, mUser).execute();
+                }
+
+                final MakeRequests.OnUserChangedListener onUserChangedListener = new MakeRequests.OnUserChangedListener() {
+                    @Override
+                    public void onChanged(String serverResponse) {
+                        Log.d(TAG, "onUserChangedListener - onChanged");
+                        ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
+
+                        for (int i = 0; i < mListCurrency.size(); i++) {
+                            if (!mListCurrency.get(i).isHidden()) {
+                               outputListCurrency.add(mListCurrency.get(i));
+                                System.out.println(mListCurrency.get(i).getCharCode());
+                            }
+                        }
+
+                        fragmentSelectCurrency.setListCurrency(mListCurrency);
+                        adapterCurrencyTile.setListCurrency(outputListCurrency);
+                        adapterCurrencyTile.notifyDataSetChanged();
+                        fragmentProgress.dismiss();
+                        Toast.makeText(getContext(), getResources().getString(R.string.successful_changed), Toast.LENGTH_SHORT).show();
+                    }
+                };
+            };
 }

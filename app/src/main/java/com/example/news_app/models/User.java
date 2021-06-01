@@ -118,6 +118,16 @@ public class User {
         this.currency = currency;
     }
 
+    public void setListCurrency(ArrayList<String> listCurrency) {
+        this.listCurrency = listCurrency;
+    }
+
+    public void reformCurrencyString(){
+        currency = "";
+        for (String currencyStr: listCurrency){
+            currency += currencyStr + ";";
+        }
+    }
 
     public void fillListThemes() {
         Log.d(TAG, "user themes : " + themes);
