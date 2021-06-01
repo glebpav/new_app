@@ -9,8 +9,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/tv_search"
@@ -56,31 +55,111 @@
 
         </LinearLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/linear1"
+            android:id="@+id/layout_sorting_top">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="left"
+                android:layout_marginTop="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Сортировать : "
+                    android:textSize="15sp"
+                    android:layout_marginStart="10dp"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_mood_24"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/img_sort_positive"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_mood_bad_24"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/img_sort_negative"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_sort_by_alpha_24"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/img_sort_alphabet"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="right"
+                android:layout_marginTop="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Вид : "
+                    android:textSize="15sp"
+                    android:layout_marginEnd="10dp"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_view_carousel_24"
+                    android:layout_marginEnd="10dp"
+                    android:id="@+id/img_view_model_carousel"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_view_module_24"
+                    android:layout_marginEnd="10dp"
+                    android:id="@+id/img_view_model_greed"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/linear1"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
+            android:layout_below="@id/layout_sorting_top"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="10dp"
             android:clipToPadding="false"
             android:foregroundGravity="center"
             android:overScrollMode="never"
             android:visibility="invisible"/>
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/layout_sorting_top"
+            android:id="@+id/recycler_view_news"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2"
+            tools:listitem="@layout/item_article_small"
+            android:layout_marginTop="10dp"
+            android:visibility="invisible"/>
+
         <RelativeLayout
             android:id="@+id/error_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:visibility="invisible">
 
             <ImageView
                 android:id="@+id/img_error"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="300dp"
-                android:src="@drawable/error" />
+                android:layout_centerInParent="true"
+                android:src="@drawable/error"/>
 
             <TextView
                 android:layout_width="wrap_content"

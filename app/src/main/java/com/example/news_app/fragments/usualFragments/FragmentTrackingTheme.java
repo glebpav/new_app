@@ -54,8 +54,14 @@ public class FragmentTrackingTheme extends Fragment {
         mUser.clearThemes();
         mUser.fillListThemes();
 
-        if (mUser.getListThemes().size() == 0) binding.layoutNoTrackingTheme.setVisibility(View.VISIBLE);
-        else binding.recyclerView.setVisibility(View.VISIBLE);
+        if (mUser.getListThemes().size() == 0) {
+            binding.recyclerView.setVisibility(View.INVISIBLE);
+            binding.layoutNoTrackingTheme.setVisibility(View.VISIBLE);
+        }
+        else {
+            binding.recyclerView.setVisibility(View.VISIBLE);
+            binding.layoutNoTrackingTheme.setVisibility(View.INVISIBLE);
+        }
 
         adapter = new AdapterTrackingThemes(Arrays.asList(mUser.getThemes().split(";")),
                 onDeleteItemClickedListener, onThemeSelectedListener);

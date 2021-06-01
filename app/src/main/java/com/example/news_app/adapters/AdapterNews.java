@@ -3,45 +3,40 @@ package com.example.news_app.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.news_app.R;
 import com.example.news_app.databinding.ItemArticleBinding;
-import com.example.news_app.databinding.ItemTrackingNewsBinding;
 import com.example.news_app.models.News;
 
 import java.util.ArrayList;
 
-import soup.neumorphism.NeumorphImageButton;
-
 public class AdapterNews extends PagerAdapter {
 
     private final Context mContext;
-    private ArrayList<News> newsArray;
+    private ArrayList<News> listNews;
     private ItemArticleBinding binding;
 
 
-    public void setNewsArray(ArrayList<News> newsArray) {
-        this.newsArray = newsArray;
+    public void setListNews(ArrayList<News> listNews) {
+        this.listNews = listNews;
     }
 
-    public AdapterNews(Context context, ArrayList<News> newsArray) {
+    public AdapterNews(Context context, ArrayList<News> listNews) {
         mContext = context;
-        this.newsArray = new ArrayList<>();
-        this.newsArray = newsArray;
+        this.listNews = new ArrayList<>();
+        this.listNews = listNews;
     }
 
     @Override
     public int getCount() {
-        return newsArray.size();
+        if (listNews == null) return 0;
+        return listNews.size();
     }
 
     @NonNull
@@ -50,7 +45,7 @@ public class AdapterNews extends PagerAdapter {
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         binding = ItemArticleBinding.inflate(layoutInflater, container, false);
 
-        final News article = newsArray.get(position);
+        final News article = listNews.get(position);
         double rating = Double.parseDouble(article.getRating());
 
         binding.tvTileTitle.setText(article.getTitle());
@@ -74,12 +69,12 @@ public class AdapterNews extends PagerAdapter {
             }
         });
 
-        set_rating_value(rating);
+        setRatingValue(rating);
         container.addView(binding.getRoot());
         return binding.getRoot();
     }
 
-    public void set_rating_value(double rating_value) {
+    public void setRatingValue(double rating_value) {
         if (rating_value < 0.35) {
             binding.tvTileRating.setText("Негативно");
         } else if (rating_value <= 0.65) {
