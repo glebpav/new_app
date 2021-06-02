@@ -8,11 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.news_app.R;
 import com.example.news_app.databinding.ItemArticleBinding;
 import com.example.news_app.databinding.ItemArticleSmallBinding;
+import com.example.news_app.fragments.dialogFragments.DialogFragmentSmallArticle;
 import com.example.news_app.models.News;
 
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ public class AdapterArticleSmallTiles extends RecyclerView.Adapter<AdapterArticl
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         final News article = listNews.get(position);
         double rating = Double.parseDouble(article.getRating());
 
@@ -66,6 +68,16 @@ public class AdapterArticleSmallTiles extends RecyclerView.Adapter<AdapterArticl
                 mContext.startActivity(Intent.createChooser(i, "Поделиться URL"));
             }
         });*/
+
+        holder.binding.cardViewSmallArticle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragmentSmallArticle dialogFragmentSmallArticle = new
+                        DialogFragmentSmallArticle(mContext, article);
+                dialogFragmentSmallArticle.show(((AppCompatActivity)mContext).getSupportFragmentManager(),
+                        "AdapterSmallArticle");
+            }
+        });
 
         setRatingValue(rating, holder);
     }
