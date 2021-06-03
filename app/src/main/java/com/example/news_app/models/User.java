@@ -27,6 +27,7 @@ public class User {
     private ArrayList<String> listHistory;
     private ArrayList<String> listThemes;
     private ArrayList<String> listCurrency;
+    private ArrayList<String> listSites;
 
     public User(int id, String name, String login, String password, String history, String themes, String sites, String currency) {
         this.id = id;
@@ -129,7 +130,7 @@ public class User {
         }
     }
 
-    public void fillListThemes() {
+    public ArrayList<String> fillListThemes() {
         Log.d(TAG, "user themes : " + themes);
         Log.d(TAG, String.valueOf(themes.split(";").length));
         listThemes = new ArrayList<>();
@@ -139,9 +140,10 @@ public class User {
             if (str.length() != 0 && !listThemes.contains(str))
                 listThemes.add(str);
         }
+        return listThemes;
     }
 
-    public void fillListCurrency() {
+    public ArrayList<String> fillListCurrency() {
         Log.d(TAG, "user currency : " + currency);
         Log.d(TAG, String.valueOf(currency.split(";").length));
         listCurrency = new ArrayList<>();
@@ -151,9 +153,10 @@ public class User {
             if (str.length() != 0 && !listCurrency.contains(str))
                 listCurrency.add(str);
         }
+        return listCurrency;
     }
 
-    public void fillListHistory() {
+    public ArrayList<String> fillListHistory() {
         Log.d(TAG, "user history : " + history);
         Log.d(TAG, String.valueOf(history.split(";").length));
         listHistory = new ArrayList<>();
@@ -163,6 +166,18 @@ public class User {
             if (str.length() != 0)
                 listHistory.add(str);
         }
+        return listHistory;
+    }
+
+    public ArrayList<String> fillListSites() {
+        listSites = new ArrayList<>();
+        if (!sites.contains(";") && sites.length() != 0) listSites.add(sites);
+        for (String str : sites.split(";")) {
+            Log.d(TAG, str);
+            if (str.length() != 0)
+                listSites.add(str);
+        }
+        return listSites;
     }
 
     public void clearThemes() {

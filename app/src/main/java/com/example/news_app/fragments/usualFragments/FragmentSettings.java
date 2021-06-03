@@ -22,6 +22,7 @@ import com.example.news_app.adapters.AdapterCurrencyTile;
 import com.example.news_app.adapters.AdapterSettingTiles;
 import com.example.news_app.databinding.FragmentSettingsBinding;
 import com.example.news_app.enums.SettingsPoints;
+import com.example.news_app.fileManagers.JsonManager;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentChangeName;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentHistory;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
@@ -48,6 +49,7 @@ public class FragmentSettings extends Fragment {
 
     private User mUser;
     private MakeRequests requests;
+    private JsonManager jsonManager;
     private FragmentSettingsBinding binding;
     private AdapterSettingTiles adapterSettingTiles;
     private AdapterCurrencyTile adapterCurrencyTile;
@@ -72,6 +74,7 @@ public class FragmentSettings extends Fragment {
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
 
         requests = new MakeRequests();
+        jsonManager = new JsonManager(getContext());
 
         adapterSettingTiles = new AdapterSettingTiles(getContext(), onClickedSettingsItemListener);
         adapterCurrencyTile = new AdapterCurrencyTile(null);
@@ -169,6 +172,8 @@ public class FragmentSettings extends Fragment {
             public void onFound(ArrayList<CentBankCurrency> listCurrency) {
                 mUser.fillListCurrency();
                 mListCurrency = listCurrency;
+                jsonManager.writeUserToJson(mUser);
+
                 ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
                 for (int i = 0; i < listCurrency.size(); i++) {
                     for (int j = 0; j < mUser.getListCurrency().size(); j++) {
@@ -189,10 +194,10 @@ public class FragmentSettings extends Fragment {
             @Override
             public void onResults(User user) {
                 mUser = user;
-                new ParseCourse(parseCourseListener).execute();
                 mUser.clearThemes();
                 mUser.fillListHistory();
                 mUser.fillListThemes();
+                new ParseCourse(parseCourseListener).execute();
 
                 binding.collapsingToolbar.setTitle(user.getName());
                 binding.tvCountThemes.setText(String.valueOf(mUser.getListHistory().size()));
