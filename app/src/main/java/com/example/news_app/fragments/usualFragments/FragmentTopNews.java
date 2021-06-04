@@ -25,6 +25,7 @@ import java.util.ArrayList;
 public class FragmentTopNews extends Fragment {
 
     private static final String TAG = "FRAGMENT_TOP_NEWS_SPACE";
+
     private MakeRequests requests;
     private AdapterTopNews adapterTopNews;
     private DialogFragmentProgressBar fragmentProgressBar;
@@ -59,9 +60,7 @@ public class FragmentTopNews extends Fragment {
         savedData = new SavedData();
         savedData = jsonManager.readUserFromJson();
 
-        Log.d(TAG, "onResume: " + savedData.getListTopNews().toString());
-
-        if (savedData.getListTopNews() != null) {
+        if (savedData != null && savedData.getListTopNews() != null) {
             adapterTopNews = new AdapterTopNews(getContext(), savedData.getListTopNews());
             binding.viewPager.setAdapter(adapterTopNews);
             binding.viewPager.setPadding(65, 0, 65, 0);
@@ -79,18 +78,20 @@ public class FragmentTopNews extends Fragment {
     MakeRequests.OnFindTopNewsListener onFindTopNewsListener = new MakeRequests.OnFindTopNewsListener() {
         @Override
         public void onFind(ArrayList<News> listNews) {
-            if (fragmentProgressBar.isDetached())
+            if (fragmentProgressBar.isVisible())
                 fragmentProgressBar.dismiss();
 
             boolean isEquals = true;
 
-            if (listNews.size() == savedData.getListTopNews().size()) {
-                for (int i = 0; i < listNews.size(); i++) {
-                    if (!listNews.get(i).getTitle().equals(savedData.getListTopNews().get(i).getTitle())){
-                        isEquals = false;
-                        break;
+            if (savedData != null && savedData.getListTopNews() != null) {
+                if (listNews.size() == savedData.getListTopNews().size()) {
+                    for (int i = 0; i < listNews.size(); i++) {
+                        if (!listNews.get(i).getTitle().equals(savedData.getListTopNews().get(i).getTitle())) {
+                            isEquals = false;
+                            break;
+                        }
                     }
-                }
+                } else isEquals = false;
             }
             else isEquals = false;
 

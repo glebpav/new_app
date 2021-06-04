@@ -95,20 +95,38 @@ public class FragmentSettings extends Fragment {
         binding.nestedScrollView.setVisibility(View.INVISIBLE);
     }
 
+    private boolean updateSavedData(){
+
+        SavedData newData = new SavedData(mUser);
+        newData.setListTopNews(savedData.getListTopNews());
+        newData.setListAllCurrency(savedData.getListAllCurrency());
+
+        jsonManager.writeDataToJson(newData);
+
+        return false;
+    }
+
     void logOut() {
         DialogFragmentSureToLogOut.OnLogOutBtnClickedListener onLogOutBtnClickedListener = new DialogFragmentSureToLogOut.OnLogOutBtnClickedListener() {
             @Override
             public void onClicked() {
+
+                // deleting all information about user from json
+                jsonManager.writeDataToJson(new SavedData());
+
+                // deleting all information about user from sharedPreferences
                 SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
                 SharedPreferences.Editor edt = pref.edit();
                 edt.putString("login", "");
                 edt.putString("password", "");
                 edt.apply();
+
                 fragmentSureToLogOut.dismiss();
                 Intent intent = new Intent(getActivity(), ActivityMain.class);
                 startActivity(intent);
             }
         };
+
         fragmentSureToLogOut = new DialogFragmentSureToLogOut();
         fragmentSureToLogOut.setLogOutBtnClickedListener(onLogOutBtnClickedListener);
         fragmentSureToLogOut.show(getActivity().getFragmentManager(), "FragmentSetting");
@@ -133,6 +151,8 @@ public class FragmentSettings extends Fragment {
                             binding.collapsingToolbar.setTitle(mUser.getName());
                             fragmentProgress.dismiss();
                             fragmentChangeName.dismiss();
+
+                            updateSavedData();
                         }
                     };
                 };
@@ -184,6 +204,8 @@ public class FragmentSettings extends Fragment {
                             Log.d("TAG", "onUserChangedListener - onChanged");
                             fragmentProgress.dismiss();
                             Toast.makeText(getContext(), getResources().getString(R.string.successful_changed), Toast.LENGTH_SHORT).show();
+
+                            updateSavedData();
                         }
                     };
 
@@ -241,6 +263,8 @@ public class FragmentSettings extends Fragment {
                             adapterCurrencyTile.notifyDataSetChanged();
                             fragmentProgress.dismiss();
                             Toast.makeText(getContext(), getResources().getString(R.string.successful_changed), Toast.LENGTH_SHORT).show();
+
+                            updateSavedData();
                         }
                     };
                 };
@@ -248,10 +272,6 @@ public class FragmentSettings extends Fragment {
         Log.d(TAG, "changeCurrency: " + mListCurrency.size());
         fragmentSelectCurrency = new DialogFragmentSelectCurrency(mListCurrency, currencySelectedListener);
         fragmentSelectCurrency.show(getFragmentManager(), "FragmentSettings");
-    }
-
-    void printInfo(User user) {
-
     }
 
     @Override
@@ -267,6 +287,7 @@ public class FragmentSettings extends Fragment {
 
                 SavedData loadedDataFromInter = new SavedData();
                 loadedDataFromInter.prepareToSave(mUser, listCurrency);
+                Log.d(TAG, "onFound: " + savedData.getListTopNews().toString());
 
                 ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
                 for (int i = 0; i < listCurrency.size(); i++) {
@@ -281,6 +302,7 @@ public class FragmentSettings extends Fragment {
 
                 if (!loadedDataFromInter.equals(savedData)) {
                     Log.d(TAG, "onFound: not equals");
+                    loadedDataFromInter.setListTopNews(savedData.getListTopNews());
                     jsonManager.writeDataToJson(loadedDataFromInter);
 
                 } else Log.d(TAG, "onFound: equals");
@@ -366,6 +388,5 @@ public class FragmentSettings extends Fragment {
                     }
                 }
             };
-
 
 }

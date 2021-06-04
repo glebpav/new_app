@@ -20,6 +20,21 @@ public class SavedData {
     private ArrayList<String> listSelectedCurrency;
     private ArrayList<CentBankCurrency> listAllCurrency;
 
+    public SavedData() {
+    }
+
+    public SavedData(User mUser) {
+        id = mUser.getId();
+        name = mUser.getName();
+        login = mUser.getLogin();
+        password = mUser.getPassword();
+
+        listSites = mUser.fillListSites();
+        listThemes = mUser.fillListThemes();
+        listHistory = mUser.fillListHistory();
+        listSelectedCurrency = mUser.fillListCurrency();
+    }
+
     public void prepareToSave(User user, ArrayList<CentBankCurrency> listCurrency) {
         id = user.getId();
         name = user.getName();
