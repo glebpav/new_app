@@ -27,8 +27,8 @@ import okhttp3.Response;
 
 public class MakeRequests {
 
-    final static String MAIN_URL = "https://analisinf.pythonanywhere.com/";
     final static String TAG = "MAKE_REQUEST_SPACE";
+    final static String MAIN_URL = "https://analisinf.pythonanywhere.com/";
 
     public class SignInRequest extends AsyncTask<Void, Void, String> {
 

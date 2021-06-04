@@ -29,7 +29,8 @@ public class User {
     private ArrayList<String> listCurrency;
     private ArrayList<String> listSites;
 
-    public User(int id, String name, String login, String password, String history, String themes, String sites, String currency) {
+    public User(int id, String name, String login, String password, String history, String themes,
+                String sites, String currency) {
         this.id = id;
         this.name = name;
         this.login = login;
@@ -38,6 +39,18 @@ public class User {
         this.themes = themes;
         this.sites = sites;
         this.currency = currency;
+    }
+
+    public User(int id, String name, String login, String password, ArrayList<String> listHistory,
+                ArrayList<String> listThemes, ArrayList<String> listCurrency, ArrayList<String> listSites) {
+        this.id = id;
+        this.name = name;
+        this.login = login;
+        this.password = password;
+        this.listHistory = listHistory;
+        this.listThemes = listThemes;
+        this.listCurrency = listCurrency;
+        this.listSites = listSites;
     }
 
     public User() {

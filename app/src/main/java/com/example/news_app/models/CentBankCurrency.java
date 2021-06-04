@@ -1,6 +1,7 @@
 package com.example.news_app.models;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class CentBankCurrency {
 
@@ -70,6 +71,12 @@ public class CentBankCurrency {
 
     public void setCharCode(String charCode) {
         this.charCode = charCode;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj.hashCode() == this.hashCode()) return true;
+        return false;
     }
 
     @NonNull

@@ -102,7 +102,7 @@ public class FragmentSignIn extends Fragment {
         intent.putExtra("themes", user.getThemes());
         intent.putExtra("password", user.getPassword());
         intent.putExtra("sites", user.getSites());
-        intent.putExtra("currency", user.getSites());
+        intent.putExtra("currency", user.getCurrency());
         startActivity(intent);
     }
 

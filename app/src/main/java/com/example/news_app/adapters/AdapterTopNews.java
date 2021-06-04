@@ -3,14 +3,11 @@ package com.example.news_app.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.news_app.R;
@@ -19,23 +16,26 @@ import com.example.news_app.models.News;
 
 import java.util.ArrayList;
 
-import soup.neumorphism.NeumorphImageButton;
-
 public class AdapterTopNews extends PagerAdapter {
 
-    private Context mContext;
-    private ArrayList<News> list_news;
+    private final Context mContext;
+    private ArrayList<News> listNews;
     private LayoutInflater layoutInflater;
     private ItemHotArticleBinding binding;
 
-    public AdapterTopNews(Context mContext, ArrayList<News> list_news) {
+    public AdapterTopNews(Context mContext, ArrayList<News> listNews) {
         this.mContext = mContext;
-        this.list_news = list_news;
+        this.listNews = listNews;
+    }
+
+    public void setListNews(ArrayList<News> listNews) {
+        this.listNews = listNews;
     }
 
     @Override
     public int getCount() {
-        return list_news.size();
+        if (listNews == null) return 0;
+        return listNews.size();
     }
 
     @NonNull
@@ -44,7 +44,7 @@ public class AdapterTopNews extends PagerAdapter {
         layoutInflater = LayoutInflater.from(mContext);
         binding = ItemHotArticleBinding.inflate(layoutInflater, container, false);
 
-        final News article = list_news.get(position);
+        final News article = listNews.get(position);
         double rating = Double.parseDouble(article.getRating());
 
         binding.tvTileTitle.setText(article.getTitle());

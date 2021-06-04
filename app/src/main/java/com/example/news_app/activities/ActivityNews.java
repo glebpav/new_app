@@ -65,6 +65,7 @@ public class ActivityNews extends AppCompatActivity{
             user.setThemes(arguments.getString("themes"));
             user.setPassword(arguments.getString("password"));
             user.setSites(arguments.getString("sites"));
+            user.setCurrency(arguments.getString("currency"));
         }
 
         meow.setOnClickMenuListener(new MeowBottomNavigation.ClickListener() {

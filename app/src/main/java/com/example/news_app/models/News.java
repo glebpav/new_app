@@ -1,5 +1,7 @@
 package com.example.news_app.models;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,5 +75,14 @@ public class News {
             e.printStackTrace();
         }
         return news_list;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+
+        String response = " { ";
+        response += title + " } ";
+        return response;
     }
 }
