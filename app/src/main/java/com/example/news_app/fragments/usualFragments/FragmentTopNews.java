@@ -3,11 +3,14 @@ package com.example.news_app.fragments.usualFragments;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.example.news_app.adapters.AdapterTopNews;
 import com.example.news_app.databinding.FragmentTopNewsBinding;
 import com.example.news_app.fileManagers.JsonManager;
@@ -56,6 +59,8 @@ public class FragmentTopNews extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        binding.progressSyncing.setVisibility(View.VISIBLE);
+        YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
 
         savedData = new SavedData();
         savedData = jsonManager.readUserFromJson();
@@ -111,6 +116,14 @@ public class FragmentTopNews extends Fragment {
             else {
                 binding.layoutError.setVisibility(View.VISIBLE);
             }
+
+            YoYo.with(Techniques.FadeOut).duration(500).repeat(1).playOn(binding.progressSyncing);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    binding.progressSyncing.setVisibility(View.INVISIBLE);
+                }
+            }, 500);
         }
     };
 

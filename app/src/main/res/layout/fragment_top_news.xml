@@ -52,4 +52,40 @@
         android:layout_marginBottom="100dp"
         android:id="@+id/view_pager"/>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/progress_syncing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="65dp"
+            android:background="@drawable/bg_white_round"
+            android:elevation="10dp">
+
+            <TextView
+                android:id="@+id/tv_syncing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:text="Синхорнизация"
+                android:textSize="20sp" />
+
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gif_progress_dots"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/tv_syncing"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/progress_dots" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
 </RelativeLayout>

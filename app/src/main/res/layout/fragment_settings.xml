@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/rect_white"
     tools:context=".fragments.usualFragments.FragmentSettings">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -153,17 +158,17 @@
             </soup.neumorphism.NeumorphCardView>
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_currency"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/recycler_view_currency"
                 android:layout_below="@+id/layout_user_info"
+                android:layout_marginStart="80dp"
                 android:layout_marginTop="15dp"
+                android:layout_marginEnd="80dp"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="2"
-                tools:listitem="@layout/item_currency"
                 tools:itemCount="2"
-                android:layout_marginStart="80dp"
-                android:layout_marginEnd="80dp"/>
+                tools:listitem="@layout/item_currency" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_settings"
@@ -180,11 +185,43 @@
 
     </androidx.core.widget.NestedScrollView>
 
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <RelativeLayout
+            android:id="@+id/progress_syncing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_white_round"
+            android:elevation="10dp">
 
+            <TextView
+                android:id="@+id/tv_syncing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:text="Синхорнизация"
+                android:textSize="20sp" />
+
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gif_progress_dots"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/tv_syncing"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/progress_dots" />
+
+        </RelativeLayout>
     </RelativeLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</RelativeLayout>
+

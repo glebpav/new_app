@@ -8,11 +8,14 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.example.news_app.adapters.AdapterTrackingThemes;
 import com.example.news_app.fileManagers.JsonManager;
@@ -85,6 +88,9 @@ public class FragmentTrackingTheme extends Fragment {
     public void onResume() {
         super.onResume();
 
+        binding.progressSyncing.setVisibility(View.VISIBLE);
+        YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
+
         MakeRequests.OnLoadUserListener loadUserListener = new MakeRequests.OnLoadUserListener() {
             @Override
             public void onResults(User user) {
@@ -96,9 +102,19 @@ public class FragmentTrackingTheme extends Fragment {
                 SavedData loadedDataFromInter = new SavedData();
                 loadedDataFromInter.prepareToSave(mUser, savedData.getListAllCurrency());
 
+                YoYo.with(Techniques.FadeOut).duration(500).repeat(1).playOn(binding.progressSyncing);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        binding.progressSyncing.setVisibility(View.INVISIBLE);
+                    }
+                }, 500);
+
                 if (!loadedDataFromInter.equals(savedData)) {
                     jsonManager.writeDataToJson(loadedDataFromInter);
                 }
+
+
             }
         };
 

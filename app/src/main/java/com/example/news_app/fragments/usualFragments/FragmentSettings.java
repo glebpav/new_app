@@ -9,12 +9,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.example.news_app.activities.ActivityMain;
 import com.example.news_app.R;
@@ -85,6 +88,8 @@ public class FragmentSettings extends Fragment {
         binding.recyclerViewSettings.setLayoutManager(new GridLayoutManager(getContext(), 2));
         binding.recyclerViewCurrency.setLayoutManager(new GridLayoutManager(getContext(), 2));
         fragmentProgress = new DialogFragmentProgressBar();
+
+
 
         return binding.getRoot();
     }
@@ -278,6 +283,8 @@ public class FragmentSettings extends Fragment {
     public void onResume() {
         super.onResume();
         //initFragment();
+        binding.progressSyncing.setVisibility(View.VISIBLE);
+        YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
 
         final ParseCourse.OnParseCourseListener parseCourseListener = new ParseCourse.OnParseCourseListener() {
             @Override
@@ -310,6 +317,16 @@ public class FragmentSettings extends Fragment {
 
                 adapterCurrencyTile.setListCurrency(outputListCurrency);
                 adapterCurrencyTile.notifyDataSetChanged();
+
+                YoYo.with(Techniques.FadeOut).duration(500).repeat(1).playOn(binding.progressSyncing);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        binding.progressSyncing.setVisibility(View.INVISIBLE);
+                    }
+                }, 500);
+
+
             }
         };
 
