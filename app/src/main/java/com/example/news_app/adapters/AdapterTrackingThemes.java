@@ -43,6 +43,7 @@ public class AdapterTrackingThemes extends RecyclerView.Adapter<AdapterTrackingT
 
     @Override
     public int getItemCount() {
+        if (themesList == null) return 0;
         return themesList.size();
     }
 

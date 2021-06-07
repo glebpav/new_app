@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
@@ -45,6 +46,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import www.sanju.motiontoast.MotionToast;
+
 
 public class FragmentSettings extends Fragment {
 
@@ -80,27 +83,21 @@ public class FragmentSettings extends Fragment {
 
         requests = new MakeRequests();
         jsonManager = new JsonManager(getContext());
+        fragmentProgress = new DialogFragmentProgressBar();
 
         adapterSettingTiles = new AdapterSettingTiles(getContext(), onClickedSettingsItemListener);
         adapterCurrencyTile = new AdapterCurrencyTile(null);
+
+        binding.progressSyncing.setVisibility(View.INVISIBLE);
         binding.recyclerViewSettings.setAdapter(adapterSettingTiles);
         binding.recyclerViewCurrency.setAdapter(adapterCurrencyTile);
         binding.recyclerViewSettings.setLayoutManager(new GridLayoutManager(getContext(), 2));
         binding.recyclerViewCurrency.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        fragmentProgress = new DialogFragmentProgressBar();
-
-
 
         return binding.getRoot();
     }
 
-    private void initFragment() {
-        fragmentProgress.show(getFragmentManager(), "FragmentSettings");
-        binding.appbar.setVisibility(View.INVISIBLE);
-        binding.nestedScrollView.setVisibility(View.INVISIBLE);
-    }
-
-    private boolean updateSavedData(){
+    private boolean updateSavedData() {
 
         SavedData newData = new SavedData(mUser);
         newData.setListTopNews(savedData.getListTopNews());
@@ -282,9 +279,6 @@ public class FragmentSettings extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //initFragment();
-        binding.progressSyncing.setVisibility(View.VISIBLE);
-        YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
 
         final ParseCourse.OnParseCourseListener parseCourseListener = new ParseCourse.OnParseCourseListener() {
             @Override
@@ -294,7 +288,6 @@ public class FragmentSettings extends Fragment {
 
                 SavedData loadedDataFromInter = new SavedData();
                 loadedDataFromInter.prepareToSave(mUser, listCurrency);
-                Log.d(TAG, "onFound: " + savedData.getListTopNews().toString());
 
                 ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
                 for (int i = 0; i < listCurrency.size(); i++) {
@@ -314,7 +307,6 @@ public class FragmentSettings extends Fragment {
 
                 } else Log.d(TAG, "onFound: equals");
 
-
                 adapterCurrencyTile.setListCurrency(outputListCurrency);
                 adapterCurrencyTile.notifyDataSetChanged();
 
@@ -325,14 +317,17 @@ public class FragmentSettings extends Fragment {
                         binding.progressSyncing.setVisibility(View.INVISIBLE);
                     }
                 }, 500);
-
-
             }
         };
 
         MakeRequests.OnLoadUserListener loadUserListener = new MakeRequests.OnLoadUserListener() {
             @Override
             public void onResults(User user) {
+
+                if (user == null) {
+                    savedData = jsonManager.readUserFromJson();
+                    user = savedData.getUser();
+                }
                 mUser = user;
                 mUser.clearThemes();
                 mUser.fillListHistory();
@@ -351,11 +346,23 @@ public class FragmentSettings extends Fragment {
             }
         };
 
+        if (requests.isInternetAvailable(getContext())) {
+            binding.progressSyncing.setVisibility(View.VISIBLE);
+            YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
+            binding.recyclerViewSettings.setClickable(true);
+        } else {
+            MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
+                    MotionToast.TOAST_ERROR,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.LONG_DURATION,
+                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+            binding.recyclerViewSettings.setClickable(false);
+        }
+
         savedData = new SavedData();
         savedData = jsonManager.readUserFromJson();
 
-        if (savedData != null) {
-
+        if (savedData != null && savedData.getListAllCurrency() != null) {
             ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
             for (int i = 0; i < savedData.getListAllCurrency().size(); i++) {
                 for (int j = 0; j < savedData.getListSelectedCurrency().size(); j++) {
@@ -379,7 +386,10 @@ public class FragmentSettings extends Fragment {
             binding.nestedScrollView.setVisibility(View.VISIBLE);
             binding.appbar.setVisibility(View.VISIBLE);
         }
+
+        if (requests.isInternetAvailable(getContext()))
         requests.new LoadUser(mUser.getLogin(), mUser.getPassword(), loadUserListener).execute();
+
     }
 
     AdapterSettingTiles.OnClickedSettingsItemListener onClickedSettingsItemListener = new

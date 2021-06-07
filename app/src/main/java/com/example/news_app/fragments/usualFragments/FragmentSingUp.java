@@ -60,7 +60,7 @@ public class FragmentSingUp extends Fragment {
             binding.btnBack.setClickable(false);
             binding.btnSignUp.setClickable(false);
 
-            if (requests.isInternetAvailable(getContext())){
+            if (!requests.isInternetAvailable(getContext())){
                 Toast.makeText(getContext(), no_internet, Toast.LENGTH_SHORT).show();
                 return;
             }

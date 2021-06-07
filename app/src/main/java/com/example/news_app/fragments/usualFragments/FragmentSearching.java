@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.news_app.R;
 import com.example.news_app.adapters.AdapterArticleSmallTiles;
 import com.example.news_app.adapters.AdapterNews;
 import com.example.news_app.comparators.articles.ComparatorArticleAlphabet;
@@ -31,6 +33,8 @@ import com.example.news_app.models.User;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+
+import www.sanju.motiontoast.MotionToast;
 
 import static com.example.news_app.databinding.FragmentSearchingBinding.*;
 
@@ -107,15 +111,34 @@ public class FragmentSearching extends Fragment {
     public void onResume() {
         super.onResume();
 
-        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-        String themeFromPage = pref.getString("SearchingTheme", "");
+        if (requests.isInternetAvailable(getContext())) {
+            SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+            String themeFromPage = pref.getString("SearchingTheme", "");
 
-        if (themeFromPage.length() != 0) {
-            findNews(themeFromPage);
-            binding.etTheme.setText(themeFromPage);
-            SharedPreferences.Editor edt = pref.edit();
-            edt.putString("SearchingTheme", "");
-            edt.apply();
+            if (themeFromPage.length() != 0) {
+                findNews(themeFromPage);
+                binding.etTheme.setText(themeFromPage);
+                SharedPreferences.Editor edt = pref.edit();
+                edt.putString("SearchingTheme", "");
+                edt.apply();
+            }
+            binding.btnFind.setOnClickListener(btnFindClicked);
+        } else {
+            MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
+                    MotionToast.TOAST_ERROR,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.LONG_DURATION,
+                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+            binding.btnFind.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
+                            MotionToast.TOAST_ERROR,
+                            MotionToast.GRAVITY_BOTTOM,
+                            MotionToast.LONG_DURATION,
+                            ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+                }
+            });
         }
     }
 

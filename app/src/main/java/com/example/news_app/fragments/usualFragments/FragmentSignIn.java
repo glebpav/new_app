@@ -7,13 +7,16 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.news_app.activities.ActivityNews;
+import com.example.news_app.fileManagers.JsonManager;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
+import com.example.news_app.models.SavedData;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.R;
 import com.example.news_app.databinding.FragmentSignInBinding;
@@ -26,6 +29,8 @@ import static com.example.news_app.R.string.no_internet;
 
 public class FragmentSignIn extends Fragment {
 
+    private JsonManager jsonManager;
+    private SavedData savedData;
     private MakeRequests requests;
     private String login, password;
     private FragmentSignInBinding binding;
@@ -39,6 +44,7 @@ public class FragmentSignIn extends Fragment {
         binding.btnSignUp.setOnClickListener(btnSignUpClicked);
 
         requests = new MakeRequests();
+        jsonManager = new JsonManager(getContext());
 
         checkUser();
 
@@ -81,7 +87,7 @@ public class FragmentSignIn extends Fragment {
                 return;
             }
 
-            if (requests.isInternetAvailable(getContext())){
+            if (!requests.isInternetAvailable(getContext())){
                 Toast.makeText(getContext(), no_internet, Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -110,11 +116,26 @@ public class FragmentSignIn extends Fragment {
         @Override
         public void onSingIn(User user) {
 
+            Log.d("ADSF", "onSingIn: " + (user==null?"null":"not null"));
+
             progressBar.dismiss();
 
             if (user == null){
-                Toast.makeText(getContext(), getResources().getString(R.string.trouble_with_authorization),
-                        Toast.LENGTH_LONG).show();
+                savedData = jsonManager.readUserFromJson();
+                if (savedData == null) {
+                    Toast.makeText(getContext(), getResources().getString(R.string.trouble_with_authorization),
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (binding.cbRememberMe.isChecked()) {
+                    SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor edt = pref.edit();
+                    edt.putString("login", savedData.getLogin());
+                    edt.putString("password", savedData.getPassword());
+                    edt.apply();
+                }
+                Log.d("TAG", "onSingIn: " + savedData.getId());
+                gotoNextActivity(savedData.getUser());
                 return;
             }
 

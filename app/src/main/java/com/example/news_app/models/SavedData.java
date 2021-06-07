@@ -51,20 +51,35 @@ public class SavedData {
 
     public boolean equals(SavedData obj) {
 
-        if (obj == null) return false;
+        if (obj == null
+                || obj.getListAllCurrency() == null
+                || obj.getListSelectedCurrency() == null
+                || listAllCurrency == null) return false;
 
-        if (!name.equals(obj.name))return false;
-        if (!listSites.equals(obj.listSites))return false;
-        if (!listThemes.equals(obj.listThemes))return false;
-        if (!listHistory.equals(obj.listHistory))return false;
-        if (listAllCurrency.size() != obj.listAllCurrency.size())return false;
-        for (int i = 0;i<listAllCurrency.size();i++){
-            if (obj.listAllCurrency.get(i).getValue() != listAllCurrency.get(i).getValue())return false;
+        Log.d(TAG, "equals: " + obj.getListAllCurrency());
+
+        if (!name.equals(obj.name)) return false;
+        if (!listSites.equals(obj.listSites)) return false;
+        if (!listThemes.equals(obj.listThemes)) return false;
+        if (!listHistory.equals(obj.listHistory)) return false;
+        if (listAllCurrency.size() != obj.listAllCurrency.size()) return false;
+        for (int i = 0; i < listAllCurrency.size(); i++) {
+            if (obj.listAllCurrency.get(i).getValue() != listAllCurrency.get(i).getValue())
+                return false;
         }
-        if (!listSelectedCurrency.equals(obj.listSelectedCurrency))return false;
+        if (!listSelectedCurrency.equals(obj.listSelectedCurrency)) return false;
 
         Log.d(TAG, "equals: equals");
         return true;
+    }
+
+    public User getUser() {
+        User user = new User(id, name, login, password, listHistory, listThemes, listSelectedCurrency, listSites);
+        user.setThemes(arrayListToStr(listThemes));
+        user.setCurrency(arrayListToStr(listSelectedCurrency));
+        user.setSites(arrayListToStr(listSites));
+        user.setHistory(arrayListToStr(listHistory));
+        return user;
     }
 
     public int getId() {
@@ -141,6 +156,14 @@ public class SavedData {
 
     public ArrayList<News> getListTopNews() {
         return listTopNews;
+    }
+
+    public String arrayListToStr(ArrayList<String> list) {
+        String output = "";
+        for (String str : list) {
+            str += str + ";";
+        }
+        return output;
     }
 
     public void setListTopNews(ArrayList<News> listTopNews) {

@@ -174,6 +174,11 @@ public class MakeRequests {
 
         @Override
         protected void onPostExecute(String response) {
+            if (response == null || response.equals("null") || response.length() == 0) {
+                mListener.onResults(null);
+                return;
+            }
+            Log.d(TAG, "onPostExecute: " + response + " --- " + response.equals("null"));
             try {
                 JSONObject obj = new JSONObject(response);
                 if (obj.getString("status").equals("ok")) {
@@ -363,17 +368,18 @@ public class MakeRequests {
 
     public boolean isInternetAvailable(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (wifiInfo != null && wifiInfo.isConnected()) {
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null) {
+            // connected to the internet
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                return true;
+            } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                return true;
+            }
+        } else {
             return false;
         }
-        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if (wifiInfo != null && wifiInfo.isConnected()) {
-            return false;
-        }
-        wifiInfo = cm.getActiveNetworkInfo();
-        return wifiInfo == null || !wifiInfo.isConnected();
-
+        return false;
     }
 
     public interface OnSignUpListener {
