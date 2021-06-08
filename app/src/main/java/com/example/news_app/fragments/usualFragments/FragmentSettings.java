@@ -3,8 +3,10 @@ package com.example.news_app.fragments.usualFragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -35,9 +37,11 @@ import com.example.news_app.fragments.dialogFragments.DialogFragmentSources;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentSureToLogOut;
 import com.example.news_app.models.CentBankCurrency;
 import com.example.news_app.models.SavedData;
+import com.example.news_app.models.Weather;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.models.User;
-import com.example.news_app.network.course.ParseCourse;
+import com.example.news_app.network.ParseCourse;
+import com.example.news_app.network.ParseWeather;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -280,70 +284,72 @@ public class FragmentSettings extends Fragment {
     public void onResume() {
         super.onResume();
 
-        final ParseCourse.OnParseCourseListener parseCourseListener = new ParseCourse.OnParseCourseListener() {
-            @Override
-            public void onFound(ArrayList<CentBankCurrency> listCurrency) {
-                mUser.fillListCurrency();
-                mListCurrency = listCurrency;
-
-                SavedData loadedDataFromInter = new SavedData();
-                loadedDataFromInter.prepareToSave(mUser, listCurrency);
-
-                ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
-                for (int i = 0; i < listCurrency.size(); i++) {
-                    for (int j = 0; j < mUser.getListCurrency().size(); j++) {
-                        if (listCurrency.get(i).getCharCode().equals(mUser.getListCurrency().get(j))) {
-                            outputListCurrency.add(listCurrency.get(i));
-                            listCurrency.get(i).setHidden(false);
-                            break;
-                        }
-                    }
-                }
-
-                if (!loadedDataFromInter.equals(savedData)) {
-                    Log.d(TAG, "onFound: not equals");
-                    loadedDataFromInter.setListTopNews(savedData.getListTopNews());
-                    jsonManager.writeDataToJson(loadedDataFromInter);
-
-                } else Log.d(TAG, "onFound: equals");
-
-                adapterCurrencyTile.setListCurrency(outputListCurrency);
-                adapterCurrencyTile.notifyDataSetChanged();
-
-                YoYo.with(Techniques.FadeOut).duration(500).repeat(1).playOn(binding.progressSyncing);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        binding.progressSyncing.setVisibility(View.INVISIBLE);
-                    }
-                }, 500);
+        ParseWeather.OnFindWeatherListener onFindWeatherListener = weather -> {
+            if (weather != null){
+                binding.tvTemp.setText(weather.getTemperature());
+                binding.tvWeatherDesc.setText(weather.getWeatherDesc());
             }
         };
 
-        MakeRequests.OnLoadUserListener loadUserListener = new MakeRequests.OnLoadUserListener() {
-            @Override
-            public void onResults(User user) {
+        final ParseCourse.OnParseCourseListener parseCourseListener = listCurrency -> {
+            mUser.fillListCurrency();
+            mListCurrency = listCurrency;
 
-                if (user == null) {
-                    savedData = jsonManager.readUserFromJson();
-                    user = savedData.getUser();
+            SavedData loadedDataFromInter = new SavedData();
+            loadedDataFromInter.prepareToSave(mUser, listCurrency);
+
+            ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
+            for (int i = 0; i < listCurrency.size(); i++) {
+                for (int j = 0; j < mUser.getListCurrency().size(); j++) {
+                    if (listCurrency.get(i).getCharCode().equals(mUser.getListCurrency().get(j))) {
+                        outputListCurrency.add(listCurrency.get(i));
+                        listCurrency.get(i).setHidden(false);
+                        break;
+                    }
                 }
-                mUser = user;
-                mUser.clearThemes();
-                mUser.fillListHistory();
-                mUser.fillListThemes();
-                new ParseCourse(parseCourseListener).execute();
-
-                binding.collapsingToolbar.setTitle(user.getName());
-                binding.tvCountThemes.setText(String.valueOf(mUser.getListHistory().size()));
-                binding.tvCountTracking.setText(String.valueOf(mUser.getListThemes().size()));
-
-                /*
-                fragmentProgress.dismiss();
-                binding.nestedScrollView.setVisibility(View.VISIBLE);
-                binding.appbar.setVisibility(View.VISIBLE);
-*/
             }
+
+            if (!loadedDataFromInter.equals(savedData)) {
+                Log.d(TAG, "onFound: not equals");
+                if (savedData.getListTopNews() != null)
+                    loadedDataFromInter.setListTopNews(savedData.getListTopNews());
+                jsonManager.writeDataToJson(loadedDataFromInter);
+
+            } else Log.d(TAG, "onFound: equals");
+
+            adapterCurrencyTile.setListCurrency(outputListCurrency);
+            adapterCurrencyTile.notifyDataSetChanged();
+
+            YoYo.with(Techniques.FadeOut).duration(500).repeat(1).playOn(binding.progressSyncing);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    binding.progressSyncing.setVisibility(View.INVISIBLE);
+                }
+            }, 500);
+        };
+
+        MakeRequests.OnLoadUserListener loadUserListener = user -> {
+
+            if (user == null) {
+                savedData = jsonManager.readUserFromJson();
+                user = savedData.getUser();
+            }
+            mUser = user;
+            mUser.clearThemes();
+            mUser.fillListHistory();
+            mUser.fillListThemes();
+            new ParseCourse(parseCourseListener).execute();
+
+            binding.collapsingToolbar.setTitle(user.getName());
+            binding.tvCountThemes.setText(String.valueOf(mUser.getListHistory().size()));
+            binding.tvCountTracking.setText(String.valueOf(mUser.getListThemes().size()));
+
+            /*
+            fragmentProgress.dismiss();
+            binding.nestedScrollView.setVisibility(View.VISIBLE);
+            binding.appbar.setVisibility(View.VISIBLE);
+*/
         };
 
         if (requests.isInternetAvailable(getContext())) {
@@ -387,9 +393,10 @@ public class FragmentSettings extends Fragment {
             binding.appbar.setVisibility(View.VISIBLE);
         }
 
-        if (requests.isInternetAvailable(getContext()))
-        requests.new LoadUser(mUser.getLogin(), mUser.getPassword(), loadUserListener).execute();
-
+        if (requests.isInternetAvailable(getContext())) {
+            new ParseWeather(getContext(), onFindWeatherListener).execute();
+            requests.new LoadUser(mUser.getLogin(), mUser.getPassword(), loadUserListener).execute();
+        }
     }
 
     AdapterSettingTiles.OnClickedSettingsItemListener onClickedSettingsItemListener = new

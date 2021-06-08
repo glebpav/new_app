@@ -66,6 +66,7 @@ public class FragmentTopNews extends Fragment {
 
         savedData = new SavedData();
         savedData = jsonManager.readUserFromJson();
+        Log.d(TAG, "onResume111: " + savedData.getListTopNews());
 
         if (savedData != null && savedData.getListTopNews() != null) {
             adapterTopNews = new AdapterTopNews(getContext(), savedData.getListTopNews());
@@ -99,6 +100,7 @@ public class FragmentTopNews extends Fragment {
                 fragmentProgressBar.dismiss();
 
             boolean isEquals = true;
+            savedData = jsonManager.readUserFromJson();
 
             if (listNews != null) {
 
@@ -115,8 +117,14 @@ public class FragmentTopNews extends Fragment {
 
                 if (!isEquals) {
                     Log.d(TAG, "onFind: not equals");
+                    Log.d(TAG, listNews.toString());
+
+                    if (savedData == null) savedData = jsonManager.readUserFromJson();
+                    //if (savedData.getListTopNews())
+                    Log.d(TAG, "onFind12: " + savedData);
                     savedData.setListTopNews(listNews);
                     jsonManager.writeOnlyTopNewsToJson(listNews);
+                    Log.d(TAG, "onFind222: " + jsonManager.readUserFromJson().getListTopNews());
                 } else Log.d(TAG, "onFind: equals");
             } else listNews = savedData.getListTopNews();
 

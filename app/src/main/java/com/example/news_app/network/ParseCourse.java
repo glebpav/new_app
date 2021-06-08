@@ -1,4 +1,4 @@
-package com.example.news_app.network.course;
+package com.example.news_app.network;
 
 import android.os.AsyncTask;
 import android.util.Log;

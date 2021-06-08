@@ -21,6 +21,14 @@ public class SavedData {
     private ArrayList<CentBankCurrency> listAllCurrency;
 
     public SavedData() {
+        listAllCurrency = new ArrayList<>();
+        listTopNews = new ArrayList<>();
+        listHistory = new ArrayList<>();
+        listSelectedCurrency = new ArrayList<>();
+        listSites = new ArrayList<>();
+        listThemes = new ArrayList<>();
+
+        Log.d(TAG, "SavedData: " + listTopNews);
     }
 
     public SavedData(User mUser) {
@@ -33,6 +41,9 @@ public class SavedData {
         listThemes = mUser.fillListThemes();
         listHistory = mUser.fillListHistory();
         listSelectedCurrency = mUser.fillListCurrency();
+
+        listAllCurrency = new ArrayList<>();
+        listTopNews = new ArrayList<>();
     }
 
     public void prepareToSave(User user, ArrayList<CentBankCurrency> listCurrency) {
@@ -155,6 +166,7 @@ public class SavedData {
     }
 
     public ArrayList<News> getListTopNews() {
+        if (listTopNews == null)listTopNews = new ArrayList<>();
         return listTopNews;
     }
 
@@ -167,6 +179,7 @@ public class SavedData {
     }
 
     public void setListTopNews(ArrayList<News> listTopNews) {
+        if (listTopNews == null)listTopNews = new ArrayList<>();
         this.listTopNews = listTopNews;
     }
 }

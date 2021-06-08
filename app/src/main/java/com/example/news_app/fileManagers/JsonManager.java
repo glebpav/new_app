@@ -110,7 +110,7 @@ public class JsonManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return new SavedData();
     }
 
     public boolean writeOnlyTopNewsToJson (ArrayList<News> listTopNews){
