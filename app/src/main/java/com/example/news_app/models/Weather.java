@@ -4,10 +4,20 @@ public class Weather {
 
     private String temperature;
     private String weatherDesc;
+    private String iconUrl;
 
-    public Weather(String temperature, String weatherDesc) {
+    public Weather(String temperature, String weatherDesc, String iconUrl) {
         this.temperature = temperature;
         this.weatherDesc = weatherDesc;
+        this.iconUrl = iconUrl;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
     }
 
     public String getTemperature() {

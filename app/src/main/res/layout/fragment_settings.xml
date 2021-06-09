@@ -78,118 +78,136 @@
                 <soup.neumorphism.NeumorphCardView
                     android:id="@+id/layout_user_info"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
                     android:layout_marginTop="30dp"
                     android:layout_marginRight="30dp">
 
-                    <LinearLayout
-                        android:id="@+id/linear1"
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
+                        android:layout_height="match_parent">
 
                         <LinearLayout
+                            android:id="@+id/linear1"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="10dp">
 
-                            <TextView
+                            <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:fontFamily="@font/monserrat"
-                                android:gravity="bottom"
-                                android:text="Темы"
-                                android:textAlignment="center"
-                                android:textColor="#000000"
-                                android:textSize="20sp"
-                                tools:ignore="RtlCompat" />
+                                android:orientation="vertical">
 
-                            <TextView
-                                android:id="@+id/tv_count_themes"
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:fontFamily="@font/monserrat"
+                                    android:gravity="bottom"
+                                    android:text="Темы"
+                                    android:textAlignment="center"
+                                    android:textColor="#000000"
+                                    android:textSize="20sp"
+                                    tools:ignore="RtlCompat" />
+
+                                <TextView
+                                    android:id="@+id/tv_count_themes"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:fontFamily="@font/monserrat"
+                                    android:text="---"
+                                    android:textAlignment="center"
+                                    android:textColor="#3C9BFF"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:fontFamily="@font/monserrat"
-                                android:text="---"
-                                android:textAlignment="center"
-                                android:textColor="#3C9BFF"
-                                android:textSize="20sp"
-                                android:textStyle="bold" />
+                                android:orientation="vertical">
 
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:fontFamily="@font/monserrat"
+                                    android:gravity="bottom"
+                                    android:text="Закладки"
+                                    android:textAlignment="center"
+                                    android:textColor="#000000"
+                                    android:textSize="20sp"
+                                    tools:ignore="RtlCompat" />
+
+                                <TextView
+                                    android:id="@+id/tv_count_tracking"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:fontFamily="@font/monserrat"
+                                    android:text="---"
+                                    android:textAlignment="center"
+                                    android:textColor="#3C9BFF"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
                         </LinearLayout>
 
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:id="@+id/layout_weather"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/linear1"
+                            android:layout_centerHorizontal="true"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
 
                             <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:fontFamily="@font/monserrat"
-                                android:gravity="bottom"
-                                android:text="Закладки"
-                                android:textAlignment="center"
-                                android:textColor="#000000"
-                                android:textSize="20sp"
-                                tools:ignore="RtlCompat" />
-
-                            <TextView
-                                android:id="@+id/tv_count_tracking"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:fontFamily="@font/monserrat"
+                                android:id="@+id/tv_temp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="5dp"
                                 android:text="---"
-                                android:textAlignment="center"
-                                android:textColor="#3C9BFF"
-                                android:textSize="20sp"
-                                android:textStyle="bold" />
+                                android:textAlignment="textEnd"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/tv_weather_desc"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5dp"
+                                android:text="---"
+                                android:textAlignment="textStart"
+                                android:textSize="15sp" />
 
                         </LinearLayout>
-                    </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/img_weather_desc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/layout_weather"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/bg_white_round"
+                            android:elevation="5dp" />
+
+                    </RelativeLayout>
 
                 </soup.neumorphism.NeumorphCardView>
-
-                <LinearLayout
-                    android:id="@+id/layout_weather"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/layout_user_info"
-                    android:orientation="horizontal"
-                    android:layout_centerHorizontal="true"
-                    android:padding="5dp">
-
-                    <TextView
-                        android:id="@+id/tv_temp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:text="---"
-                        android:textAlignment="textEnd"
-                        android:textSize="20sp"/>
-
-                    <TextView
-                        android:id="@+id/tv_weather_desc"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:text="---"
-                        android:textAlignment="textStart"
-                        android:textSize="20sp"/>
-
-                </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_view_currency"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/layout_weather"
+                    android:layout_below="@+id/layout_user_info"
                     android:layout_marginStart="80dp"
                     android:layout_marginTop="15dp"
                     android:layout_marginEnd="80dp"

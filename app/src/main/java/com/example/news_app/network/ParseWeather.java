@@ -40,18 +40,19 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
 
     private static final String OPEN_WEATHER_API_URL_1 = "https://api.openweathermap.org/data/2.5/weather?lat=";
     private static final String OPEN_WEATHER_API_URL_2 = "&lon=";
-    private static final String OPEN_WEATHER_API_URL_3 = "&units=metric&appid=591bd21525458ba0815a231896fe4e99";
+    private static final String OPEN_WEATHER_API_URL_3 = "&units=metric&lang=ru&appid=591bd21525458ba0815a231896fe4e99";
+
+    private static final String OPEN_WEATHER_ICON_URL = "https://openweathermap.org/img/wn/{id}@2x.png";
 
     private static final String TAG = "PARSE_WEATHER_SPACE";
     private static final int PERMISSION_ID = 44;
 
     private volatile boolean flag;
-    private OnFindWeatherListener weatherListener;
+    private final OnFindWeatherListener weatherListener;
 
     @SuppressLint("StaticFieldLeak")
     private final Context mContext;
     private FusedLocationProviderClient mFusedLocationClient;
-    private String temperature;
     private String latitude;
     private String longitude;
 
@@ -80,7 +81,6 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
                         Log.d(TAG, "lat : " + latitude);
                         Log.d(TAG, "lon : " + longitude);
                         flag = true;
-                        //new KnowWeather(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude())).execute();
                     }
                 });
             } else {
@@ -89,8 +89,7 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
                 mContext.startActivity(intent);
             }
         } else {
-            // if permissions aren't available,
-            // request for permissions
+            // if permissions aren't available, request for permissions
             requestPermissions();
         }
     }
@@ -98,16 +97,14 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
     @SuppressLint("MissingPermission")
     private void requestNewLocationData() {
 
-        // Initializing LocationRequest
-        // object with appropriate methods
+        // Initializing LocationRequest object with appropriate methods
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(5);
         mLocationRequest.setFastestInterval(0);
         mLocationRequest.setNumUpdates(1);
 
-        // setting LocationRequest
-        // on FusedLocationClient
+        // setting LocationRequest on FusedLocationClient
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
         mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
     }
@@ -125,11 +122,6 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
         return ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-
-        // If we want background location
-        // on Android 10.0 and higher,
-        // use:
-        // ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
     // method to request for permissions
@@ -139,8 +131,7 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
                 Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_ID);
     }
 
-    // method to check
-    // if location is enabled
+    // method to check if location is enabled
     private boolean isLocationEnabled() {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
@@ -180,12 +171,18 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
         try {
             JSONObject jsonObject = new JSONObject(s);
             JSONObject jsonObject1 = jsonObject.getJSONObject("main");
-            Log.d(TAG, "weather " + jsonObject1.getString("temp"));
             JSONArray jsonObject2 = jsonObject.getJSONArray("weather");
             JSONObject jsonObject3 = (JSONObject) jsonObject2.get(0);
-            Log.d(TAG, "desc " + jsonObject3.getString("description"));
 
-            weatherListener.OnFind(new Weather(jsonObject1.getString("temp"), jsonObject3.getString("main")));
+            String temperature = jsonObject1.getString("temp");
+            String weatherDesc = jsonObject3.getString("description");
+            String iconUrl = OPEN_WEATHER_ICON_URL.replace("{id}", jsonObject3.getString("icon"));
+
+            Log.d(TAG, "temperature " + temperature);
+            Log.d(TAG, "desc " + weatherDesc);
+            Log.d(TAG, "iconUrl " + iconUrl);
+
+            weatherListener.OnFind(new Weather(temperature, weatherDesc, iconUrl));
         } catch (JSONException e) {
             e.printStackTrace();
         }
