@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".activities.ActivityNews"
     android:id="@+id/NA"
-    android:background="@color/colorPrimary"
+    android:background="@color/main_background"
     android:screenOrientation="portrait">
 
 

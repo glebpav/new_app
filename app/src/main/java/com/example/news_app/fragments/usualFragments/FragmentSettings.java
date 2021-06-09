@@ -229,14 +229,6 @@ public class FragmentSettings extends Fragment {
         }
     }
 
-    private void updateSavedData() {
-        SavedData newData = new SavedData(mUser);
-        newData.setListTopNews(savedData.getListTopNews());
-        newData.setListAllCurrency(savedData.getListAllCurrency());
-
-        jsonManager.writeDataToJson(newData);
-    }
-
     private void logOut() {
         DialogFragmentSureToLogOut.OnLogOutBtnClickedListener onLogOutBtnClickedListener = new DialogFragmentSureToLogOut.OnLogOutBtnClickedListener() {
             @Override
@@ -402,6 +394,14 @@ public class FragmentSettings extends Fragment {
         Log.d(TAG, "changeCurrency: " + mListCurrency.size());
         fragmentSelectCurrency = new DialogFragmentSelectCurrency(mListCurrency, currencySelectedListener);
         fragmentSelectCurrency.show(getFragmentManager(), "FragmentSettings");
+    }
+
+    private void updateSavedData() {
+        SavedData newData = new SavedData(mUser);
+        newData.setListTopNews(savedData.getListTopNews());
+        newData.setListAllCurrency(savedData.getListAllCurrency());
+
+        jsonManager.writeDataToJson(newData);
     }
 
     AdapterSettingTiles.OnClickedSettingsItemListener onClickedSettingsItemListener = point -> {

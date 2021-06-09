@@ -31,8 +31,6 @@ public class SavedData {
         listThemes = new ArrayList<>();
 
         weather = new Weather();
-
-        Log.d(TAG, "SavedData: " + listTopNews);
     }
 
     public SavedData(User mUser) {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#efeeee</color>
+    <color name="colorPrimary">#FFBB86FC</color>
     <color name="colorPrimaryDark">#8F5EFF</color>`
     <color name="colorAccent">#7535AD</color>
     <color name="positive_color">#64DD17</color>
@@ -13,5 +13,6 @@
     <color name="dark_purple">#7535AD</color>
     <color name="light_purple">#DAB2FB</color>
     <color name="deep_black">#000</color>
+    <color name="main_background">#efeeee</color>
 
 </resources>

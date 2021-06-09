@@ -36,6 +36,7 @@
     <string name="password_error">пароль должен содержать цифры, символы, и быть не короче 6 символов</string>
     <string name="no_internet">Отсутствует подключение к интернету</string>
     <string name="successful_changed">Успешно изменено</string>
+    <string name="add_new">добавьте новую тему</string>
     <string name="enter_name">введите пароль</string>
 
     <!-- Button's texts -->
@@ -47,14 +48,19 @@
     <string name="rename">новое имя</string>
     <string name="currency">Валюты</string>
 
+    <!-- Chips's texts -->
+
+    <string name="positive">Позитивные</string>
+    <string name="negative">Негативные</string>
+    <string name="neutral">Нейтральные</string>
+
     <!-- unsorted strings -->
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="loading">Загрузка…</string>
     <string name="are_you_sure">Вы уверены, что хотите выйти?</string>
     <string name="is_empty_now">Здесь пока пусто</string>
-    <string name="add_new">добавьте новую тему</string>
     <string name="sort_to">сортировать :</string>
+    <string name="loading">Загрузка…</string>
     <string name="alphabet">алфавит</string>
     <string name="choice">выбор</string>
 

@@ -24,7 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class JsonManager {
 
     private static final String JSON_FILE_NAME = "userData";
-    private static final String VERY_IMPORTANT_SEED = "userData";
+    private static final String VERY_IMPORTANT_SEED = "a0VPQ/SggW4gBRKRNM000A==";
     private final Context context;
     private final Gson gson;
     private SecretKeySpec sks;
@@ -35,7 +35,7 @@ public class JsonManager {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gson = gsonBuilder.create();
 
-        sks = stringToKey("a0VPQ/SggW4gBRKRNM000A==");
+        sks = stringToKey(VERY_IMPORTANT_SEED);
         //sks = null;
         /*try {
             SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
@@ -77,7 +77,7 @@ public class JsonManager {
     public SavedData readUserFromJson() {
         try {
             File file = new File(context.getFilesDir(), JSON_FILE_NAME);
-            FileReader fileReader = null;
+            FileReader fileReader;
             fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             StringBuilder stringBuilder = new StringBuilder();
@@ -105,21 +105,22 @@ public class JsonManager {
                 Log.e("Crypto", "AES decryption error");
             }
             if(decodedBytes == null) return null;
+
+            SavedData savedData = gson.fromJson(new String(decodedBytes), SavedData.class);
+
             Log.d("TAG", "readUserFromJson: " + new String(decodedBytes));
-            return gson.fromJson(new String(decodedBytes), SavedData.class);
+            Log.d("TAG", "readUserFromJson: " + savedData.getWeather().getTemperature());
+            return savedData;
         } catch (IOException e) {
             e.printStackTrace();
         }
         return new SavedData();
     }
 
-    public boolean writeOnlyTopNewsToJson (ArrayList<News> listTopNews){
-
+    public void writeOnlyTopNewsToJson (ArrayList<News> listTopNews){
         SavedData savedData = readUserFromJson();
         savedData.setListTopNews(listTopNews);
         writeDataToJson(savedData);
-
-        return false;
     }
 
     public static SecretKeySpec stringToKey(String stringKey) {

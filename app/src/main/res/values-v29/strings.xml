@@ -1,14 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">News findeR demo</string>
+
+    <string name="app_name">News findeR</string>
 
     <!-- Headers for fragments -->
 
     <string name="history">История</string>
-    <string name="change_sources">источники</string>
+    <string name="change_sources">Источники</string>
     <string name="sources">Источники</string>
+    <string name="currency_title">Курсы валют</string>
     <string name="add_bookmark">Добавить закладку</string>
     <string name="warning">Внимание !</string>
+    <string name="bookmarks">Закладки</string>
+    <string name="hot_news">Горячие новости</string>
 
     <!-- Responses from site -->
 
@@ -16,7 +19,7 @@
     <string name="trouble_with_authorization">Возникла проблема с автоматической авторизацией</string>
     <string name="something_went_wrong">Упс, что-то пошло не так</string>
 
-    <!-- DOMENS/TEXTS for sites -->
+    <!-- DOMAIN/TEXTS for sites -->
 
     <string name="lenta_domain">Lenta</string>
     <string name="lenta">Lenta</string>
@@ -31,19 +34,34 @@
     <!-- Toast's texts -->
 
     <string name="password_error">пароль должен содержать цифры, символы, и быть не короче 6 символов</string>
+    <string name="no_internet">Отсутствует подключение к интернету</string>
     <string name="successful_changed">Успешно изменено</string>
+    <string name="add_new">добавьте новую тему</string>
     <string name="enter_name">введите пароль</string>
 
     <!-- Button's texts -->
 
-    <string name="log_out">выйти</string>
+    <string name="log_out">Выйти</string>
     <string name="understand">Понятно</string>
+    <string name="cancel">Отмена</string>
+    <string name="add">добавить</string>
+    <string name="rename">новое имя</string>
+    <string name="currency">Валюты</string>
+
+    <!-- Chips's texts -->
+
+    <string name="positive">Позитивные</string>
+    <string name="negative">Негативные</string>
+    <string name="neutral">Нейтральные</string>
 
     <!-- unsorted strings -->
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="rename">новое имя</string>
-    <string name="loading">Загрузка…</string>
     <string name="are_you_sure">Вы уверены, что хотите выйти?</string>
+    <string name="is_empty_now">Здесь пока пусто</string>
+    <string name="sort_to">сортировать :</string>
+    <string name="loading">Загрузка…</string>
+    <string name="alphabet">алфавит</string>
+    <string name="choice">выбор</string>
 
 </resources>
