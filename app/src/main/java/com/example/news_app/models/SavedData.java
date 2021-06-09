@@ -13,6 +13,8 @@ public class SavedData {
     private String login;
     private String password;
 
+    private Weather weather;
+
     private ArrayList<News> listTopNews;
     private ArrayList<String> listSites;
     private ArrayList<String> listHistory;
@@ -27,6 +29,8 @@ public class SavedData {
         listSelectedCurrency = new ArrayList<>();
         listSites = new ArrayList<>();
         listThemes = new ArrayList<>();
+
+        weather = new Weather();
 
         Log.d(TAG, "SavedData: " + listTopNews);
     }
@@ -92,6 +96,15 @@ public class SavedData {
         user.setHistory(arrayListToStr(listHistory));
         return user;
     }
+
+    public Weather getWeather() {
+        return weather;
+    }
+
+    public void setWeather(Weather weather) {
+        this.weather = weather;
+    }
+
 
     public int getId() {
         return id;

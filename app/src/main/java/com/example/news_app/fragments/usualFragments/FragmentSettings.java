@@ -34,6 +34,7 @@ import com.example.news_app.fragments.dialogFragments.DialogFragmentSources;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentSureToLogOut;
 import com.example.news_app.models.CentBankCurrency;
 import com.example.news_app.models.SavedData;
+import com.example.news_app.models.Weather;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.models.User;
 import com.example.news_app.network.ParseCourse;
@@ -82,6 +83,7 @@ public class FragmentSettings extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
 
+        savedData = new SavedData();
         requests = new MakeRequests();
         jsonManager = new JsonManager(getContext());
         fragmentProgress = new DialogFragmentProgressBar();
@@ -107,6 +109,10 @@ public class FragmentSettings extends Fragment {
                 binding.tvTemp.setText(weather.getTemperature());
                 binding.tvWeatherDesc.setText(weather.getWeatherDesc());
                 Picasso.with(getContext()).load(weather.getIconUrl()).into(binding.imgWeatherDesc);
+
+                savedData = jsonManager.readUserFromJson();
+                savedData.setWeather(weather);
+                jsonManager.writeDataToJson(savedData);
             }
         };
 
@@ -184,9 +190,7 @@ public class FragmentSettings extends Fragment {
             binding.recyclerViewSettings.setClickable(false);
         }
 
-        savedData = new SavedData();
         savedData = jsonManager.readUserFromJson();
-
         if (savedData != null && savedData.getListAllCurrency() != null) {
             ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
             for (int i = 0; i < savedData.getListAllCurrency().size(); i++) {
@@ -203,6 +207,14 @@ public class FragmentSettings extends Fragment {
             adapterCurrencyTile.setListCurrency(outputListCurrency);
             adapterCurrencyTile.notifyDataSetChanged();
 
+            Weather savedWeather = savedData.getWeather();
+            if (savedWeather != null){
+                binding.tvTemp.setText(savedWeather.getTemperature());
+                binding.tvWeatherDesc.setText(savedWeather.getWeatherDesc());
+                Picasso.with(getContext()).load(savedWeather.getIconUrl()).into(binding.imgWeatherDesc);
+                YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.imgWeatherDesc);
+            }
+
             binding.collapsingToolbar.setTitle(savedData.getName());
             binding.tvCountThemes.setText(String.valueOf(savedData.getListHistory().size()));
             binding.tvCountTracking.setText(String.valueOf(savedData.getListThemes().size()));
@@ -211,7 +223,6 @@ public class FragmentSettings extends Fragment {
             binding.nestedScrollView.setVisibility(View.VISIBLE);
             binding.appbar.setVisibility(View.VISIBLE);
         }
-
         if (requests.isInternetAvailable(getContext())) {
             new ParseWeather(getContext(), onFindWeatherListener).execute();
             requests.new LoadUser(mUser.getLogin(), mUser.getPassword(), loadUserListener).execute();

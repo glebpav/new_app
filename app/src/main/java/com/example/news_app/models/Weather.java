@@ -12,6 +12,9 @@ public class Weather {
         this.iconUrl = iconUrl;
     }
 
+    public Weather() {
+    }
+
     public String getIconUrl() {
         return iconUrl;
     }
