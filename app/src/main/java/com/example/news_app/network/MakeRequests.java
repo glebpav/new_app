@@ -366,7 +366,7 @@ public class MakeRequests {
 
     }
 
-    public boolean isInternetAvailable(Context context) {
+    public static boolean isInternetAvailable(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork != null) {

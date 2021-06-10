@@ -2,6 +2,7 @@ package com.example.news_app.fragments.dialogFragments;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -31,11 +32,13 @@ public class DialogFragmentSelectCurrency extends DialogFragment {
 
     private static final String TAG = "DIALOG_FRAGMENT_CURRENCY_SPACE";
     private final OnCurrencySelectedListener mCurrencySelectedListener;
-    private ArrayList <CentBankCurrency> listCurrency;
+    private ArrayList<CentBankCurrency> listCurrency;
     private DialogFragmentChangeCurrencyBinding binding;
     private AdapterCurrencyTableTile adapterCurrencyTableTile;
     private ComparatorCurrencyAlphabet comparatorAlphabet;
     private ComparatorCurrencyChoice comparatorChoice;
+
+    private final Context context;
 
     public void setListCurrency(ArrayList<CentBankCurrency> listCurrency) {
         this.listCurrency = listCurrency;
@@ -44,11 +47,14 @@ public class DialogFragmentSelectCurrency extends DialogFragment {
     }
 
     @SuppressLint("LongLogTag")
-    public DialogFragmentSelectCurrency(ArrayList<CentBankCurrency> listCurrency, OnCurrencySelectedListener mCurrencySelectedListener) {
+    public DialogFragmentSelectCurrency(ArrayList<CentBankCurrency> listCurrency, Context context, OnCurrencySelectedListener mCurrencySelectedListener) {
+        this.context = context;
         this.listCurrency = listCurrency;
         this.mCurrencySelectedListener = mCurrencySelectedListener;
-        for (CentBankCurrency currency:listCurrency)
-            Log.d(TAG, "DialogFragmentSelectCurrency: " + currency.isHidden());
+        if (listCurrency != null) {
+            for (CentBankCurrency currency : listCurrency)
+                Log.d(TAG, "DialogFragmentSelectCurrency: " + currency.isHidden());
+        }
     }
 
     @Nullable
@@ -61,11 +67,11 @@ public class DialogFragmentSelectCurrency extends DialogFragment {
             getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         }
 
-        adapterCurrencyTableTile = new AdapterCurrencyTableTile(listCurrency, currencySelectedListener);
+        adapterCurrencyTableTile = new AdapterCurrencyTableTile(listCurrency, context, currencySelectedListener);
         binding.recyclerView.setAdapter(adapterCurrencyTableTile);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         comparatorAlphabet = new ComparatorCurrencyAlphabet();
-        comparatorChoice  = new ComparatorCurrencyChoice();
+        comparatorChoice = new ComparatorCurrencyChoice();
 
         binding.tvSortAlphabet.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -107,7 +113,7 @@ public class DialogFragmentSelectCurrency extends DialogFragment {
         }
     };
 
-    public interface OnCurrencySelectedListener{
+    public interface OnCurrencySelectedListener {
         void onSelected(CentBankCurrency currency);
     }
 

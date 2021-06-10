@@ -3,13 +3,13 @@
     android:id="@+id/layout_dialog_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+    android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
 
     <RelativeLayout
+        android:id="@+id/rl_min"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/dialog_background"
-        android:id="@+id/rl_min">
+        android:background="@drawable/dialog_background">
 
         <View
             android:id="@+id/v_top"
@@ -29,57 +29,61 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textField"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/v_top"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginRight="20dp"
-            android:hint="введите новое имя"
             android:layout_marginBottom="30dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:outlineAmbientShadowColor="#D35959"
-            >
+            android:hint="введите новое имя"
+            android:outlineAmbientShadowColor="#D35959">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_change_name"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
+                android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
 
     </RelativeLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:orientation="horizontal"
         android:layout_below="@+id/rl_min"
-        android:layout_marginTop="-15dp"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp">
+        android:layout_marginTop="-15dp"
+        android:layout_marginRight="30dp"
+        android:orientation="horizontal">
 
         <Button
+            android:id="@+id/btn_dismiss"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginRight="15dp"
+            android:layout_weight="1"
             android:background="@drawable/change_nama_dismiss"
+            android:fontFamily="@font/monserrat"
             android:text="Отмена"
             android:textColor="#FFF"
             android:textSize="15sp"
-            android:id="@+id/btn_dismiss"/>
+            android:theme="@style/Widget.AppCompat.Button" />
+
         <Button
+            android:id="@+id/btn_apply"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
             android:layout_weight="1"
-            android:layout_marginLeft="15dp"
             android:background="@drawable/change_name_btn_ok"
+            android:fontFamily="@font/monserrat"
             android:text="Применить"
             android:textColor="#FFF"
             android:textSize="15sp"
-            android:id="@+id/btn_apply"/>
+            android:theme="@style/Widget.AppCompat.Button" />
 
 
     </LinearLayout>

@@ -26,7 +26,10 @@ public class FragmentSingUp extends Fragment {
     private MakeRequests requests;
     private DialogFragmentProgressBar progressBar;
 
-    private String login, password, name;
+    private String login;
+    private String password;
+    private String name;
+
     private FragmentSingUpBinding binding;
 
     @Override
@@ -40,44 +43,6 @@ public class FragmentSingUp extends Fragment {
 
         return binding.getRoot();
     }
-
-
-    View.OnClickListener btnSingUpClicked = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            login = binding.etLogin.getText().toString();
-            password = binding.etPassword.getText().toString();
-            name = binding.etName.getText().toString();
-
-            if (!validateLogin(login) || !validatePassword(password))return;
-            if (name.length() == 0) {
-                Toast.makeText(getContext(), "введите имя", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            progressBar = new DialogFragmentProgressBar();
-            progressBar.show(getFragmentManager(), "FragmentSingUp");
-            binding.btnBack.setClickable(false);
-            binding.btnSignUp.setClickable(false);
-
-            if (!requests.isInternetAvailable(getContext())){
-                Toast.makeText(getContext(), no_internet, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            MakeRequests.SignUpRequest signUpRequest = requests.new SignUpRequest(signUpListener,
-                    binding.etLogin.getText().toString(),
-                    binding.etName.getText().toString(),
-                    binding.etPassword.getText().toString());
-            signUpRequest.execute();
-        }
-    };
-
-    View.OnClickListener btnBackClicked = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            getFragmentManager().beginTransaction().add(R.id.MA, new FragmentSignIn()).commit();
-        }
-    };
 
     MakeRequests.OnSignUpListener signUpListener = new MakeRequests.OnSignUpListener() {
         @Override
@@ -94,6 +59,37 @@ public class FragmentSingUp extends Fragment {
             progressBar.dismiss();
             Toast.makeText(getContext(), getResources().getString(responseId), Toast.LENGTH_SHORT).show();
         }
+    };
+
+    View.OnClickListener btnSingUpClicked = v -> {
+        login = binding.etLogin.getText().toString();
+        password = binding.etPassword.getText().toString();
+        name = binding.etName.getText().toString();
+
+        if (!validateLogin(login) || !validatePassword(password))return;
+        if (name.length() == 0) {
+            Toast.makeText(getContext(), "введите имя", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        progressBar = new DialogFragmentProgressBar();
+        progressBar.show(getFragmentManager(), "FragmentSingUp");
+        binding.btnBack.setClickable(false);
+        binding.btnSignUp.setClickable(false);
+
+        if (!requests.isInternetAvailable(getContext())){
+            Toast.makeText(getContext(), no_internet, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        MakeRequests.SignUpRequest signUpRequest = requests.new SignUpRequest(signUpListener,
+                binding.etLogin.getText().toString(),
+                binding.etName.getText().toString(),
+                binding.etPassword.getText().toString());
+        signUpRequest.execute();
+    };
+
+    View.OnClickListener btnBackClicked = v -> {
+        getFragmentManager().beginTransaction().add(R.id.MA, new FragmentSignIn()).commit();
     };
 
     boolean validateLogin(String login) {

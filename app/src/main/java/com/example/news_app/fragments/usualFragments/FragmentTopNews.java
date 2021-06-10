@@ -83,8 +83,7 @@ public class FragmentTopNews extends Fragment {
 
             MakeRequests.FindTopNews find_topNews = requests.new FindTopNews(onFindTopNewsListener);
             find_topNews.execute();
-        }
-        else {
+        } else {
             MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
                     MotionToast.TOAST_ERROR,
                     MotionToast.GRAVITY_BOTTOM,
@@ -93,58 +92,55 @@ public class FragmentTopNews extends Fragment {
         }
     }
 
-    MakeRequests.OnFindTopNewsListener onFindTopNewsListener = new MakeRequests.OnFindTopNewsListener() {
-        @Override
-        public void onFind(ArrayList<News> listNews) {
-            if (fragmentProgressBar.isVisible())
-                fragmentProgressBar.dismiss();
+    private final MakeRequests.OnFindTopNewsListener onFindTopNewsListener = listNews -> {
+        if (fragmentProgressBar.isVisible())
+            fragmentProgressBar.dismiss();
 
-            boolean isEquals = true;
-            savedData = jsonManager.readUserFromJson();
+        boolean isEquals = true;
+        savedData = jsonManager.readUserFromJson();
 
-            if (listNews != null) {
+        if (listNews != null) {
 
-                if (savedData != null && savedData.getListTopNews() != null) {
-                    if (listNews.size() == savedData.getListTopNews().size()) {
-                        for (int i = 0; i < listNews.size(); i++) {
-                            if (!listNews.get(i).getTitle().equals(savedData.getListTopNews().get(i).getTitle())) {
-                                isEquals = false;
-                                break;
-                            }
+            if (savedData != null && savedData.getListTopNews() != null) {
+                if (listNews.size() == savedData.getListTopNews().size()) {
+                    for (int i = 0; i < listNews.size(); i++) {
+                        if (!listNews.get(i).getTitle().equals(savedData.getListTopNews().get(i).getTitle())) {
+                            isEquals = false;
+                            break;
                         }
-                    } else isEquals = false;
+                    }
                 } else isEquals = false;
+            } else isEquals = false;
 
-                if (!isEquals) {
-                    Log.d(TAG, "onFind: not equals");
-                    Log.d(TAG, listNews.toString());
+            if (!isEquals) {
+                Log.d(TAG, "onFind: not equals");
+                Log.d(TAG, listNews.toString());
 
-                    if (savedData == null) savedData = jsonManager.readUserFromJson();
-                    //if (savedData.getListTopNews())
-                    Log.d(TAG, "onFind12: " + savedData);
-                    savedData.setListTopNews(listNews);
-                    jsonManager.writeOnlyTopNewsToJson(listNews);
-                    Log.d(TAG, "onFind222: " + jsonManager.readUserFromJson().getListTopNews());
-                } else Log.d(TAG, "onFind: equals");
-            } else listNews = savedData.getListTopNews();
+                if (savedData == null) savedData = jsonManager.readUserFromJson();
+                //if (savedData.getListTopNews())
+                Log.d(TAG, "onFind12: " + savedData);
+                savedData.setListTopNews(listNews);
+                jsonManager.writeOnlyTopNewsToJson(listNews);
+                Log.d(TAG, "onFind222: " + jsonManager.readUserFromJson().getListTopNews());
+            } else Log.d(TAG, "onFind: equals");
+        } else listNews = savedData.getListTopNews();
 
-            if (listNews != null && listNews.size() != 0) {
-                adapterTopNews = new AdapterTopNews(getContext(), listNews);
-                binding.viewPager.setAdapter(adapterTopNews);
-                binding.viewPager.setPadding(65, 0, 65, 0);
-                binding.viewPager.setVisibility(View.VISIBLE);
-            } else {
-                binding.layoutError.setVisibility(View.VISIBLE);
-            }
-
-            YoYo.with(Techniques.FadeOut).duration(500).repeat(1).playOn(binding.progressSyncing);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    binding.progressSyncing.setVisibility(View.INVISIBLE);
-                }
-            }, 500);
+        if (listNews != null && listNews.size() != 0) {
+            adapterTopNews = new AdapterTopNews(getContext(), listNews);
+            binding.viewPager.setAdapter(adapterTopNews);
+            binding.viewPager.setPadding(65, 0, 65, 0);
+            binding.viewPager.setVisibility(View.VISIBLE);
+        } else {
+            binding.layoutError.setVisibility(View.VISIBLE);
         }
+
+        YoYo.with(Techniques.FadeOut).duration(500).repeat(1).playOn(binding.progressSyncing);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                binding.progressSyncing.setVisibility(View.INVISIBLE);
+            }
+        }, 500);
     };
 
 }

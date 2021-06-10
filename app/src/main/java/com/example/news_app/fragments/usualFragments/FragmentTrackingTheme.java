@@ -28,6 +28,7 @@ import com.example.news_app.network.MakeRequests;
 import com.example.news_app.databinding.FragmentTrackingBinding;
 import com.example.news_app.models.User;
 import com.google.gson.Gson;
+import com.google.gson.internal.$Gson$Preconditions;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -48,8 +49,8 @@ public class FragmentTrackingTheme extends Fragment {
     private SavedData savedData;
     private AdapterTrackingThemes adapter;
 
-    private final ViewPager2 pager;
-    private final MeowBottomNavigation meow;
+    private ViewPager2 pager;
+    private MeowBottomNavigation meow;
     private FragmentTrackingBinding binding;
 
     private DialogFragmentAddTheme dialogFragmentAddTheme;
@@ -64,19 +65,6 @@ public class FragmentTrackingTheme extends Fragment {
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentTrackingBinding.inflate(inflater, container, false);
-
-        AdapterTrackingThemes.OnThemeSelectedListener onThemeSelectedListener = new AdapterTrackingThemes.
-                OnThemeSelectedListener() {
-            @Override
-            public void onThemeSelected(String theme) {
-                SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-                SharedPreferences.Editor edt = pref.edit();
-                edt.putString("SearchingTheme", theme);
-                edt.apply();
-                pager.setCurrentItem(0);
-                meow.show(0, true);
-            }
-        };
 
         binding.btnAddTrackingTheme.setOnClickListener(btnAddThemeClicked);
         binding.progressSyncing.setVisibility(View.INVISIBLE);
@@ -98,70 +86,9 @@ public class FragmentTrackingTheme extends Fragment {
         return binding.getRoot();
     }
 
-    void printThemes (ArrayList <String> list){
-        adapter.setThemesList(list);
-        adapter.notifyDataSetChanged();
-
-        if (list.size() == 0) {
-            binding.recyclerView.setVisibility(View.INVISIBLE);
-            binding.layoutNoTrackingTheme.setVisibility(View.VISIBLE);
-        } else {
-            binding.recyclerView.setVisibility(View.VISIBLE);
-            binding.layoutNoTrackingTheme.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    View.OnClickListener btnAddThemeClicked = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            DialogFragmentAddTheme.OnBtnApplyClickListener btnApplyClickListener = new DialogFragmentAddTheme.OnBtnApplyClickListener() {
-                @Override
-                public void onClick(String theme) {
-                    dialogFragmentProgressBar = new DialogFragmentProgressBar();
-                    dialogFragmentProgressBar.show(getFragmentManager(), "FragmentTrackingTheme");
-                    mUser.setThemes(mUser.getThemes() + ";" + theme);
-
-                    Log.d(TAG, "onClick: " + new Gson().toJson(mUser));
-
-                    requests.new UpdateUserAsync(onUserChangedListener, mUser).execute();
-                }
-            };
-
-            dialogFragmentAddTheme = new DialogFragmentAddTheme(btnApplyClickListener);
-            dialogFragmentAddTheme.show(getFragmentManager(), "DialogFragmentAddTheme");
-        }
-    };
-
     @Override
     public void onResume() {
         super.onResume();
-
-        MakeRequests.OnLoadUserListener loadUserListener = new MakeRequests.OnLoadUserListener() {
-            @Override
-            public void onResults(User user) {
-                if (user != null)
-                    mUser = user;
-                //mUser.clearThemes();
-                //mUser.fillListHistory();
-                mUser.fillListThemes();
-                Log.d(TAG, "onResultsLoaded: " + mUser.getListThemes());
-
-                SavedData loadedDataFromInter = new SavedData();
-                loadedDataFromInter.prepareToSave(mUser, savedData.getListAllCurrency());
-
-                printThemes(mUser.getListThemes());
-
-                YoYo.with(Techniques.FadeOut).duration(500).repeat(1).playOn(binding.progressSyncing);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        binding.progressSyncing.setVisibility(View.INVISIBLE);
-                    }
-                }, 500);
-
-                jsonManager.writeDataToJson(loadedDataFromInter);
-            }
-        };
 
         savedData = new SavedData();
         savedData = jsonManager.readUserFromJson();
@@ -194,39 +121,94 @@ public class FragmentTrackingTheme extends Fragment {
         }
     }
 
-    private final MakeRequests.OnUserChangedListener onUserChangedListener = new MakeRequests.OnUserChangedListener() {
-        @Override
-        public void onChanged(String serverResponse) {
-            mUser.clearThemes();
-            mUser.fillListThemes();
+    void printThemes (ArrayList <String> list){
+        adapter.setThemesList(list);
+        adapter.notifyDataSetChanged();
 
-            Log.d(TAG, "onChangedLoaded: " + mUser.getListThemes());
+        if (list.size() == 0) {
+            binding.recyclerView.setVisibility(View.INVISIBLE);
+            binding.layoutNoTrackingTheme.setVisibility(View.VISIBLE);
+        } else {
+            binding.recyclerView.setVisibility(View.VISIBLE);
+            binding.layoutNoTrackingTheme.setVisibility(View.INVISIBLE);
+        }
+    }
 
-            savedData = jsonManager.readUserFromJson();
-            savedData.setListThemes(mUser.getListThemes());
-            jsonManager.writeDataToJson(savedData);
+    private final MakeRequests.OnLoadUserListener loadUserListener = user -> {
+        if (user != null)
+            mUser = user;
+        //mUser.clearThemes();
+        //mUser.fillListHistory();
+        mUser.fillListThemes();
+        Log.d(TAG, "onResultsLoaded: " + mUser.getListThemes());
 
-            Log.d(TAG, "onChangedSaved: " + savedData.getListThemes());
+        SavedData loadedDataFromInter = new SavedData();
+        loadedDataFromInter.prepareToSave(mUser, savedData.getListAllCurrency());
 
-            printThemes(mUser.getListThemes());
+        printThemes(mUser.getListThemes());
 
-            dialogFragmentProgressBar.dismiss();
-            try {
-                dialogFragmentAddTheme.dismiss();
-            } catch (Exception e) {
-                e.printStackTrace();
+        YoYo.with(Techniques.FadeOut).duration(500).repeat(1).playOn(binding.progressSyncing);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                binding.progressSyncing.setVisibility(View.INVISIBLE);
             }
+        }, 500);
+
+        jsonManager.writeDataToJson(loadedDataFromInter);
+    };
+
+    private final AdapterTrackingThemes.OnThemeSelectedListener onThemeSelectedListener = theme -> {
+        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor edt = pref.edit();
+        edt.putString("SearchingTheme", theme);
+        edt.apply();
+        pager.setCurrentItem(0);
+        meow.show(0, true);
+    };
+
+    private final MakeRequests.OnUserChangedListener onUserChangedListener = serverResponse -> {
+        mUser.clearThemes();
+        mUser.fillListThemes();
+
+        Log.d(TAG, "onChangedLoaded: " + mUser.getListThemes());
+
+        savedData = jsonManager.readUserFromJson();
+        savedData.setListThemes(mUser.getListThemes());
+        jsonManager.writeDataToJson(savedData);
+
+        Log.d(TAG, "onChangedSaved: " + savedData.getListThemes());
+
+        printThemes(mUser.getListThemes());
+
+        dialogFragmentProgressBar.dismiss();
+        try {
+            dialogFragmentAddTheme.dismiss();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     };
 
-    private final AdapterTrackingThemes.OnDeleteItemClickedListener onDeleteItemClickedListener = new AdapterTrackingThemes.OnDeleteItemClickedListener() {
-        @Override
-        public void onDeleteItem(String theme) {
-            dialogFragmentProgressBar = new DialogFragmentProgressBar();
-            dialogFragmentProgressBar.show(getFragmentManager(), "FragmentTrackingTheme");
-            mUser.setThemes(mUser.getThemes().replace(theme, ""));
-            mUser.clearThemes();
-            requests.new UpdateUserAsync(onUserChangedListener, mUser).execute();
-        }
+    private final DialogFragmentAddTheme.OnBtnApplyClickListener btnApplyClickListener = theme -> {
+        dialogFragmentProgressBar = new DialogFragmentProgressBar();
+        dialogFragmentProgressBar.show(getFragmentManager(), "FragmentTrackingTheme");
+        mUser.setThemes(mUser.getThemes() + ";" + theme);
+
+        Log.d(TAG, "onClick: " + new Gson().toJson(mUser));
+
+        requests.new UpdateUserAsync(onUserChangedListener, mUser).execute();
+    };
+
+    private final AdapterTrackingThemes.OnDeleteItemClickedListener onDeleteItemClickedListener = theme -> {
+        dialogFragmentProgressBar = new DialogFragmentProgressBar();
+        dialogFragmentProgressBar.show(getFragmentManager(), "FragmentTrackingTheme");
+        mUser.setThemes(mUser.getThemes().replace(theme, ""));
+        mUser.clearThemes();
+        requests.new UpdateUserAsync(onUserChangedListener, mUser).execute();
+    };
+
+    private final View.OnClickListener btnAddThemeClicked = v -> {
+        dialogFragmentAddTheme = new DialogFragmentAddTheme(btnApplyClickListener);
+        dialogFragmentAddTheme.show(getFragmentManager(), "DialogFragmentAddTheme");
     };
 }

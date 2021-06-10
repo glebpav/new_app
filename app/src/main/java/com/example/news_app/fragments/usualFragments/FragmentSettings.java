@@ -64,8 +64,8 @@ public class FragmentSettings extends Fragment {
     private AdapterSettingTiles adapterSettingTiles;
     private AdapterCurrencyTile adapterCurrencyTile;
 
-    private final ViewPager2 pager;
-    private final MeowBottomNavigation meow;
+    private ViewPager2 pager;
+    private MeowBottomNavigation meow;
     private DialogFragmentHistory fragmentHistory;
     private DialogFragmentSources fragmentSources;
     private DialogFragmentProgressBar fragmentProgress;
@@ -104,94 +104,24 @@ public class FragmentSettings extends Fragment {
     public void onResume() {
         super.onResume();
 
-        ParseWeather.OnFindWeatherListener onFindWeatherListener = weather -> {
-            if (weather != null){
-                binding.tvTemp.setText(weather.getTemperature());
-                binding.tvWeatherDesc.setText(weather.getWeatherDesc());
-                Picasso.with(getContext()).load(weather.getIconUrl()).into(binding.imgWeatherDesc);
-
-                savedData = jsonManager.readUserFromJson();
-                savedData.setWeather(weather);
-                jsonManager.writeDataToJson(savedData);
-            }
-        };
-
-        final ParseCourse.OnParseCourseListener parseCourseListener = listCurrency -> {
-            mUser.fillListCurrency();
-            mListCurrency = listCurrency;
-
-            SavedData loadedDataFromInter = new SavedData();
-            loadedDataFromInter.prepareToSave(mUser, listCurrency);
-
-            ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
-            for (int i = 0; i < listCurrency.size(); i++) {
-                for (int j = 0; j < mUser.getListCurrency().size(); j++) {
-                    if (listCurrency.get(i).getCharCode().equals(mUser.getListCurrency().get(j))) {
-                        outputListCurrency.add(listCurrency.get(i));
-                        listCurrency.get(i).setHidden(false);
-                        break;
-                    }
-                }
-            }
-
-            if (!loadedDataFromInter.equals(savedData)) {
-                Log.d(TAG, "onFound: not equals");
-                if (savedData.getListTopNews() != null)
-                    loadedDataFromInter.setListTopNews(savedData.getListTopNews());
-                jsonManager.writeDataToJson(loadedDataFromInter);
-
-            } else Log.d(TAG, "onFound: equals");
-
-            adapterCurrencyTile.setListCurrency(outputListCurrency);
-            adapterCurrencyTile.notifyDataSetChanged();
-
-            YoYo.with(Techniques.FadeOut).duration(500).repeat(1).playOn(binding.progressSyncing);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    binding.progressSyncing.setVisibility(View.INVISIBLE);
-                }
-            }, 500);
-        };
-
-        MakeRequests.OnLoadUserListener loadUserListener = user -> {
-
-            if (user == null) {
-                savedData = jsonManager.readUserFromJson();
-                user = savedData.getUser();
-            }
-            mUser = user;
-            mUser.clearThemes();
-            mUser.fillListHistory();
-            mUser.fillListThemes();
-            new ParseCourse(parseCourseListener).execute();
-
-            binding.collapsingToolbar.setTitle(user.getName());
-            binding.tvCountThemes.setText(String.valueOf(mUser.getListHistory().size()));
-            binding.tvCountTracking.setText(String.valueOf(mUser.getListThemes().size()));
-
-            /*
-            fragmentProgress.dismiss();
-            binding.nestedScrollView.setVisibility(View.VISIBLE);
-            binding.appbar.setVisibility(View.VISIBLE);
-*/
-        };
-
-        if (requests.isInternetAvailable(getContext())) {
+        if (MakeRequests.isInternetAvailable(getContext())) {
             binding.progressSyncing.setVisibility(View.VISIBLE);
             YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
-            binding.recyclerViewSettings.setClickable(true);
         } else {
             MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
                     MotionToast.TOAST_ERROR,
                     MotionToast.GRAVITY_BOTTOM,
                     MotionToast.LONG_DURATION,
                     ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-            binding.recyclerViewSettings.setClickable(false);
+            //binding.recyclerViewSettings.setClickable(false);
         }
 
+        Log.d(TAG, "onResume: ");
         savedData = jsonManager.readUserFromJson();
+        Log.d(TAG, "onResume: " + savedData.getListHistory());
+
         if (savedData != null && savedData.getListAllCurrency() != null) {
+
             ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
             for (int i = 0; i < savedData.getListAllCurrency().size(); i++) {
                 for (int j = 0; j < savedData.getListSelectedCurrency().size(); j++) {
@@ -207,8 +137,9 @@ public class FragmentSettings extends Fragment {
             adapterCurrencyTile.setListCurrency(outputListCurrency);
             adapterCurrencyTile.notifyDataSetChanged();
 
+
             Weather savedWeather = savedData.getWeather();
-            if (savedWeather != null){
+            if (savedWeather != null) {
                 binding.tvTemp.setText(savedWeather.getTemperature());
                 binding.tvWeatherDesc.setText(savedWeather.getWeatherDesc());
                 Picasso.with(getContext()).load(savedWeather.getIconUrl()).into(binding.imgWeatherDesc);
@@ -223,33 +154,13 @@ public class FragmentSettings extends Fragment {
             binding.nestedScrollView.setVisibility(View.VISIBLE);
             binding.appbar.setVisibility(View.VISIBLE);
         }
-        if (requests.isInternetAvailable(getContext())) {
+        if (MakeRequests.isInternetAvailable(getContext())) {
             new ParseWeather(getContext(), onFindWeatherListener).execute();
             requests.new LoadUser(mUser.getLogin(), mUser.getPassword(), loadUserListener).execute();
         }
     }
 
     private void logOut() {
-        DialogFragmentSureToLogOut.OnLogOutBtnClickedListener onLogOutBtnClickedListener = new DialogFragmentSureToLogOut.OnLogOutBtnClickedListener() {
-            @Override
-            public void onClicked() {
-
-                // deleting all information about user from json
-                jsonManager.writeDataToJson(new SavedData());
-
-                // deleting all information about user from sharedPreferences
-                SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-                SharedPreferences.Editor edt = pref.edit();
-                edt.putString("login", "");
-                edt.putString("password", "");
-                edt.apply();
-
-                fragmentSureToLogOut.dismiss();
-                Intent intent = new Intent(getActivity(), ActivityMain.class);
-                startActivity(intent);
-            }
-        };
-
         fragmentSureToLogOut = new DialogFragmentSureToLogOut();
         fragmentSureToLogOut.setLogOutBtnClickedListener(onLogOutBtnClickedListener);
         fragmentSureToLogOut.show(getActivity().getFragmentManager(), "FragmentSetting");
@@ -257,7 +168,7 @@ public class FragmentSettings extends Fragment {
 
     private void changeName() {
 
-        DialogFragmentChangeName.OnBtnChangedClickedListener btnChangedClickedListener = new
+        final DialogFragmentChangeName.OnBtnChangedClickedListener btnChangedClickedListener = new
                 DialogFragmentChangeName.OnBtnChangedClickedListener() {
                     @Override
                     public void onClicked(String name) {
@@ -285,24 +196,11 @@ public class FragmentSettings extends Fragment {
     }
 
     private void showHistory() {
-
-        DialogFragmentHistory.OnAdapterTileHistoryClickedListener adapterTileHistoryClickedListener = new
-                DialogFragmentHistory.OnAdapterTileHistoryClickedListener() {
-                    @Override
-                    public void onClicked(int position) {
-                        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor edt = pref.edit();
-                        edt.putString("SearchingTheme", mUser.getHistory().split(";")
-                                [(mUser.getHistory().split(";")).length - position - 1]);
-                        edt.apply();
-
-                        fragmentHistory.dismiss();
-                        pager.setCurrentItem(0);
-                        meow.show(0, true);
-                    }
-                };
-
-        List<String> list = Arrays.asList(mUser.getHistory().split(";"));
+        List<String> list;
+        if (!MakeRequests.isInternetAvailable(getContext()))
+            list = jsonManager.readUserFromJson().getListHistory();
+        else
+            list = Arrays.asList(mUser.getHistory().split(";"));
         Collections.reverse(list);
         fragmentHistory = new DialogFragmentHistory(list, adapterTileHistoryClickedListener);
         fragmentHistory.show(getFragmentManager(), "FragmentDialog");
@@ -348,6 +246,9 @@ public class FragmentSettings extends Fragment {
                     public void onSelected(CentBankCurrency currency) {
                         Log.d(TAG, "onSelected: " + currency.getName() + " (isHidden - " + currency.isHidden() + ")");
 
+                        if (mUser == null)
+                            mUser = jsonManager.readUserFromJson().getUser();
+
                         if (!currency.isHidden()) {
                             mUser.getListCurrency().remove(currency.getCharCode());
                             mListCurrency.get(mListCurrency.indexOf(currency)).setHidden(true);
@@ -367,32 +268,33 @@ public class FragmentSettings extends Fragment {
                         requests.new UpdateUserAsync(onUserChangedListener, mUser).execute();
                     }
 
-                    final MakeRequests.OnUserChangedListener onUserChangedListener = new MakeRequests.OnUserChangedListener() {
-                        @Override
-                        public void onChanged(String serverResponse) {
-                            Log.d(TAG, "onUserChangedListener - onChanged");
-                            ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
+                    final MakeRequests.OnUserChangedListener onUserChangedListener = serverResponse -> {
+                        Log.d(TAG, "onUserChangedListener - onChanged");
+                        ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
 
-                            for (int i = 0; i < mListCurrency.size(); i++) {
-                                if (!mListCurrency.get(i).isHidden()) {
-                                    outputListCurrency.add(mListCurrency.get(i));
-                                    System.out.println(mListCurrency.get(i).getCharCode());
-                                }
+                        for (int i = 0; i < mListCurrency.size(); i++) {
+                            if (!mListCurrency.get(i).isHidden()) {
+                                outputListCurrency.add(mListCurrency.get(i));
+                                System.out.println(mListCurrency.get(i).getCharCode());
                             }
-
-                            fragmentSelectCurrency.setListCurrency(mListCurrency);
-                            adapterCurrencyTile.setListCurrency(outputListCurrency);
-                            adapterCurrencyTile.notifyDataSetChanged();
-                            fragmentProgress.dismiss();
-                            Toast.makeText(getContext(), getResources().getString(R.string.successful_changed), Toast.LENGTH_SHORT).show();
-
-                            updateSavedData();
                         }
+
+                        fragmentSelectCurrency.setListCurrency(mListCurrency);
+                        adapterCurrencyTile.setListCurrency(outputListCurrency);
+                        adapterCurrencyTile.notifyDataSetChanged();
+                        fragmentProgress.dismiss();
+                        Toast.makeText(getContext(), getResources().getString(R.string.successful_changed), Toast.LENGTH_SHORT).show();
+
+                        updateSavedData();
                     };
                 };
 
-        Log.d(TAG, "changeCurrency: " + mListCurrency.size());
-        fragmentSelectCurrency = new DialogFragmentSelectCurrency(mListCurrency, currencySelectedListener);
+        //Log.d(TAG, "changeCurrency: " + mListCurrency.size());
+
+        if (!MakeRequests.isInternetAvailable(getContext()))
+            mListCurrency = jsonManager.readUserFromJson().getListAllCurrency();
+
+        fragmentSelectCurrency = new DialogFragmentSelectCurrency(mListCurrency, getContext(), currencySelectedListener);
         fragmentSelectCurrency.show(getFragmentManager(), "FragmentSettings");
     }
 
@@ -404,7 +306,19 @@ public class FragmentSettings extends Fragment {
         jsonManager.writeDataToJson(newData);
     }
 
-    AdapterSettingTiles.OnClickedSettingsItemListener onClickedSettingsItemListener = point -> {
+    private final DialogFragmentHistory.OnAdapterTileHistoryClickedListener adapterTileHistoryClickedListener = position -> {
+        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor edt = pref.edit();
+        edt.putString("SearchingTheme", mUser.getHistory().split(";")
+                [(mUser.getHistory().split(";")).length - position - 1]);
+        edt.apply();
+
+        fragmentHistory.dismiss();
+        pager.setCurrentItem(0);
+        meow.show(0, true);
+    };
+
+    private final AdapterSettingTiles.OnClickedSettingsItemListener onClickedSettingsItemListener = point -> {
         switch (point) {
             case LOG_OUT:
                 logOut();
@@ -422,6 +336,95 @@ public class FragmentSettings extends Fragment {
                 changeCurrency();
                 break;
         }
+    };
+
+    private final DialogFragmentSureToLogOut.OnLogOutBtnClickedListener onLogOutBtnClickedListener = () -> {
+        // deleting all information about user from json
+        jsonManager.writeDataToJson(new SavedData());
+
+        // deleting all information about user from sharedPreferences
+        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor edt = pref.edit();
+        edt.putString("login", "");
+        edt.putString("password", "");
+        edt.apply();
+
+        fragmentSureToLogOut.dismiss();
+        Intent intent = new Intent(getActivity(), ActivityMain.class);
+        startActivity(intent);
+    };
+
+    private final ParseCourse.OnParseCourseListener parseCourseListener = listCurrency -> {
+        mUser.fillListCurrency();
+        mListCurrency = listCurrency;
+
+        SavedData loadedDataFromInter = new SavedData();
+        loadedDataFromInter.prepareToSave(mUser, listCurrency);
+
+        ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
+        for (int i = 0; i < listCurrency.size(); i++) {
+            for (int j = 0; j < mUser.getListCurrency().size(); j++) {
+                if (listCurrency.get(i).getCharCode().equals(mUser.getListCurrency().get(j))) {
+                    outputListCurrency.add(listCurrency.get(i));
+                    listCurrency.get(i).setHidden(false);
+                    break;
+                }
+            }
+        }
+
+        if (!loadedDataFromInter.equals(savedData)) {
+            Log.d(TAG, "onFound: not equals");
+            if (savedData.getListTopNews() != null)
+                loadedDataFromInter.setListTopNews(savedData.getListTopNews());
+            jsonManager.writeDataToJson(loadedDataFromInter);
+
+        } else Log.d(TAG, "onFound: equals");
+
+        adapterCurrencyTile.setListCurrency(outputListCurrency);
+        adapterCurrencyTile.notifyDataSetChanged();
+
+        YoYo.with(Techniques.FadeOut).duration(500).repeat(1).playOn(binding.progressSyncing);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                binding.progressSyncing.setVisibility(View.INVISIBLE);
+            }
+        }, 500);
+    };
+
+    private final ParseWeather.OnFindWeatherListener onFindWeatherListener = weather -> {
+        if (weather != null) {
+            binding.tvTemp.setText(weather.getTemperature());
+            binding.tvWeatherDesc.setText(weather.getWeatherDesc());
+            Picasso.with(getContext()).load(weather.getIconUrl()).into(binding.imgWeatherDesc);
+
+            savedData = jsonManager.readUserFromJson();
+            savedData.setWeather(weather);
+            jsonManager.writeDataToJson(savedData);
+        }
+    };
+
+    private final MakeRequests.OnLoadUserListener loadUserListener = user -> {
+
+        if (user == null) {
+            savedData = jsonManager.readUserFromJson();
+            user = savedData.getUser();
+        }
+        mUser = user;
+        mUser.clearThemes();
+        mUser.fillListHistory();
+        mUser.fillListThemes();
+        new ParseCourse(parseCourseListener).execute();
+
+        binding.collapsingToolbar.setTitle(user.getName());
+        binding.tvCountThemes.setText(String.valueOf(mUser.getListHistory().size()));
+        binding.tvCountTracking.setText(String.valueOf(mUser.getListThemes().size()));
+
+            /*
+            fragmentProgress.dismiss();
+            binding.nestedScrollView.setVisibility(View.VISIBLE);
+            binding.appbar.setVisibility(View.VISIBLE);
+*/
     };
 
 }

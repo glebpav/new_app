@@ -41,7 +41,6 @@ import www.sanju.motiontoast.MotionToast;
 
 import static com.example.news_app.databinding.FragmentSearchingBinding.*;
 
-
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class FragmentSearching extends Fragment {
 

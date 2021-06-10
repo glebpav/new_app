@@ -88,17 +88,23 @@
             </androidx.recyclerview.widget.RecyclerView>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
+
     <Button
         android:id="@+id/btn_apply"
+        style="@style/Widget.AppCompat.Button"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:layout_below="@+id/layout_currency"
         android:layout_marginLeft="60dp"
-        android:layout_marginRight="60dp"
         android:layout_marginTop="-15dp"
+        android:layout_marginRight="60dp"
         android:background="@drawable/change_name_btn_ok"
         android:text="@string/understand"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="#FFF"
+        android:textColorHighlight="#DD5050"
+        android:textColorLink="#FFFFFF"
+        android:textCursorDrawable="@drawable/bg"
         android:textSize="15sp" />
 
 </RelativeLayout>

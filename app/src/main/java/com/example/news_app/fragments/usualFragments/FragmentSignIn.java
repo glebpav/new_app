@@ -51,51 +51,65 @@ public class FragmentSignIn extends Fragment {
         return binding.getRoot();
     }
 
-    void checkUser() {
-        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-        login = pref.getString("login", "");
-        password = pref.getString("password", "");
+    private final MakeRequests.OnSingInListener singInListener = user -> {
+        Log.d("ADSF", "onSingIn: " + (user==null?"null":"not null"));
+        progressBar.dismiss();
 
-        if (login.length() == 0 || password.length() == 0) return;
-
-        progressBar = new DialogFragmentProgressBar();
-        progressBar.show(getFragmentManager(), "FragmentSingIn");
-        requests.new SignInRequest(login, password, singInListener).execute();
-
-    }
-
-    View.OnClickListener btnSignUpClicked = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            assert getFragmentManager() != null;
-            getFragmentManager().beginTransaction().add(R.id.MA, new FragmentSingUp()).commit();
+        if (user == null){
+            savedData = jsonManager.readUserFromJson();
+            if (savedData == null) {
+                Toast.makeText(getContext(), getResources().getString(R.string.trouble_with_authorization),
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (binding.cbRememberMe.isChecked()) {
+                SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+                SharedPreferences.Editor edt = pref.edit();
+                edt.putString("login", savedData.getLogin());
+                edt.putString("password", savedData.getPassword());
+                edt.apply();
+            }
+            Log.d("TAG", "onSingIn: " + savedData.getId());
+            gotoNextActivity(savedData.getUser());
+            return;
         }
+
+        if (binding.cbRememberMe.isChecked()) {
+            SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+            SharedPreferences.Editor edt = pref.edit();
+            edt.putString("login", login);
+            edt.putString("password", password);
+            edt.apply();
+        }
+        gotoNextActivity(user);
     };
 
-    View.OnClickListener btnSignInClicked = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            login = binding.etLogin.getText().toString();
-            password = binding.etPassword.getText().toString();
+    private final View.OnClickListener btnSignUpClicked = v -> {
+        assert getFragmentManager() != null;
+        getFragmentManager().beginTransaction().add(R.id.MA, new FragmentSingUp()).commit();
+    };
 
-            if (login.length() == 0) {
-                Toast.makeText(getActivity(), "введите логин", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (password.length() == 0) {
-                Toast.makeText(getActivity(), "введите пароль", Toast.LENGTH_SHORT).show();
-                return;
-            }
+    private final View.OnClickListener btnSignInClicked = v -> {
+        login = binding.etLogin.getText().toString();
+        password = binding.etPassword.getText().toString();
 
-            if (!requests.isInternetAvailable(getContext())){
-                Toast.makeText(getContext(), no_internet, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            progressBar = new DialogFragmentProgressBar();
-            assert getFragmentManager() != null;
-            progressBar.show(getFragmentManager(), "FragmentSignIn");
-            requests.new SignInRequest(login, password, singInListener).execute();
+        if (login.length() == 0) {
+            Toast.makeText(getActivity(), "введите логин", Toast.LENGTH_SHORT).show();
+            return;
         }
+        if (password.length() == 0) {
+            Toast.makeText(getActivity(), "введите пароль", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!requests.isInternetAvailable(getContext())){
+            Toast.makeText(getContext(), no_internet, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        progressBar = new DialogFragmentProgressBar();
+        assert getFragmentManager() != null;
+        progressBar.show(getFragmentManager(), "FragmentSignIn");
+        requests.new SignInRequest(login, password, singInListener).execute();
     };
 
     public void gotoNextActivity(User user) {
@@ -112,42 +126,16 @@ public class FragmentSignIn extends Fragment {
         startActivity(intent);
     }
 
-    MakeRequests.OnSingInListener singInListener = new MakeRequests.OnSingInListener() {
-        @Override
-        public void onSingIn(User user) {
+   private void checkUser() {
+        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+        login = pref.getString("login", "");
+        password = pref.getString("password", "");
 
-            Log.d("ADSF", "onSingIn: " + (user==null?"null":"not null"));
+        if (login.length() == 0 || password.length() == 0) return;
 
-            progressBar.dismiss();
+        progressBar = new DialogFragmentProgressBar();
+        progressBar.show(getFragmentManager(), "FragmentSingIn");
+        requests.new SignInRequest(login, password, singInListener).execute();
 
-            if (user == null){
-                savedData = jsonManager.readUserFromJson();
-                if (savedData == null) {
-                    Toast.makeText(getContext(), getResources().getString(R.string.trouble_with_authorization),
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-                if (binding.cbRememberMe.isChecked()) {
-                    SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor edt = pref.edit();
-                    edt.putString("login", savedData.getLogin());
-                    edt.putString("password", savedData.getPassword());
-                    edt.apply();
-                }
-                Log.d("TAG", "onSingIn: " + savedData.getId());
-                gotoNextActivity(savedData.getUser());
-                return;
-            }
-
-            if (binding.cbRememberMe.isChecked()) {
-                SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-                SharedPreferences.Editor edt = pref.edit();
-                edt.putString("login", login);
-                edt.putString("password", password);
-                edt.apply();
-            }
-            gotoNextActivity(user);
-        }
-    };
-
+    }
 }
