@@ -37,24 +37,16 @@ public class DialogFragmentAddTheme extends DialogFragment {
             getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         }
 
-        binding.btnDismiss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDialog().dismiss();
-            }
-        });
+        binding.btnDismiss.setOnClickListener(v -> getDialog().dismiss());
 
-        binding.btnApply.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String theme = binding.etAddTheme.getText().toString();
-                Log.d("asd", "onClick: "+ theme);
-                if (theme.isEmpty()) {
-                    Toast.makeText(getContext(), "Введите тему", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                btnApplyListener.onClick(theme);
+        binding.btnApply.setOnClickListener(v -> {
+            String theme = binding.etAddTheme.getText().toString();
+            Log.d("asd", "onClick: "+ theme);
+            if (theme.isEmpty()) {
+                Toast.makeText(getContext(), "Введите тему", Toast.LENGTH_SHORT).show();
+                return;
             }
+            btnApplyListener.onClick(theme);
         });
 
         return binding.getRoot();

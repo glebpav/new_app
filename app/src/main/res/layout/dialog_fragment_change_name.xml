@@ -3,7 +3,7 @@
     android:id="@+id/layout_dialog_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+    android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
 
     <RelativeLayout
         android:id="@+id/rl_min"

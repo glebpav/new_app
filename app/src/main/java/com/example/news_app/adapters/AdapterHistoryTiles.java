@@ -34,12 +34,7 @@ public class AdapterHistoryTiles extends RecyclerView.Adapter<AdapterHistoryTile
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         holder.binding.tvHistoryTile.setText(listHistory.get(position));
 
-        holder.binding.tvHistoryTile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickHistoryItemListener.onClick(position);
-            }
-        });
+        holder.binding.tvHistoryTile.setOnClickListener(v -> clickHistoryItemListener.onClick(position));
     }
 
     @Override

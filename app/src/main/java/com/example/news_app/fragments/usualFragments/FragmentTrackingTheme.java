@@ -37,7 +37,7 @@ import java.util.Arrays;
 
 import www.sanju.motiontoast.MotionToast;
 
-// Todo : disable buttons in adapter Themes when internet is'n available
+// Todo : disable buttons in adapter Themes when internet is't available
 
 public class FragmentTrackingTheme extends Fragment {
 
@@ -76,7 +76,7 @@ public class FragmentTrackingTheme extends Fragment {
         mUser.clearThemes();
         mUser.fillListThemes();
 
-        adapter = new AdapterTrackingThemes(Arrays.asList(mUser.getThemes().split(";")),
+        adapter = new AdapterTrackingThemes(Arrays.asList(mUser.getThemes().split(";")), getContext(),
                 onDeleteItemClickedListener, onThemeSelectedListener);
         binding.recyclerView.setAdapter(adapter);
 
@@ -97,7 +97,7 @@ public class FragmentTrackingTheme extends Fragment {
             Log.d(TAG, "onResumeSaved: " + savedData.getListThemes());
             printThemes(savedData.getListThemes());
         }
-        if (requests.isInternetAvailable(getContext())) {
+        if (MakeRequests.isInternetAvailable(getContext())) {
             binding.btnAddTrackingTheme.setOnClickListener(btnAddThemeClicked);
             binding.progressSyncing.setVisibility(View.VISIBLE);
             YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
@@ -108,16 +108,11 @@ public class FragmentTrackingTheme extends Fragment {
                     MotionToast.GRAVITY_BOTTOM,
                     MotionToast.LONG_DURATION,
                     ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-            binding.btnAddTrackingTheme.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
-                            MotionToast.TOAST_ERROR,
-                            MotionToast.GRAVITY_BOTTOM,
-                            MotionToast.LONG_DURATION,
-                            ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-                }
-            });
+            binding.btnAddTrackingTheme.setOnClickListener(v -> MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
+                    MotionToast.TOAST_ERROR,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.LONG_DURATION,
+                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular)));
         }
     }
 
@@ -143,7 +138,11 @@ public class FragmentTrackingTheme extends Fragment {
         Log.d(TAG, "onResultsLoaded: " + mUser.getListThemes());
 
         SavedData loadedDataFromInter = new SavedData();
+        SavedData loadedDataFromJson = jsonManager.readUserFromJson();
         loadedDataFromInter.prepareToSave(mUser, savedData.getListAllCurrency());
+
+        loadedDataFromInter.setListTopNews(loadedDataFromJson.getListTopNews());
+        loadedDataFromInter.setWeather(loadedDataFromJson.getWeather());
 
         printThemes(mUser.getListThemes());
 

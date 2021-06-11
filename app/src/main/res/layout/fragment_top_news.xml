@@ -3,16 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.usualFragments.FragmentTopNews"
-    >
+    tools:context=".fragments.usualFragments.FragmentTopNews">
 
     <TextView
         android:id="@+id/tv_top_news"
+        style="@style/topTitleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/hot_news"
-        style="@style/topTitleText"
-        android:textColor="@color/dark_text"/>
+        android:textColor="@color/dark_text" />
 
     <RelativeLayout
         android:id="@+id/layout_error"
@@ -42,15 +41,15 @@
     </RelativeLayout>
 
     <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="450dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="100dp"
         android:clipToPadding="false"
         android:foregroundGravity="center"
         android:overScrollMode="never"
-        android:visibility="invisible"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="100dp"
-        android:id="@+id/view_pager"/>
+        android:visibility="invisible" />
 
     <RelativeLayout
         android:layout_width="match_parent"

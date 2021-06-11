@@ -1,10 +1,18 @@
 <resources>
 
+    <!-- App name -->
+
     <string name="app_name">News findeR</string>
+
+    <!-- Preferences names -->
+
+    <string name="tone_format">TONE_FORMAT</string>
+    <string name="tone_format_key">TONE_FORMAT_KEY</string>
 
     <!-- Headers for fragments -->
 
     <string name="add_bookmark">Добавить закладку</string>
+    <string name="format_of_rating">Формат оценки</string>
     <string name="searching_news">Поиск новостей</string>
     <string name="currency_title">Курсы валют</string>
     <string name="hot_news">Горячие новости</string>
@@ -53,6 +61,8 @@
     <string name="positive">Позитивные</string>
     <string name="negative">Негативные</string>
     <string name="neutral">Нейтральные</string>
+    <string name="number">численно</string>
+    <string name="regarding">относительно</string>
 
     <!-- unsorted strings -->
 
@@ -64,5 +74,8 @@
     <string name="alphabet">алфавит</string>
     <string name="choice">выбор</string>
     <string name="view">Вид :</string>
+    <string name="select_format">Выберете формат :</string>
+    <string name="number_format_desc">Тональность статей Вы будете получать в численном формате (от 0 до 1), где 0 - очень негативныя новость, а 1 - позитивная</string>
+    <string name="regarding_format_desc">Тональность статей Вы будете получать в словесном формате (новость может бытоь позитивной, нейтральной и негативной) </string>
 
 </resources>

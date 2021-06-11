@@ -67,6 +67,7 @@
             android:layout_height="match_parent"
             android:background="@drawable/bg_settings"
             android:elevation="30dp"
+            android:overScrollMode="never"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
             <RelativeLayout
@@ -211,6 +212,7 @@
                     android:layout_marginStart="80dp"
                     android:layout_marginTop="15dp"
                     android:layout_marginEnd="80dp"
+                    android:overScrollMode="never"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:spanCount="2"
                     tools:itemCount="2"
@@ -223,6 +225,7 @@
                     android:layout_below="@+id/recycler_view_currency"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="15dp"
+                    android:overScrollMode="never"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:spanCount="2"
                     tools:listitem="@layout/item_settings" />

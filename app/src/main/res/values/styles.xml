@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -23,7 +23,7 @@
         <item name="android:layout_marginTop">10dp</item>
     </style>
 
-    <style name="input_text_login">
+    <style name="inputTextLogin">
         <item name="android:layout_marginStart">20dp</item>
         <item name="android:layout_marginEnd">20dp</item>
         <item name="android:drawablePadding">10dp</item>
@@ -33,12 +33,6 @@
         <item name="android:textColorHint">@color/dark_text</item>
         <item name="android:textColor">@color/dark_text</item>
         <item name="android:fontFamily">@font/monserrat</item>
-    </style>
-
-    <style name="Theme.MaterialButton" parent="AppTheme">
-        <item name="colorAccent">#D63838</item>
-        <item name="colorButtonNormal">#14ED3A</item>
-        <item name="background">@drawable/change_name_btn_ok</item>
     </style>
 
 </resources>

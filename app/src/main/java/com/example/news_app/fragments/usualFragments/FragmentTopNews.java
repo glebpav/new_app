@@ -64,6 +64,7 @@ public class FragmentTopNews extends Fragment {
     public void onResume() {
         super.onResume();
 
+        adapterTopNews.updateToneType();
         savedData = new SavedData();
         savedData = jsonManager.readUserFromJson();
         Log.d(TAG, "onResume111: " + savedData.getListTopNews());

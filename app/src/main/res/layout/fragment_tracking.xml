@@ -21,6 +21,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="80dp"
         tools:listitem="@layout/item_tracking_news"
+        android:overScrollMode="never"
         android:visibility="invisible"/>
 
     <RelativeLayout

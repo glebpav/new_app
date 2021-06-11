@@ -68,7 +68,7 @@
                         android:layout_marginTop="40dp"
                         android:hint="Логин"
                         android:drawableLeft="@drawable/ic_mail_outline_black_24dp"
-                        style="@style/input_text_login"/>
+                        style="@style/inputTextLogin"/>
 
                     <EditText
                         android:id="@+id/et_password"
@@ -76,7 +76,7 @@
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/ic_lock_outline_black_24dp"
                         android:hint="Пароль"
-                        style="@style/input_text_login"
+                        style="@style/inputTextLogin"
                         android:inputType="textPassword"/>
 
                     <CheckBox

@@ -27,6 +27,7 @@ import com.example.news_app.adapters.AdapterSettingTiles;
 import com.example.news_app.databinding.FragmentSettingsBinding;
 import com.example.news_app.fileManagers.JsonManager;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentChangeName;
+import com.example.news_app.fragments.dialogFragments.DialogFragmentChangeToneFormat;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentHistory;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentSelectCurrency;
@@ -72,6 +73,7 @@ public class FragmentSettings extends Fragment {
     private DialogFragmentChangeName fragmentChangeName;
     private DialogFragmentSureToLogOut fragmentSureToLogOut;
     private DialogFragmentSelectCurrency fragmentSelectCurrency;
+    private DialogFragmentChangeToneFormat fragmentChangeToneFormat;
 
     public FragmentSettings(User user, ViewPager2 pager, MeowBottomNavigation meow) {
         this.mUser = user;
@@ -298,6 +300,11 @@ public class FragmentSettings extends Fragment {
         fragmentSelectCurrency.show(getFragmentManager(), "FragmentSettings");
     }
 
+    private void changeToneFormat() {
+        fragmentChangeToneFormat = new DialogFragmentChangeToneFormat();
+        fragmentChangeToneFormat.show(getParentFragmentManager(), "FragmentSetting");
+    }
+
     private void updateSavedData() {
         SavedData newData = new SavedData(mUser);
         newData.setListTopNews(savedData.getListTopNews());
@@ -307,15 +314,24 @@ public class FragmentSettings extends Fragment {
     }
 
     private final DialogFragmentHistory.OnAdapterTileHistoryClickedListener adapterTileHistoryClickedListener = position -> {
-        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-        SharedPreferences.Editor edt = pref.edit();
-        edt.putString("SearchingTheme", mUser.getHistory().split(";")
-                [(mUser.getHistory().split(";")).length - position - 1]);
-        edt.apply();
+        Log.d(TAG, "adapterHistory : " + MakeRequests.isInternetAvailable(getContext()));
+        if (MakeRequests.isInternetAvailable(getContext())) {
+            SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+            SharedPreferences.Editor edt = pref.edit();
+            edt.putString("SearchingTheme", mUser.getHistory().split(";")
+                    [(mUser.getHistory().split(";")).length - position - 1]);
+            edt.apply();
 
-        fragmentHistory.dismiss();
-        pager.setCurrentItem(0);
-        meow.show(0, true);
+            fragmentHistory.dismiss();
+            pager.setCurrentItem(0);
+            meow.show(0, true);
+        }else{
+            MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
+                    MotionToast.TOAST_ERROR,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.LONG_DURATION,
+                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+        }
     };
 
     private final AdapterSettingTiles.OnClickedSettingsItemListener onClickedSettingsItemListener = point -> {
@@ -334,6 +350,9 @@ public class FragmentSettings extends Fragment {
                 break;
             case CHANGE_CURRENCY:
                 changeCurrency();
+                break;
+            case IN_FUTURE2:
+                changeToneFormat();
                 break;
         }
     };

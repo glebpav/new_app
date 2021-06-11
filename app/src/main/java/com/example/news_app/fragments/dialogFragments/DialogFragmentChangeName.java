@@ -46,12 +46,7 @@ public class DialogFragmentChangeName extends DialogFragment {
         return binding.getRoot();
     }
 
-    View.OnClickListener btnDismissClicked = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            getDialog().dismiss();
-        }
-    };
+    View.OnClickListener btnDismissClicked = v -> getDialog().dismiss();
 
     View.OnClickListener btnApplyClicked = new View.OnClickListener() {
         @Override

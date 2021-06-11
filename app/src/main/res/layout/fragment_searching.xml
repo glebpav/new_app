@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animationCache="false"
+    android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
     tools:context=".fragments.usualFragments.FragmentSearching">
 
     <RelativeLayout

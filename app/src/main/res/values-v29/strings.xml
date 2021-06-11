@@ -1,6 +1,12 @@
 <resources>
 
+    <!-- App name -->
+
     <string name="app_name">News findeR</string>
+
+    <!-- Preferences names -->
+
+    <string name="tone_format">TONE_FORMAT</string>
 
     <!-- Headers for fragments -->
 
