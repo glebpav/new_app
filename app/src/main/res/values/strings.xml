@@ -20,6 +20,7 @@
     <string name="warning">Внимание !</string>
     <string name="sources">Источники</string>
     <string name="history">История</string>
+    <string name="output_type">Формат</string>
 
     <!-- Responses from site -->
 

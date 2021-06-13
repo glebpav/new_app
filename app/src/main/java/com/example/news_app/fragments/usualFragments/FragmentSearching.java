@@ -118,6 +118,11 @@ public class FragmentSearching extends Fragment {
     public void onResume() {
         super.onResume();
 
+        if (adapterArticleBigTiles != null){
+            adapterArticleBigTiles.updateToneType();
+            binding.viewPager.setAdapter(adapterArticleBigTiles);
+        }
+
         if (requests.isInternetAvailable(getContext())) {
             SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
             String themeFromPage = pref.getString("SearchingTheme", "");
@@ -136,16 +141,11 @@ public class FragmentSearching extends Fragment {
                     MotionToast.GRAVITY_BOTTOM,
                     MotionToast.LONG_DURATION,
                     ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-            binding.btnFind.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
-                            MotionToast.TOAST_ERROR,
-                            MotionToast.GRAVITY_BOTTOM,
-                            MotionToast.LONG_DURATION,
-                            ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-                }
-            });
+            binding.btnFind.setOnClickListener(v -> MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
+                    MotionToast.TOAST_ERROR,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.LONG_DURATION,
+                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular)));
         }
     }
 
@@ -157,6 +157,11 @@ public class FragmentSearching extends Fragment {
         binding.viewPager.setVisibility(View.INVISIBLE);
         binding.errorLayout.setVisibility(View.INVISIBLE);
         binding.layoutSortingTop.setVisibility(View.INVISIBLE);
+    }
+
+    private void initChipArray() {
+        chipArray = new ArrayList<>();
+        for (int i = 0; i < 3; i++) chipArray.add(true);
     }
 
     private void onChipArrayChanged() {
@@ -177,11 +182,6 @@ public class FragmentSearching extends Fragment {
         adapterArticleSmallTiles.setListNews(showingNews);
         adapterArticleSmallTiles.notifyDataSetChanged();
         binding.viewPager.setAdapter(adapterArticleBigTiles);
-    }
-
-    private void initChipArray() {
-        chipArray = new ArrayList<>();
-        for (int i = 0; i < 3; i++) chipArray.add(true);
     }
 
     @SuppressLint("LongLogTag")

@@ -7,7 +7,7 @@ public enum SettingsPoints {
     CHANGE_NAME(R.drawable.ic_baseline_drive_file_rename_outline_24, R.string.rename),
     SHOW_HISTORY(R.drawable.ic_baseline_history_24, R.string.history),
     CHANGE_CURRENCY(R.drawable.ic_baseline_attach_money_24, R.string.currency),
-    IN_FUTURE2(R.drawable.ic_baseline_do_not_disturb_24, R.string.in_future),
+    IN_FUTURE2(R.drawable.ic_baseline_stacked_line_chart_24, R.string.output_type),
     CHANGE_SOURCES(R.drawable.ic_baseline_find_replace_24, R.string.sources),
     LOG_OUT(R.drawable.ic_baseline_logout_24, R.string.log_out);
 
