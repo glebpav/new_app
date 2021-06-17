@@ -1,5 +1,6 @@
 package com.example.news_app.fragments.usualFragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -102,6 +103,7 @@ public class FragmentSettings extends Fragment {
         return binding.getRoot();
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onResume() {
         super.onResume();
@@ -130,7 +132,6 @@ public class FragmentSettings extends Fragment {
                     if (savedData.getListAllCurrency().get(i).getCharCode().equals(savedData
                             .getListSelectedCurrency().get(j))) {
                         outputListCurrency.add(savedData.getListAllCurrency().get(i));
-                        //savedData.getListAllCurrency().get(i).setHidden(false);
                         break;
                     }
                 }
@@ -142,7 +143,8 @@ public class FragmentSettings extends Fragment {
 
             Weather savedWeather = savedData.getWeather();
             if (savedWeather != null) {
-                binding.tvTemp.setText(savedWeather.getTemperature());
+                int tempInt = (int) Double.parseDouble(savedWeather.getTemperature());
+                binding.tvTemp.setText(tempInt + "°");
                 binding.tvWeatherDesc.setText(savedWeather.getWeatherDesc());
                 Picasso.with(getContext()).load(savedWeather.getIconUrl()).into(binding.imgWeatherDesc);
                 YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.imgWeatherDesc);
@@ -152,7 +154,6 @@ public class FragmentSettings extends Fragment {
             binding.tvCountThemes.setText(String.valueOf(savedData.getListHistory().size()));
             binding.tvCountTracking.setText(String.valueOf(savedData.getListThemes().size()));
 
-            //fragmentProgress.dismiss();
             binding.nestedScrollView.setVisibility(View.VISIBLE);
             binding.appbar.setVisibility(View.VISIBLE);
         }
@@ -411,9 +412,11 @@ public class FragmentSettings extends Fragment {
         }, 500);
     };
 
+    @SuppressLint("SetTextI18n")
     private final ParseWeather.OnFindWeatherListener onFindWeatherListener = weather -> {
         if (weather != null) {
-            binding.tvTemp.setText(weather.getTemperature());
+            int tempInt = (int) Double.parseDouble(weather.getTemperature());
+            binding.tvTemp.setText(tempInt + "°");
             binding.tvWeatherDesc.setText(weather.getWeatherDesc());
             Picasso.with(getContext()).load(weather.getIconUrl()).into(binding.imgWeatherDesc);
 

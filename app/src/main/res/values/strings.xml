@@ -45,7 +45,6 @@
     <string name="password_error">пароль должен содержать цифры, символы, и быть не короче 6 символов</string>
     <string name="no_internet">Отсутствует подключение к интернету</string>
     <string name="successful_changed">Успешно изменено</string>
-    <string name="add_new">добавьте новую тему</string>
     <string name="enter_name">введите пароль</string>
 
     <!-- Button's texts -->
@@ -65,11 +64,18 @@
     <string name="number">численно</string>
     <string name="regarding">относительно</string>
 
-    <!-- unsorted strings -->
+    <!-- Info cards -->
+
+    <string name="enter_theme">Введите тему, чтобы</string>
+    <string name="know_more">узнать новое</string>
+    <string name="is_empty_now">Здесь пока пусто</string>
+    <string name="add_new">добавьте новую тему</string>
+
+    <!-- Unsorted strings -->
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="are_you_sure">Вы уверены, что хотите выйти?</string>
-    <string name="is_empty_now">Здесь пока пусто</string>
+
     <string name="sort_to">сортировать </string>
     <string name="loading">Загрузка…</string>
     <string name="alphabet">алфавит</string>
@@ -78,5 +84,6 @@
     <string name="select_format">Выберете формат :</string>
     <string name="number_format_desc">Тональность статей Вы будете получать в численном формате (от 0 до 1), где 0 - очень негативныя новость, а 1 - позитивная</string>
     <string name="regarding_format_desc">Тональность статей Вы будете получать в словесном формате (новость может бытоь позитивной, нейтральной и негативной) </string>
+
 
 </resources>

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,8 @@ import static java.security.AccessController.getContext;
 
 public class AdapterNews extends PagerAdapter {
 
+    private static final String TAG = "ADAPTER_NEWS_SPACE";
+
     private String toneType;
     private final Context mContext;
     private ArrayList<News> listNews;
@@ -42,6 +45,7 @@ public class AdapterNews extends PagerAdapter {
         this.listNews = new ArrayList<>();
         this.listNews = listNews;
         toneType = getToneFormatFromPref();
+        Log.d(TAG, "AdapterNews: news tone - " + toneType);
     }
 
     @Override
@@ -98,7 +102,8 @@ public class AdapterNews extends PagerAdapter {
     }
 
     private void setRatingValue(double ratingValue) {
-        if (toneType == null || toneType == "REG") {
+        Log.d(TAG, "setRatingValue: tone - " + toneType);
+        if (toneType == null || toneType.equals("REG")) {
             if (ratingValue < 0.35) {
                 binding.tvTileRating.setText("Негативно");
             } else if (ratingValue <= 0.65) {

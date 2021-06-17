@@ -240,16 +240,49 @@
 
         </RelativeLayout>
 
-        <ImageView
-            android:id="@+id/img_hello"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:alpha="0.3"
-            android:padding="40dp"
-            android:scaleType="fitEnd"
-            android:src="@drawable/find4" />
+            android:layout_height="match_parent"
+            android:layout_below="@+id/layout_sorting_top">
+
+            <RelativeLayout
+                android:id="@+id/img_hello"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="@drawable/bg_tumbleweed"
+                android:elevation="20dp"
+                android:padding="30dp"
+                android:visibility="visible">
+
+                <pl.droidsonroids.gif.GifImageView
+                    android:id="@+id/img_tumbleweed"
+                    android:layout_width="240dp"
+                    android:layout_height="200dp"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/rocket" />
+
+                <TextView
+                    android:id="@+id/tv_is_empty_now"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/img_tumbleweed"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/enter_theme"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_is_empty_now"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/know_more"
+                    android:textSize="20sp" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
 
     </RelativeLayout>
 </RelativeLayout>

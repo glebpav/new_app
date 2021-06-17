@@ -91,7 +91,8 @@
                         <LinearLayout
                             android:id="@+id/linear1"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="130dp"
+                            android:gravity="center"
                             android:orientation="horizontal"
                             android:padding="10dp">
 
@@ -159,56 +160,68 @@
 
                             </LinearLayout>
                         </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/layout_weather"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/linear1"
-                            android:layout_centerHorizontal="true"
-                            android:orientation="horizontal"
-                            android:padding="5dp">
-
-                            <TextView
-                                android:id="@+id/tv_temp"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="5dp"
-                                android:text="---"
-                                android:textAlignment="textEnd"
-                                android:textSize="15sp" />
-
-                            <TextView
-                                android:id="@+id/tv_weather_desc"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="5dp"
-                                android:text="---"
-                                android:textAlignment="textStart"
-                                android:textSize="15sp" />
-
-                        </LinearLayout>
-
-                        <ImageView
-                            android:id="@+id/img_weather_desc"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/layout_weather"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginBottom="10dp"
-                            android:background="@drawable/bg_white_round"
-                            android:elevation="5dp" />
-
                     </RelativeLayout>
 
                 </soup.neumorphism.NeumorphCardView>
+
+                <LinearLayout
+                    android:id="@+id/layout_weather"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/layout_user_info"
+                    android:layout_centerHorizontal="true"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+
+
+                    <TextView
+                        android:id="@+id/tv_today"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:text="Сегодя "
+                        android:textSize="20sp"
+                        android:layout_gravity="center"/>
+
+                    <TextView
+                        android:id="@+id/tv_temp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:text="---"
+                        android:textSize="20sp"
+                        android:layout_gravity="center"/>
+
+                    <ImageView
+                        android:id="@+id/img_weather_desc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/bg_white_round"
+                        android:elevation="5dp"
+                        android:layout_marginEnd="5dp"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_weather_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/layout_weather"
+                    android:text="---"
+                    android:visibility="gone"
+                    android:textAlignment="textStart"
+                    android:textSize="15sp" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_view_currency"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/layout_user_info"
+                    android:layout_below="@+id/tv_weather_desc"
                     android:layout_marginStart="80dp"
                     android:layout_marginTop="15dp"
                     android:layout_marginEnd="80dp"
