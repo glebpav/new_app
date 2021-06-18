@@ -92,6 +92,7 @@ public class FragmentSearching extends Fragment {
         binding.chipPos.setOnClickListener(chipPosClicked);
         binding.chipNeut.setOnClickListener(chipNeutClicked);
         binding.chipNeg.setOnClickListener(chipNegClicked);
+        binding.btnFind.setOnClickListener(btnFindClicked);
 
         binding.imgSortAlphabet.setOnClickListener(imgSortAlphabetClicked);
         binding.imgSortPositive.setOnClickListener(imgSortPositiveClicked);
@@ -123,7 +124,7 @@ public class FragmentSearching extends Fragment {
             binding.viewPager.setAdapter(adapterArticleBigTiles);
         }
 
-        if (requests.isInternetAvailable(getContext())) {
+        if (MakeRequests.isInternetAvailable(getContext())) {
             SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
             String themeFromPage = pref.getString("SearchingTheme", "");
 
@@ -134,18 +135,12 @@ public class FragmentSearching extends Fragment {
                 edt.putString("SearchingTheme", "");
                 edt.apply();
             }
-            binding.btnFind.setOnClickListener(btnFindClicked);
         } else {
             MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
                     MotionToast.TOAST_ERROR,
                     MotionToast.GRAVITY_BOTTOM,
                     MotionToast.LONG_DURATION,
                     ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-            binding.btnFind.setOnClickListener(v -> MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
-                    MotionToast.TOAST_ERROR,
-                    MotionToast.GRAVITY_BOTTOM,
-                    MotionToast.LONG_DURATION,
-                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular)));
         }
     }
 
@@ -247,12 +242,20 @@ public class FragmentSearching extends Fragment {
     };
 
     private final View.OnClickListener btnFindClicked = v -> {
-        String theme = binding.etTheme.getText().toString();
-        if (theme.length() == 0) {
-            Toast.makeText(getActivity(), "Введите тему", Toast.LENGTH_SHORT).show();
-            return;
+        if (MakeRequests.isInternetAvailable(getContext())) {
+            String theme = binding.etTheme.getText().toString();
+            if (theme.length() == 0) {
+                Toast.makeText(getActivity(), "Введите тему", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            findNews(theme);
+        } else {
+            MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
+                    MotionToast.TOAST_ERROR,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.LONG_DURATION,
+                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
         }
-        findNews(theme);
     };
 
     private final View.OnClickListener chipPosClicked = v -> {

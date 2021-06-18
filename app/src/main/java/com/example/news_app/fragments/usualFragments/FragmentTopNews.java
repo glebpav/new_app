@@ -78,18 +78,27 @@ public class FragmentTopNews extends Fragment {
             //fragmentProgressBar.show(getFragmentManager(), "FragmentTopNews");
         }
 
-        if (requests.isInternetAvailable(getContext())) {
+        if (MakeRequests.isInternetAvailable(getContext())) {
             binding.progressSyncing.setVisibility(View.VISIBLE);
             YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
 
             MakeRequests.FindTopNews find_topNews = requests.new FindTopNews(onFindTopNewsListener);
             find_topNews.execute();
         } else {
-            MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
-                    MotionToast.TOAST_ERROR,
-                    MotionToast.GRAVITY_BOTTOM,
-                    MotionToast.LONG_DURATION,
-                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+            String dateOfSaving = jsonManager.readSavedDate();
+            if (savedData != null && dateOfSaving != null)
+                MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "последнее сохранение \n" + dateOfSaving,
+                        MotionToast.TOAST_ERROR,
+                        MotionToast.GRAVITY_BOTTOM,
+                        MotionToast.LONG_DURATION,
+                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+            else{
+                MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
+                        MotionToast.TOAST_ERROR,
+                        MotionToast.GRAVITY_BOTTOM,
+                        MotionToast.LONG_DURATION,
+                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+            }
         }
     }
 

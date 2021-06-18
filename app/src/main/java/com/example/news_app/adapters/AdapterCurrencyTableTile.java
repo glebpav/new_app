@@ -83,6 +83,7 @@ public class AdapterCurrencyTableTile extends RecyclerView.Adapter<AdapterCurren
 
     @Override
     public int getItemCount() {
+        if (listCurrency == null) return 0;
         return listCurrency.size();
     }
 

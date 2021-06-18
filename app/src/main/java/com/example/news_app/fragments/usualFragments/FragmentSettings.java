@@ -108,21 +108,30 @@ public class FragmentSettings extends Fragment {
     public void onResume() {
         super.onResume();
 
+        Log.d(TAG, "onResume: ");
+        savedData = jsonManager.readUserFromJson();
+        //Log.d(TAG, "onResume: " + savedData.getListHistory());
+
         if (MakeRequests.isInternetAvailable(getContext())) {
             binding.progressSyncing.setVisibility(View.VISIBLE);
             YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
         } else {
-            MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
-                    MotionToast.TOAST_ERROR,
-                    MotionToast.GRAVITY_BOTTOM,
-                    MotionToast.LONG_DURATION,
-                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+            String dateOfSaving = jsonManager.readSavedDate();
+            if (savedData != null && dateOfSaving != null)
+                MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "последнее сохранение \n" + dateOfSaving,
+                        MotionToast.TOAST_ERROR,
+                        MotionToast.GRAVITY_BOTTOM,
+                        MotionToast.LONG_DURATION,
+                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+            else {
+                MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
+                        MotionToast.TOAST_ERROR,
+                        MotionToast.GRAVITY_BOTTOM,
+                        MotionToast.LONG_DURATION,
+                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+            }
             //binding.recyclerViewSettings.setClickable(false);
         }
-
-        Log.d(TAG, "onResume: ");
-        savedData = jsonManager.readUserFromJson();
-        Log.d(TAG, "onResume: " + savedData.getListHistory());
 
         if (savedData != null && savedData.getListAllCurrency() != null) {
 
@@ -141,11 +150,26 @@ public class FragmentSettings extends Fragment {
             adapterCurrencyTile.notifyDataSetChanged();
 
 
-            Weather savedWeather = savedData.getWeather();
+            Weather savedWeather = jsonManager.readSavedWeather();
             if (savedWeather != null) {
-                int tempInt = (int) Double.parseDouble(savedWeather.getTemperature());
-                binding.tvTemp.setText(tempInt + "°");
+                try {
+                    int tempInt = (int) Double.parseDouble(savedWeather.getTemperature());
+                    binding.tvTemp.setText(tempInt + "°");
+                } catch (Exception e) {
+                }
+
                 binding.tvWeatherDesc.setText(savedWeather.getWeatherDesc());
+
+                binding.imgWeatherDesc.setOnClickListener(v -> {
+                    //Toast.makeText(getContext(), savedWeather.getWeatherDesc(), Toast.LENGTH_SHORT).show();
+
+                    MotionToast.Companion.createColorToast(getActivity(), "Описание погоды", savedWeather.getWeatherDesc(),
+                            MotionToast.TOAST_INFO,
+                            MotionToast.GRAVITY_BOTTOM,
+                            MotionToast.LONG_DURATION,
+                            ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+                });
+
                 Picasso.with(getContext()).load(savedWeather.getIconUrl()).into(binding.imgWeatherDesc);
                 YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.imgWeatherDesc);
             }
@@ -326,7 +350,7 @@ public class FragmentSettings extends Fragment {
             fragmentHistory.dismiss();
             pager.setCurrentItem(0);
             meow.show(0, true);
-        }else{
+        } else {
             MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
                     MotionToast.TOAST_ERROR,
                     MotionToast.GRAVITY_BOTTOM,
@@ -352,7 +376,7 @@ public class FragmentSettings extends Fragment {
             case CHANGE_CURRENCY:
                 changeCurrency();
                 break;
-            case IN_FUTURE2:
+            case CHANGE_FORMAT:
                 changeToneFormat();
                 break;
         }
@@ -380,6 +404,7 @@ public class FragmentSettings extends Fragment {
 
         SavedData loadedDataFromInter = new SavedData();
         loadedDataFromInter.prepareToSave(mUser, listCurrency);
+
 
         ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
         for (int i = 0; i < listCurrency.size(); i++) {
@@ -420,9 +445,15 @@ public class FragmentSettings extends Fragment {
             binding.tvWeatherDesc.setText(weather.getWeatherDesc());
             Picasso.with(getContext()).load(weather.getIconUrl()).into(binding.imgWeatherDesc);
 
-            savedData = jsonManager.readUserFromJson();
-            savedData.setWeather(weather);
-            jsonManager.writeDataToJson(savedData);
+            binding.imgWeatherDesc.setOnClickListener(v -> {
+                MotionToast.Companion.createColorToast(getActivity(), "Описание погоды", weather.getWeatherDesc(),
+                        MotionToast.TOAST_INFO,
+                        MotionToast.GRAVITY_BOTTOM,
+                        MotionToast.LONG_DURATION,
+                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+            });
+
+            jsonManager.writeSavingWeather(weather);
         }
     };
 

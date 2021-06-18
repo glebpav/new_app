@@ -37,8 +37,6 @@ import java.util.Arrays;
 
 import www.sanju.motiontoast.MotionToast;
 
-// Todo : disable buttons in adapter Themes when internet is't available
-
 public class FragmentTrackingTheme extends Fragment {
 
     final static String TAG = "FRAGMENT_TRACKING_SPACE";
@@ -67,6 +65,7 @@ public class FragmentTrackingTheme extends Fragment {
         binding = FragmentTrackingBinding.inflate(inflater, container, false);
 
         binding.btnAddTrackingTheme.setOnClickListener(btnAddThemeClicked);
+
         binding.progressSyncing.setVisibility(View.INVISIBLE);
         binding.layoutNoTrackingTheme.setVisibility(View.INVISIBLE);
 
@@ -98,25 +97,28 @@ public class FragmentTrackingTheme extends Fragment {
             printThemes(savedData.getListThemes());
         }
         if (MakeRequests.isInternetAvailable(getContext())) {
-            binding.btnAddTrackingTheme.setOnClickListener(btnAddThemeClicked);
             binding.progressSyncing.setVisibility(View.VISIBLE);
             YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
             requests.new LoadUser(mUser.getLogin(), mUser.getPassword(), loadUserListener).execute();
         } else {
-            MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
-                    MotionToast.TOAST_ERROR,
-                    MotionToast.GRAVITY_BOTTOM,
-                    MotionToast.LONG_DURATION,
-                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-            binding.btnAddTrackingTheme.setOnClickListener(v -> MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
-                    MotionToast.TOAST_ERROR,
-                    MotionToast.GRAVITY_BOTTOM,
-                    MotionToast.LONG_DURATION,
-                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular)));
+            String dateOfSaving = jsonManager.readSavedDate();
+            if (savedData != null && dateOfSaving != null) {
+                MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "последнее сохранение \n" + dateOfSaving,
+                        MotionToast.TOAST_ERROR,
+                        MotionToast.GRAVITY_BOTTOM,
+                        MotionToast.LONG_DURATION,
+                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+            } else {
+                MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
+                        MotionToast.TOAST_ERROR,
+                        MotionToast.GRAVITY_BOTTOM,
+                        MotionToast.LONG_DURATION,
+                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+            }
         }
     }
 
-    void printThemes (ArrayList <String> list){
+    void printThemes(ArrayList<String> list) {
         adapter.setThemesList(list);
         adapter.notifyDataSetChanged();
 
@@ -142,7 +144,6 @@ public class FragmentTrackingTheme extends Fragment {
         loadedDataFromInter.prepareToSave(mUser, savedData.getListAllCurrency());
 
         loadedDataFromInter.setListTopNews(loadedDataFromJson.getListTopNews());
-        loadedDataFromInter.setWeather(loadedDataFromJson.getWeather());
 
         printThemes(mUser.getListThemes());
 
@@ -207,7 +208,15 @@ public class FragmentTrackingTheme extends Fragment {
     };
 
     private final View.OnClickListener btnAddThemeClicked = v -> {
-        dialogFragmentAddTheme = new DialogFragmentAddTheme(btnApplyClickListener);
-        dialogFragmentAddTheme.show(getFragmentManager(), "DialogFragmentAddTheme");
+        if (MakeRequests.isInternetAvailable(getContext())) {
+            dialogFragmentAddTheme = new DialogFragmentAddTheme(btnApplyClickListener);
+            dialogFragmentAddTheme.show(getFragmentManager(), "DialogFragmentAddTheme");
+        } else {
+            MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
+                    MotionToast.TOAST_ERROR,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.LONG_DURATION,
+                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+        }
     };
 }

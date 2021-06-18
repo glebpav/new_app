@@ -43,7 +43,8 @@
                     android:importantForAutofill="no"
                     android:inputType="text"
                     android:textColor="@color/dark_text"
-                    tools:ignore="LabelFor" />
+                    tools:ignore="LabelFor"
+                    android:hint="@string/hint_enter_theme"/>
 
             </soup.neumorphism.NeumorphCardView>
 
@@ -71,6 +72,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 app:singleLine="true"
+                app:selectionRequired="true"
                 tools:ignore="RelativeOverlap">
 
                 <com.google.android.material.chip.Chip

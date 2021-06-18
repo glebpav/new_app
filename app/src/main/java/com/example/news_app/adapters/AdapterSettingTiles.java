@@ -3,7 +3,6 @@ package com.example.news_app.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -13,10 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.news_app.R;
 import com.example.news_app.databinding.ItemSettingsBinding;
 import com.example.news_app.enums.SettingsPoints;
-import com.example.news_app.models.SettingTile;
 import com.example.news_app.network.MakeRequests;
-
-import java.util.ArrayList;
 
 import www.sanju.motiontoast.MotionToast;
 
@@ -47,7 +43,8 @@ public class AdapterSettingTiles extends RecyclerView.Adapter<AdapterSettingTile
         holder.binding.layoutItem.setOnClickListener(v -> {
             if (MakeRequests.isInternetAvailable(context)
                     || point == SettingsPoints.CHANGE_CURRENCY
-                    || point == SettingsPoints.SHOW_HISTORY)
+                    || point == SettingsPoints.SHOW_HISTORY
+                    || point == SettingsPoints.CHANGE_FORMAT)
                 mListener.onClicked(point);
             else {
                 MotionToast.Companion.createColorToast((Activity) context,

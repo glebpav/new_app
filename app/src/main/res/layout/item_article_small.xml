@@ -10,7 +10,7 @@
         android:layout_height="200dp"
         tools:ignore="MissingConstraints"
         android:background="@drawable/bg_tumbleweed"
-        android:elevation="1dp"
+        android:elevation="5dp"
         android:layout_margin="10dp"
         app:cardCornerRadius="20dp"
         android:id="@+id/card_view_small_article">

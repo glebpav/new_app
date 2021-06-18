@@ -76,7 +76,7 @@
                 app:layout_constrainedHeight="true"
                 app:layout_constraintBottom_toBottomOf="@+id/Id_const_layout"
                 app:layout_constraintEnd_toEndOf="@+id/Id_const_layout"
-                app:layout_constraintHeight_max="500dp"
+                app:layout_constraintHeight_max="400dp"
                 app:layout_constraintStart_toStartOf="@+id/Id_const_layout"
                 app:layout_constraintTop_toTopOf="@+id/Id_const_layout"
                 android:layout_centerHorizontal="true"
@@ -102,7 +102,6 @@
         android:text="@string/understand"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="#FFF"
-        android:textColorHighlight="#DD5050"
         android:textColorLink="#FFFFFF"
         android:textCursorDrawable="@drawable/bg"
         android:textSize="15sp" />
