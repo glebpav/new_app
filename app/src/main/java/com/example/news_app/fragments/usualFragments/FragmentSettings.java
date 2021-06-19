@@ -25,6 +25,7 @@ import com.example.news_app.activities.ActivityMain;
 import com.example.news_app.R;
 import com.example.news_app.adapters.AdapterCurrencyTile;
 import com.example.news_app.adapters.AdapterSettingTiles;
+import com.example.news_app.databases.DataBaseHelper;
 import com.example.news_app.databinding.FragmentSettingsBinding;
 import com.example.news_app.fileManagers.JsonManager;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentChangeName;
@@ -35,12 +36,14 @@ import com.example.news_app.fragments.dialogFragments.DialogFragmentSelectCurren
 import com.example.news_app.fragments.dialogFragments.DialogFragmentSources;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentSureToLogOut;
 import com.example.news_app.models.CentBankCurrency;
+import com.example.news_app.models.News;
 import com.example.news_app.models.SavedData;
 import com.example.news_app.models.Weather;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.models.User;
 import com.example.news_app.network.ParseCourse;
 import com.example.news_app.network.ParseWeather;
+import com.example.news_app.utils.SharedPreferencesHelper;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
@@ -61,6 +64,7 @@ public class FragmentSettings extends Fragment {
     private User mUser;
     private SavedData savedData;
     private MakeRequests requests;
+    private DataBaseHelper dbHelper;
     private JsonManager jsonManager;
     private FragmentSettingsBinding binding;
     private AdapterSettingTiles adapterSettingTiles;
@@ -80,6 +84,9 @@ public class FragmentSettings extends Fragment {
         this.mUser = user;
         this.meow = meow;
         this.pager = pager;
+    }
+
+    public FragmentSettings() {
     }
 
     @Override
@@ -108,9 +115,14 @@ public class FragmentSettings extends Fragment {
     public void onResume() {
         super.onResume();
 
-        Log.d(TAG, "onResume: ");
+        dbHelper = DataBaseHelper.getDataBaseHelperInstance(getContext());
+        dbHelper.new GetCurrencies(onGetCurrencyListener).execute();
+
+        // todo : from here
+
         savedData = jsonManager.readUserFromJson();
-        //Log.d(TAG, "onResume: " + savedData.getListHistory());
+
+        // todo : to here
 
         if (MakeRequests.isInternetAvailable(getContext())) {
             binding.progressSyncing.setVisibility(View.VISIBLE);
@@ -134,21 +146,6 @@ public class FragmentSettings extends Fragment {
         }
 
         if (savedData != null && savedData.getListAllCurrency() != null) {
-
-            ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
-            for (int i = 0; i < savedData.getListAllCurrency().size(); i++) {
-                for (int j = 0; j < savedData.getListSelectedCurrency().size(); j++) {
-                    if (savedData.getListAllCurrency().get(i).getCharCode().equals(savedData
-                            .getListSelectedCurrency().get(j))) {
-                        outputListCurrency.add(savedData.getListAllCurrency().get(i));
-                        break;
-                    }
-                }
-            }
-
-            adapterCurrencyTile.setListCurrency(outputListCurrency);
-            adapterCurrencyTile.notifyDataSetChanged();
-
 
             Weather savedWeather = jsonManager.readSavedWeather();
             if (savedWeather != null) {
@@ -284,9 +281,14 @@ public class FragmentSettings extends Fragment {
                             mListCurrency.get(mListCurrency.indexOf(currency)).setHidden(false);
                         }
 
-                        for (String str : mUser.getListCurrency())
-                            Log.d(TAG, "onSelected: " + str);
                         mUser.reformCurrencyString();
+                        mUser.reformCurrencyString();
+                        SharedPreferencesHelper.writeToPref(
+                                getContext().getResources().getString(R.string.selected_currency),
+                                getContext().getResources().getString(R.string.selected_currency_key),
+                                mUser.getCurrency(),
+                                getContext());
+
                         Log.d(TAG, "onSelected: " + mListCurrency.get(mListCurrency.indexOf(currency)).getName() + " (isHidden - " + mListCurrency.get(mListCurrency.indexOf(currency)).isHidden() + ")");
                         Log.d(TAG, "onSelected: " + mUser.getCurrency());
 
@@ -302,7 +304,6 @@ public class FragmentSettings extends Fragment {
                         for (int i = 0; i < mListCurrency.size(); i++) {
                             if (!mListCurrency.get(i).isHidden()) {
                                 outputListCurrency.add(mListCurrency.get(i));
-                                System.out.println(mListCurrency.get(i).getCharCode());
                             }
                         }
 
@@ -336,6 +337,14 @@ public class FragmentSettings extends Fragment {
         newData.setListAllCurrency(savedData.getListAllCurrency());
 
         jsonManager.writeDataToJson(newData);
+    }
+
+    void saveCurrencyToDb(ArrayList<CentBankCurrency> listCurrency) {
+        new Thread(() -> {
+            dbHelper.getAppDataBase().getCurrencyDao().deleteAll();
+            dbHelper.getAppDataBase().getCurrencyDao().insertAll(listCurrency.toArray
+                    (new CentBankCurrency[listCurrency.size()]));
+        }).start();
     }
 
     private final DialogFragmentHistory.OnAdapterTileHistoryClickedListener adapterTileHistoryClickedListener = position -> {
@@ -402,9 +411,16 @@ public class FragmentSettings extends Fragment {
         mUser.fillListCurrency();
         mListCurrency = listCurrency;
 
+        if (listCurrency != null) {
+            saveCurrencyToDb(mListCurrency);
+        }
+
+        // todo : from here
+
         SavedData loadedDataFromInter = new SavedData();
         loadedDataFromInter.prepareToSave(mUser, listCurrency);
 
+        // todo : to here
 
         ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
         for (int i = 0; i < listCurrency.size(); i++) {
@@ -457,11 +473,47 @@ public class FragmentSettings extends Fragment {
         }
     };
 
+    private final DataBaseHelper.OnGetCurrencyListener onGetCurrencyListener = listCurrency -> {
+        mListCurrency = (ArrayList<CentBankCurrency>) listCurrency;
+
+        ArrayList<String> selectedCurrencyCharCode = new ArrayList<>();
+        String currencyStr = SharedPreferencesHelper.readFromPref(
+                getContext().getResources().getString(R.string.selected_currency),
+                getContext().getResources().getString(R.string.selected_currency_key),
+                getContext());
+        if (currencyStr != null) {
+            for (String charCode : currencyStr.split(";")) {
+                if (charCode != null) selectedCurrencyCharCode.add(charCode);
+            }
+        }
+        Log.d(TAG, "saved cur : " + currencyStr);
+
+        ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
+        for (int i = 0; i < mListCurrency.size(); i++) {
+            for (int j = 0; j < selectedCurrencyCharCode.size(); j++) {
+                if (mListCurrency.get(i).getCharCode().equals(selectedCurrencyCharCode.get(j))) {
+                    outputListCurrency.add(savedData.getListAllCurrency().get(i));
+                    break;
+                }
+            }
+        }
+
+
+        adapterCurrencyTile.setListCurrency(outputListCurrency);
+        adapterCurrencyTile.notifyDataSetChanged();
+    };
+
     private final MakeRequests.OnLoadUserListener loadUserListener = user -> {
 
         if (user == null) {
+
+            // todo : form here
+
             savedData = jsonManager.readUserFromJson();
             user = savedData.getUser();
+
+
+            // todo : to here
         }
         mUser = user;
         mUser.clearThemes();

@@ -1,4 +1,4 @@
-package com.example.news_app.databases.historyDb;
+package com.example.news_app.models;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey;
 public class History {
 
     @PrimaryKey(autoGenerate = true)
-    int id;
+    public int id;
 
     @ColumnInfo(name = "theme")
     private String theme;

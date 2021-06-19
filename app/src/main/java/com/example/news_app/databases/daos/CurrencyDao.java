@@ -1,4 +1,4 @@
-package com.example.news_app.databases.currencyDb;
+package com.example.news_app.databases.daos;
 
 import androidx.room.Dao;
 import androidx.room.Delete;

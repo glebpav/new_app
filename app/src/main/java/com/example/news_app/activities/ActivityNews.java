@@ -1,12 +1,15 @@
 package com.example.news_app.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.RelativeLayout;
@@ -68,44 +71,35 @@ public class ActivityNews extends AppCompatActivity{
             user.setCurrency(arguments.getString("currency"));
         }
 
-        meow.setOnClickMenuListener(new MeowBottomNavigation.ClickListener() {
-            @Override
-            public void onClickItem(MeowBottomNavigation.Model item) {
-                switch (item.getId()) {
-                    case (SEARCH_ID): {
-                        pager.setCurrentItem(SEARCH_ID);
-                        break;
-                    }
-                    case (TRACKING_ID): {
-                        pager.setCurrentItem(TRACKING_ID);
-                        break;
-                    }
-                    case (TOP_NEWS_ID): {
-                        pager.setCurrentItem(TOP_NEWS_ID);
-                        break;
-                    }
-                    case (SETTING_ID): {
-                        pager.setCurrentItem(SETTING_ID);
-                        break;
-                    }
-                    default:
-                        pager.setCurrentItem(SEARCH_ID);
+        meow.setOnClickMenuListener(item -> {
+            switch (item.getId()) {
+                case (SEARCH_ID): {
+                    pager.setCurrentItem(SEARCH_ID);
+                    break;
                 }
+                case (TRACKING_ID): {
+                    pager.setCurrentItem(TRACKING_ID);
+                    break;
+                }
+                case (TOP_NEWS_ID): {
+                    pager.setCurrentItem(TOP_NEWS_ID);
+                    break;
+                }
+                case (SETTING_ID): {
+                    pager.setCurrentItem(SETTING_ID);
+                    break;
+                }
+                default:
+                    pager.setCurrentItem(SEARCH_ID);
             }
         });
 
-        meow.setOnShowListener(new MeowBottomNavigation.ShowListener() {
-            @Override
-            public void onShowItem(MeowBottomNavigation.Model item) {
-                // your codes
-            }
+        meow.setOnShowListener(item -> {
+            // your codes
         });
 
-        meow.setOnReselectListener(new MeowBottomNavigation.ReselectListener() {
-            @Override
-            public void onReselectItem(MeowBottomNavigation.Model item) {
-                // your codes
-            }
+        meow.setOnReselectListener(item -> {
+            // your codes
         });
 
     }
@@ -117,6 +111,8 @@ public class ActivityNews extends AppCompatActivity{
             super(fa);
         }
 
+
+        @SuppressLint("NewApi")
         @NonNull
         @Override
         public Fragment createFragment(int position) {

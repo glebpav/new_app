@@ -1,10 +1,12 @@
-package com.example.news_app.databases.bookmarksDb;
+package com.example.news_app.databases.daos;
 
 
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+
+import com.example.news_app.models.BookMark;
 
 import java.util.List;
 

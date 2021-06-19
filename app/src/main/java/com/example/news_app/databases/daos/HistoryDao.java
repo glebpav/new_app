@@ -1,12 +1,11 @@
-package com.example.news_app.databases.historyDb;
+package com.example.news_app.databases.daos;
 
 
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.example.news_app.models.CentBankCurrency;
+import com.example.news_app.models.History;
 
 import java.util.List;
 
@@ -20,6 +19,6 @@ public interface HistoryDao {
     void deleteAll();
 
     @Query("SELECT * FROM history")
-    List<History> getAllCurrencies();
+    List<History> getAllHistory();
 
 }

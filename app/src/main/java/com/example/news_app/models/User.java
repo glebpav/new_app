@@ -127,6 +127,11 @@ public class User {
         return listThemes;
     }
 
+    public void setListThemes (ArrayList<String> listThemes){
+        this.listThemes = listThemes;
+        reformThemesString();
+    }
+
     public String getCurrency() {
         return currency;
     }
@@ -143,6 +148,13 @@ public class User {
         currency = "";
         for (String currencyStr: listCurrency){
             currency += currencyStr + ";";
+        }
+    }
+
+    public void reformThemesString(){
+        themes = "";
+        for (String str: listThemes){
+            themes += str + ";";
         }
     }
 

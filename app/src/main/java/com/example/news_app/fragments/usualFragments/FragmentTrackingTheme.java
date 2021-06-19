@@ -4,14 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,13 +20,11 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.example.news_app.R;
 import com.example.news_app.adapters.AdapterTrackingThemes;
-import com.example.news_app.databases.AppDataBase;
 import com.example.news_app.databases.DataBaseHelper;
-import com.example.news_app.databases.bookmarksDb.BookMark;
+import com.example.news_app.models.BookMark;
 import com.example.news_app.fileManagers.JsonManager;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentAddTheme;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
-import com.example.news_app.models.SavedData;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.databinding.FragmentTrackingBinding;
 import com.example.news_app.models.User;
@@ -38,8 +34,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 import www.sanju.motiontoast.MotionToast;
 
@@ -48,9 +42,8 @@ public class FragmentTrackingTheme extends Fragment {
     final static String TAG = "FRAGMENT_TRACKING_SPACE";
 
     private User mUser;
-    private SavedData savedData;
-    private DataBaseHelper dbHelper;
     private MakeRequests requests;
+    private DataBaseHelper dbHelper;
     private JsonManager jsonManager;
     private AdapterTrackingThemes adapter;
 
@@ -100,25 +93,13 @@ public class FragmentTrackingTheme extends Fragment {
         Log.d(TAG, "onResume: getBookMarks from db");
         dbHelper.new GetBookMarks(onGetBookMarksListener).execute();
 
-        // Todo : убрать это недоразумение (от сюда)
-
-        savedData = new SavedData();
-        savedData = jsonManager.readUserFromJson();
-
-        if (savedData != null && savedData.getListThemes() != null) {
-            Log.d(TAG, "onResumeSaved: " + savedData.getListThemes());
-            printThemes(savedData.getListThemes());
-        }
-
-        // Todo : до сюда
-
         if (MakeRequests.isInternetAvailable(getContext())) {
             binding.progressSyncing.setVisibility(View.VISIBLE);
             YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
             requests.new LoadUser(mUser.getLogin(), mUser.getPassword(), loadUserListener).execute();
         } else {
             String dateOfSaving = jsonManager.readSavedDate();
-            if (savedData != null && dateOfSaving != null) {
+            if (dateOfSaving != null) {
                 MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "последнее сохранение \n" + dateOfSaving,
                         MotionToast.TOAST_ERROR,
                         MotionToast.GRAVITY_BOTTOM,
@@ -147,7 +128,7 @@ public class FragmentTrackingTheme extends Fragment {
         }
     }
 
-    void saveBookMarkToDb (ArrayList<String> listBookMarks){
+    void saveBookMarkToDb(ArrayList<String> listBookMarks) {
         new Thread(() -> {
             dbHelper.getAppDataBase().getBookmarkDao().deleteAll();
             dbHelper.getAppDataBase().getBookmarkDao().insertAll(BookMark
@@ -164,16 +145,6 @@ public class FragmentTrackingTheme extends Fragment {
         mUser.fillListThemes();
         Log.d(TAG, "onResultsLoaded: " + mUser.getListThemes());
 
-        // todo : form here
-
-        SavedData loadedDataFromInter = new SavedData();
-        SavedData loadedDataFromJson = jsonManager.readUserFromJson();
-        loadedDataFromInter.prepareToSave(mUser, savedData.getListAllCurrency());
-
-        loadedDataFromInter.setListTopNews(loadedDataFromJson.getListTopNews());
-
-        // todo : to here
-
         saveBookMarkToDb(mUser.getListThemes());
 
         printThemes(mUser.getListThemes());
@@ -185,8 +156,6 @@ public class FragmentTrackingTheme extends Fragment {
                 binding.progressSyncing.setVisibility(View.INVISIBLE);
             }
         }, 500);
-
-        jsonManager.writeDataToJson(loadedDataFromInter);
     };
 
     private final AdapterTrackingThemes.OnThemeSelectedListener onThemeSelectedListener = theme -> {
@@ -201,23 +170,10 @@ public class FragmentTrackingTheme extends Fragment {
     private final MakeRequests.OnUserChangedListener onUserChangedListener = serverResponse -> {
         mUser.clearThemes();
         mUser.fillListThemes();
-
         Log.d(TAG, "onChangedLoaded: " + mUser.getListThemes());
 
-        // Todo : form here
-
-        savedData = jsonManager.readUserFromJson();
-        savedData.setListThemes(mUser.getListThemes());
-        jsonManager.writeDataToJson(savedData);
-
-        // Todo : to here
-
         saveBookMarkToDb(mUser.getListThemes());
-
-        Log.d(TAG, "onChangedSaved: " + savedData.getListThemes());
-
         printThemes(mUser.getListThemes());
-
         dialogFragmentProgressBar.dismiss();
         try {
             dialogFragmentAddTheme.dismiss();
@@ -250,8 +206,8 @@ public class FragmentTrackingTheme extends Fragment {
         } else {
             Log.d(TAG, "onGetBookMarksListener: " + listBookMarks);
             printThemes(BookMark.getStringBookMarksList(listBookMarks));
+            mUser.setListThemes(BookMark.getStringBookMarksList(listBookMarks));
         }
-
     };
 
     private final View.OnClickListener btnAddThemeClicked = v -> {

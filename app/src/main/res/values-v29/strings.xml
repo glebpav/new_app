@@ -8,6 +8,8 @@
 
     <string name="tone_format">TONE_FORMAT</string>
     <string name="tone_format_key">TONE_FORMAT_KEY</string>
+    <string name="selected_currency">SELECTED_CURRENCY</string>
+    <string name="selected_currency_key">SELECTED_CURRENCY_KEY</string>
 
     <!-- Headers for fragments -->
 
@@ -50,7 +52,7 @@
     <!-- Button's texts -->
 
     <string name="understand">Понятно</string>
-    <string name="rename">новое имя</string>
+    <string name="rename">Новое имя</string>
     <string name="currency">Валюты</string>
     <string name="log_out">Выйти</string>
     <string name="cancel">Отмена</string>
@@ -83,6 +85,8 @@
     <string name="view">Вид :</string>
     <string name="select_format">Выберете формат :</string>
     <string name="number_format_desc">Тональность статей Вы будете получать в численном формате (от 0 до 1), где 0 - очень негативныя новость, а 1 - позитивная</string>
-    <string name="regarding_format_desc">Тональность статей Вы будете получать в словесном формате (новость может бытоь позитивной, нейтральной и негативной) </string>
+    <string name="regarding_format_desc">Тональность статей Вы будете получать в словесном формате (новость может быть позитивной, нейтральной и негативной) </string>
+    <string name="hint_enter_theme">введите тему</string>
+
 
 </resources>

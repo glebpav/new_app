@@ -1,4 +1,4 @@
-package com.example.news_app.databases.bookmarksDb;
+package com.example.news_app.models;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
@@ -13,7 +13,7 @@ import java.util.List;
 public class BookMark {
 
     @PrimaryKey(autoGenerate = true)
-    int id;
+    public int id;
 
     @ColumnInfo(name = "bookMarkTheme")
     private String bookMarkTheme;

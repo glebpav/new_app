@@ -1,6 +1,10 @@
 package com.example.news_app.models;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -8,13 +12,22 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+@Entity(tableName = "hotNews")
 public class News {
 
+    @PrimaryKey(autoGenerate = true)
+    public int id;
+
+    @ColumnInfo(name = "title")
     private String title;
+    @ColumnInfo(name = "description")
     private String description;
+    @ColumnInfo(name = "url")
     private String url;
+    @ColumnInfo(name = "rating")
     private String rating;
 
+    @Ignore
     public News(String title, String description, String url, String rating) {
         this.title = title;
         this.description = description;
@@ -22,7 +35,15 @@ public class News {
         this.rating = rating;
     }
 
-    public News() {
+    @Ignore
+    public News() {}
+
+    public News(int id, String title, String description, String url, String rating) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.url = url;
+        this.rating = rating;
     }
 
     public String getTitle() {

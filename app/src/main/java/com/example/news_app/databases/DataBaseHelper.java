@@ -6,9 +6,10 @@ import android.os.AsyncTask;
 
 import androidx.room.Room;
 
-import com.example.news_app.databases.bookmarksDb.BookMark;
-import com.example.news_app.databases.historyDb.History;
+import com.example.news_app.models.BookMark;
+import com.example.news_app.models.History;
 import com.example.news_app.models.CentBankCurrency;
+import com.example.news_app.models.News;
 
 import java.util.List;
 
@@ -28,13 +29,16 @@ public class DataBaseHelper {
     }
 
     private DataBaseHelper(Context context) {
-        appDataBase = Room.databaseBuilder(context, AppDataBase.class, "dataBase.db").build();
+        appDataBase = Room.databaseBuilder(context, AppDataBase.class, "dataBase.db")
+                .fallbackToDestructiveMigration()
+                .build();
     }
 
     public AppDataBase getAppDataBase() {
         return appDataBase;
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class GetBookMarks extends AsyncTask<Void, Void, List<BookMark>> {
 
         private final OnGetBookMarksListener bookMarksListener;
@@ -54,8 +58,52 @@ public class DataBaseHelper {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
+    public class GetHotNews extends AsyncTask<Void, Void, List<News>> {
+
+        private final OnGetHotNewsListener hotNewsListener;
+
+        public GetHotNews(OnGetHotNewsListener hotNewsListener) {
+            this.hotNewsListener = hotNewsListener;
+        }
+
+        @Override
+        protected List<News> doInBackground(Void... voids) {
+            return appDataBase.getHotNewsDao().getAllNews();
+        }
+
+        @Override
+        protected void onPostExecute(List<News> list) {
+            hotNewsListener.onGet(list);
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public class GetCurrencies extends AsyncTask<Void, Void, List<CentBankCurrency>>{
+
+        private final OnGetCurrencyListener currencyListener;
+
+        public GetCurrencies(OnGetCurrencyListener currencyListener) {
+            this.currencyListener = currencyListener;
+        }
+
+        @Override
+        protected List<CentBankCurrency> doInBackground(Void... voids) {
+            return appDataBase.getCurrencyDao().getAllCurrencies();
+        }
+
+        @Override
+        protected void onPostExecute(List<CentBankCurrency> centBankCurrencies) {
+            currencyListener.onGet(centBankCurrencies);
+        }
+    }
+
     public interface OnGetBookMarksListener {
         void onGet(List<BookMark> listBookMarks);
+    }
+
+    public interface OnGetHotNewsListener {
+        void onGet(List<News> listNews);
     }
 
     public interface OnGetCurrencyListener {
