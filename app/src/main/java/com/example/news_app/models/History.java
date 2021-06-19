@@ -5,6 +5,8 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import java.util.ArrayList;
+
 @Entity(tableName = "History")
 public class History {
 
@@ -32,4 +34,19 @@ public class History {
         this.theme = theme;
     }
 
+    static public ArrayList<String> getStringList(ArrayList <History> listHistory){
+        ArrayList<String> listString = new ArrayList<>();
+        for(History history : listHistory){
+            listString.add(history.theme);
+        }
+        return listString;
+    }
+
+    static public ArrayList<History> getListFromStr(ArrayList <String> listHistory){
+        ArrayList<History> listString = new ArrayList<>();
+        for(String str : listHistory){
+            listString.add(new History(str));
+        }
+        return listString;
+    }
 }

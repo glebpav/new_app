@@ -129,36 +129,9 @@ public class FragmentTopNews extends Fragment {
         if (fragmentProgressBar.isVisible())
             fragmentProgressBar.dismiss();
 
-        boolean isEquals = true;
-        savedData = jsonManager.readUserFromJson();
-
         if (listNews != null) {
-            /*
-            if (savedData != null && savedData.getListTopNews() != null) {
-                if (listNews.size() == savedData.getListTopNews().size()) {
-                    for (int i = 0; i < listNews.size(); i++) {
-                        if (!listNews.get(i).getTitle().equals(savedData.getListTopNews().get(i).getTitle())) {
-                            isEquals = false;
-                            break;
-                        }
-                    }
-                } else isEquals = false;
-            } else isEquals = false;
-
-            if (!isEquals) {
-                Log.d(TAG, "onFind: not equals");
-                Log.d(TAG, listNews.toString());
-
-                if (savedData == null) savedData = jsonManager.readUserFromJson();
-                //if (savedData.getListTopNews())
-                Log.d(TAG, "onFind12: " + savedData);
-                savedData.setListTopNews(listNews);
-                jsonManager.writeOnlyTopNewsToJson(listNews);
-                Log.d(TAG, "onFind222: " + jsonManager.readUserFromJson().getListTopNews());
-            } else Log.d(TAG, "onFind: equals");
-             */
             saveTopNewsToDb(listNews);
-        } else listNews = savedData.getListTopNews();
+        } else listNews = null;
 
         if (listNews != null && listNews.size() != 0) {
             adapterTopNews = new AdapterTopNews(getContext(), listNews);

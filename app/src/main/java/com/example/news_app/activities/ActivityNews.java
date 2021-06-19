@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.example.news_app.R;
+import com.example.news_app.databases.DataBaseHelper;
 import com.example.news_app.fragments.usualFragments.FragmentSearching;
 import com.example.news_app.fragments.usualFragments.FragmentSettings;
 import com.example.news_app.fragments.usualFragments.FragmentTopNews;
@@ -41,7 +42,6 @@ public class ActivityNews extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_activity);
 
-
         meow = findViewById(R.id.meow);
         pager = findViewById(R.id.pager);
         layout = findViewById(R.id.NA);
@@ -51,6 +51,7 @@ public class ActivityNews extends AppCompatActivity{
         pager.setCurrentItem(0);
         pager.setUserInputEnabled(false);
         meow.show(SEARCH_ID,true);
+        //DataBaseHelper.recreateDataBaseHelperInstance(this);
 
         meow.add(new MeowBottomNavigation.Model(SEARCH_ID, R.drawable.ic_baseline_find_replace_24));
         meow.add(new MeowBottomNavigation.Model(TRACKING_ID, R.drawable.ic_baseline_bookmarks_24));
@@ -112,7 +113,8 @@ public class ActivityNews extends AppCompatActivity{
         }
 
 
-        @SuppressLint("NewApi")
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @NonNull
         @Override
         public Fragment createFragment(int position) {

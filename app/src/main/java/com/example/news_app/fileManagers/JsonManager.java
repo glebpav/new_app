@@ -115,12 +115,6 @@ public class JsonManager {
         }
     }
 
-    public void writeOnlyTopNewsToJson (ArrayList<News> listTopNews){
-        SavedData savedData = readUserFromJson();
-        savedData.setListTopNews(listTopNews);
-        writeDataToJson(savedData);
-    }
-
     public SavedData readUserFromJson() {
         try {
             File file = new File(context.getFilesDir(), JSON_FILE_NAME);
@@ -134,18 +128,10 @@ public class JsonManager {
                 line = bufferedReader.readLine();
             }
             bufferedReader.close();
-            //String responce = Base64.decode(stringBuilder.toString(), 0);
-            // This responce will have Json Format String
-            //String responce = stringBuilder.toString();
-
-            // Decode the encoded data with AES
             byte[] decodedBytes = null;
             try {
                 Cipher c = Cipher.getInstance("AES");
                 c.init(Cipher.DECRYPT_MODE, sks);
-
-                //Log.d("Crypto", stringBuilder.toString());
-                //decodedBytes = c.doFinal(responce.getBytes(Charset.forName("UTR-8")));
                 decodedBytes = c.doFinal(Base64.decode(stringBuilder.toString(), 0));
 
             } catch (Exception e) {

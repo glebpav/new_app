@@ -28,6 +28,11 @@ public class DataBaseHelper {
         return dataBaseHelper;
     }
 
+    public static DataBaseHelper recreateDataBaseHelperInstance(Context context) {
+        dataBaseHelper = new DataBaseHelper(context);
+        return dataBaseHelper;
+    }
+
     private DataBaseHelper(Context context) {
         appDataBase = Room.databaseBuilder(context, AppDataBase.class, "dataBase.db")
                 .fallbackToDestructiveMigration()
@@ -79,7 +84,7 @@ public class DataBaseHelper {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public class GetCurrencies extends AsyncTask<Void, Void, List<CentBankCurrency>>{
+    public class GetCurrencies extends AsyncTask<Void, Void, List<CentBankCurrency>> {
 
         private final OnGetCurrencyListener currencyListener;
 
@@ -95,6 +100,26 @@ public class DataBaseHelper {
         @Override
         protected void onPostExecute(List<CentBankCurrency> centBankCurrencies) {
             currencyListener.onGet(centBankCurrencies);
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public class GetHistoryList extends AsyncTask<Void, Void, List<History>> {
+
+        private final OnGetHistoryListener historyListener;
+
+        public GetHistoryList(OnGetHistoryListener historyListener) {
+            this.historyListener = historyListener;
+        }
+
+        @Override
+        protected List<History> doInBackground(Void... voids) {
+            return appDataBase.getHistoryDao().getAllHistory();
+        }
+
+        @Override
+        protected void onPostExecute(List<History> listHistory) {
+            historyListener.onGet(listHistory);
         }
     }
 

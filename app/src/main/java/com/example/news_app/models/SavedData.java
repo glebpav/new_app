@@ -111,48 +111,12 @@ public class SavedData {
         return login;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public ArrayList<String> getListSites() {
-        return listSites;
-    }
-
-    public void setListSites(ArrayList<String> listSites) {
-        this.listSites = listSites;
-    }
-
-    public ArrayList<String> getListHistory() {
-        return listHistory;
-    }
-
-    public void setListHistory(ArrayList<String> listHistory) {
-        this.listHistory = listHistory;
-    }
-
-    public ArrayList<String> getListThemes() {
-        return listThemes;
-    }
-
-    public void setListThemes(ArrayList<String> listThemes) {
-        this.listThemes = listThemes;
-    }
-
     public ArrayList<String> getListSelectedCurrency() {
         return listSelectedCurrency;
-    }
-
-    public void setListSelectedCurrency(ArrayList<String> listSelectedCurrency) {
-        this.listSelectedCurrency = listSelectedCurrency;
     }
 
     public ArrayList<CentBankCurrency> getListAllCurrency() {

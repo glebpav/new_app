@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     >
@@ -8,6 +9,8 @@
     <soup.neumorphism.NeumorphCardView
         android:layout_width="130dp"
         android:layout_height="130dp"
+        app:neumorph_shapeType="flat"
+        style="@style/ShapeAppearance.Neumorph.CardView"
         android:background="@color/material_on_primary_emphasis_high_type"
         android:id="@+id/nuemorph_card_source">
 

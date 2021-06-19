@@ -35,8 +35,9 @@ import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentSelectCurrency;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentSources;
 import com.example.news_app.fragments.dialogFragments.DialogFragmentSureToLogOut;
+import com.example.news_app.models.BookMark;
 import com.example.news_app.models.CentBankCurrency;
-import com.example.news_app.models.News;
+import com.example.news_app.models.History;
 import com.example.news_app.models.SavedData;
 import com.example.news_app.models.Weather;
 import com.example.news_app.network.MakeRequests;
@@ -48,10 +49,14 @@ import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import www.sanju.motiontoast.MotionToast;
 
@@ -59,10 +64,13 @@ import www.sanju.motiontoast.MotionToast;
 public class FragmentSettings extends Fragment {
 
     private static final String TAG = "FRAGMENT_SETTINGS_SPACE";
+
+    private String selectedSources;
     private ArrayList<CentBankCurrency> mListCurrency;
+    private ArrayList<String> mListHistory;
 
     private User mUser;
-    private SavedData savedData;
+    private Weather mWeather;
     private MakeRequests requests;
     private DataBaseHelper dbHelper;
     private JsonManager jsonManager;
@@ -93,10 +101,11 @@ public class FragmentSettings extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
 
-        savedData = new SavedData();
+        mWeather = new Weather();
         requests = new MakeRequests();
         jsonManager = new JsonManager(getContext());
         fragmentProgress = new DialogFragmentProgressBar();
+        dbHelper = DataBaseHelper.recreateDataBaseHelperInstance(getContext());
 
         adapterSettingTiles = new AdapterSettingTiles(getContext(), onClickedSettingsItemListener);
         adapterCurrencyTile = new AdapterCurrencyTile(null);
@@ -116,20 +125,21 @@ public class FragmentSettings extends Fragment {
         super.onResume();
 
         dbHelper = DataBaseHelper.getDataBaseHelperInstance(getContext());
+
         dbHelper.new GetCurrencies(onGetCurrencyListener).execute();
+        dbHelper.new GetHistoryList(onGetHistoryListener).execute();
+        dbHelper.new GetBookMarks(onGetBookMarksListener).execute();
 
-        // todo : from here
+        loadDataFromPref();
 
-        savedData = jsonManager.readUserFromJson();
-
-        // todo : to here
+        if (mWeather != null) printWeather();
 
         if (MakeRequests.isInternetAvailable(getContext())) {
             binding.progressSyncing.setVisibility(View.VISIBLE);
             YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
         } else {
-            String dateOfSaving = jsonManager.readSavedDate();
-            if (savedData != null && dateOfSaving != null)
+            String dateOfSaving = SharedPreferencesHelper.readFromPref(getContext().getResources().getString(R.string.time_of_last_save_key), getContext());
+            if (dateOfSaving != null)
                 MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "последнее сохранение \n" + dateOfSaving,
                         MotionToast.TOAST_ERROR,
                         MotionToast.GRAVITY_BOTTOM,
@@ -142,42 +152,12 @@ public class FragmentSettings extends Fragment {
                         MotionToast.LONG_DURATION,
                         ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
             }
-            //binding.recyclerViewSettings.setClickable(false);
         }
 
-        if (savedData != null && savedData.getListAllCurrency() != null) {
-
-            Weather savedWeather = jsonManager.readSavedWeather();
-            if (savedWeather != null) {
-                try {
-                    int tempInt = (int) Double.parseDouble(savedWeather.getTemperature());
-                    binding.tvTemp.setText(tempInt + "°");
-                } catch (Exception e) {
-                }
-
-                binding.tvWeatherDesc.setText(savedWeather.getWeatherDesc());
-
-                binding.imgWeatherDesc.setOnClickListener(v -> {
-                    //Toast.makeText(getContext(), savedWeather.getWeatherDesc(), Toast.LENGTH_SHORT).show();
-
-                    MotionToast.Companion.createColorToast(getActivity(), "Описание погоды", savedWeather.getWeatherDesc(),
-                            MotionToast.TOAST_INFO,
-                            MotionToast.GRAVITY_BOTTOM,
-                            MotionToast.LONG_DURATION,
-                            ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-                });
-
-                Picasso.with(getContext()).load(savedWeather.getIconUrl()).into(binding.imgWeatherDesc);
-                YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.imgWeatherDesc);
-            }
-
-            binding.collapsingToolbar.setTitle(savedData.getName());
-            binding.tvCountThemes.setText(String.valueOf(savedData.getListHistory().size()));
-            binding.tvCountTracking.setText(String.valueOf(savedData.getListThemes().size()));
-
-            binding.nestedScrollView.setVisibility(View.VISIBLE);
-            binding.appbar.setVisibility(View.VISIBLE);
-        }
+        if (mUser != null && mUser.getName() != null)
+            binding.collapsingToolbar.setTitle(mUser.getName());
+        binding.nestedScrollView.setVisibility(View.VISIBLE);
+        binding.appbar.setVisibility(View.VISIBLE);
         if (MakeRequests.isInternetAvailable(getContext())) {
             new ParseWeather(getContext(), onFindWeatherListener).execute();
             requests.new LoadUser(mUser.getLogin(), mUser.getPassword(), loadUserListener).execute();
@@ -209,8 +189,6 @@ public class FragmentSettings extends Fragment {
                             binding.collapsingToolbar.setTitle(mUser.getName());
                             fragmentProgress.dismiss();
                             fragmentChangeName.dismiss();
-
-                            updateSavedData();
                         }
                     };
                 };
@@ -222,7 +200,7 @@ public class FragmentSettings extends Fragment {
     private void showHistory() {
         List<String> list;
         if (!MakeRequests.isInternetAvailable(getContext()))
-            list = jsonManager.readUserFromJson().getListHistory();
+            list = mListHistory;
         else
             list = Arrays.asList(mUser.getHistory().split(";"));
         Collections.reverse(list);
@@ -249,12 +227,12 @@ public class FragmentSettings extends Fragment {
                             Log.d("TAG", "onUserChangedListener - onChanged");
                             fragmentProgress.dismiss();
                             Toast.makeText(getContext(), getResources().getString(R.string.successful_changed), Toast.LENGTH_SHORT).show();
-
-                            updateSavedData();
                         }
                     };
 
                 };
+
+        if (mUser.getSites() == null) mUser.setSites(selectedSources);
 
         mUser.setSites(mUser.getSites().replace("null", "").replace(";;", ";"));
         fragmentSources = new DialogFragmentSources();
@@ -284,7 +262,6 @@ public class FragmentSettings extends Fragment {
                         mUser.reformCurrencyString();
                         mUser.reformCurrencyString();
                         SharedPreferencesHelper.writeToPref(
-                                getContext().getResources().getString(R.string.selected_currency),
                                 getContext().getResources().getString(R.string.selected_currency_key),
                                 mUser.getCurrency(),
                                 getContext());
@@ -312,15 +289,8 @@ public class FragmentSettings extends Fragment {
                         adapterCurrencyTile.notifyDataSetChanged();
                         fragmentProgress.dismiss();
                         Toast.makeText(getContext(), getResources().getString(R.string.successful_changed), Toast.LENGTH_SHORT).show();
-
-                        updateSavedData();
                     };
                 };
-
-        //Log.d(TAG, "changeCurrency: " + mListCurrency.size());
-
-        if (!MakeRequests.isInternetAvailable(getContext()))
-            mListCurrency = jsonManager.readUserFromJson().getListAllCurrency();
 
         fragmentSelectCurrency = new DialogFragmentSelectCurrency(mListCurrency, getContext(), currencySelectedListener);
         fragmentSelectCurrency.show(getFragmentManager(), "FragmentSettings");
@@ -331,12 +301,11 @@ public class FragmentSettings extends Fragment {
         fragmentChangeToneFormat.show(getParentFragmentManager(), "FragmentSetting");
     }
 
-    private void updateSavedData() {
-        SavedData newData = new SavedData(mUser);
-        newData.setListTopNews(savedData.getListTopNews());
-        newData.setListAllCurrency(savedData.getListAllCurrency());
-
-        jsonManager.writeDataToJson(newData);
+    private void clearDataInDb() {
+        new Thread(() -> {
+            dbHelper.getAppDataBase().getHistoryDao().deleteAll();
+            dbHelper.getAppDataBase().getBookmarkDao().deleteAll();
+        }).start();
     }
 
     void saveCurrencyToDb(ArrayList<CentBankCurrency> listCurrency) {
@@ -345,6 +314,73 @@ public class FragmentSettings extends Fragment {
             dbHelper.getAppDataBase().getCurrencyDao().insertAll(listCurrency.toArray
                     (new CentBankCurrency[listCurrency.size()]));
         }).start();
+    }
+
+    void saveHistoryToDb(ArrayList<History> listHistory) {
+        new Thread(() -> {
+            dbHelper.getAppDataBase().getHistoryDao().deleteAll();
+            dbHelper.getAppDataBase().getHistoryDao().insertAll(listHistory.toArray
+                    (new History[listHistory.size()]));
+        }).start();
+    }
+
+    void saveWeatherToPref(Weather weather) {
+        SharedPreferencesHelper.writeToPref(
+                getContext().getResources().getString(R.string.temperature_key),
+                weather.getTemperature(),
+                getContext());
+        SharedPreferencesHelper.writeToPref(
+                getContext().getResources().getString(R.string.weather_url_key),
+                weather.getIconUrl(),
+                getContext());
+        SharedPreferencesHelper.writeToPref(
+                getContext().getResources().getString(R.string.weather_desc_key),
+                weather.getWeatherDesc(),
+                getContext());
+    }
+
+    void loadDataFromPref() {
+        selectedSources = SharedPreferencesHelper.readFromPref(
+                getContext().getResources().getString(R.string.selected_src_key),
+                getContext());
+        mUser.setName(SharedPreferencesHelper.readFromPref(
+                getContext().getResources().getString(R.string.name_key),
+                getContext()));
+        mWeather.setTemperature(SharedPreferencesHelper.readFromPref(
+                getContext().getResources().getString(R.string.temperature_key),
+                getContext()));
+        mWeather.setWeatherDesc(SharedPreferencesHelper.readFromPref(
+                getContext().getResources().getString(R.string.weather_desc_key),
+                getContext()));
+        mWeather.setIconUrl(SharedPreferencesHelper.readFromPref(
+                getContext().getResources().getString(R.string.weather_url_key),
+                getContext()));
+    }
+
+    String getDate() {
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm dd.MM", Locale.getDefault());
+        return timeFormat.format(new Date());
+    }
+
+    void printWeather() {
+        try {
+            int tempInt = (int) Double.parseDouble(mWeather.getTemperature());
+            binding.tvTemp.setText(tempInt + "°");
+        } catch (Exception e) {
+        }
+
+        binding.tvWeatherDesc.setText(mWeather.getWeatherDesc());
+
+        binding.imgWeatherDesc.setOnClickListener(v -> {
+            MotionToast.Companion.createColorToast(getActivity(), "Описание погоды", mWeather.getWeatherDesc(),
+                    MotionToast.TOAST_INFO,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.LONG_DURATION,
+                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+        });
+
+        Picasso.with(getContext()).load(mWeather.getIconUrl()).into(binding.imgWeatherDesc);
+        YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.imgWeatherDesc);
     }
 
     private final DialogFragmentHistory.OnAdapterTileHistoryClickedListener adapterTileHistoryClickedListener = position -> {
@@ -402,6 +438,8 @@ public class FragmentSettings extends Fragment {
         edt.putString("password", "");
         edt.apply();
 
+        clearDataInDb();
+
         fragmentSureToLogOut.dismiss();
         Intent intent = new Intent(getActivity(), ActivityMain.class);
         startActivity(intent);
@@ -415,13 +453,6 @@ public class FragmentSettings extends Fragment {
             saveCurrencyToDb(mListCurrency);
         }
 
-        // todo : from here
-
-        SavedData loadedDataFromInter = new SavedData();
-        loadedDataFromInter.prepareToSave(mUser, listCurrency);
-
-        // todo : to here
-
         ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
         for (int i = 0; i < listCurrency.size(); i++) {
             for (int j = 0; j < mUser.getListCurrency().size(); j++) {
@@ -432,14 +463,6 @@ public class FragmentSettings extends Fragment {
                 }
             }
         }
-
-        if (!loadedDataFromInter.equals(savedData)) {
-            Log.d(TAG, "onFound: not equals");
-            if (savedData.getListTopNews() != null)
-                loadedDataFromInter.setListTopNews(savedData.getListTopNews());
-            jsonManager.writeDataToJson(loadedDataFromInter);
-
-        } else Log.d(TAG, "onFound: equals");
 
         adapterCurrencyTile.setListCurrency(outputListCurrency);
         adapterCurrencyTile.notifyDataSetChanged();
@@ -456,20 +479,13 @@ public class FragmentSettings extends Fragment {
     @SuppressLint("SetTextI18n")
     private final ParseWeather.OnFindWeatherListener onFindWeatherListener = weather -> {
         if (weather != null) {
-            int tempInt = (int) Double.parseDouble(weather.getTemperature());
-            binding.tvTemp.setText(tempInt + "°");
-            binding.tvWeatherDesc.setText(weather.getWeatherDesc());
-            Picasso.with(getContext()).load(weather.getIconUrl()).into(binding.imgWeatherDesc);
-
-            binding.imgWeatherDesc.setOnClickListener(v -> {
-                MotionToast.Companion.createColorToast(getActivity(), "Описание погоды", weather.getWeatherDesc(),
-                        MotionToast.TOAST_INFO,
-                        MotionToast.GRAVITY_BOTTOM,
-                        MotionToast.LONG_DURATION,
-                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-            });
-
-            jsonManager.writeSavingWeather(weather);
+            mWeather = weather;
+            printWeather();
+            saveWeatherToPref(weather);
+            SharedPreferencesHelper.writeToPref(
+                    getContext().getResources().getString(R.string.time_of_last_save_key),
+                    getDate(),
+                    getContext());
         }
     };
 
@@ -478,7 +494,6 @@ public class FragmentSettings extends Fragment {
 
         ArrayList<String> selectedCurrencyCharCode = new ArrayList<>();
         String currencyStr = SharedPreferencesHelper.readFromPref(
-                getContext().getResources().getString(R.string.selected_currency),
                 getContext().getResources().getString(R.string.selected_currency_key),
                 getContext());
         if (currencyStr != null) {
@@ -488,32 +503,43 @@ public class FragmentSettings extends Fragment {
         }
         Log.d(TAG, "saved cur : " + currencyStr);
 
+        if (mListCurrency == null || currencyStr == null || mListCurrency.size() == 0) return;
+
         ArrayList<CentBankCurrency> outputListCurrency = new ArrayList<>();
         for (int i = 0; i < mListCurrency.size(); i++) {
             for (int j = 0; j < selectedCurrencyCharCode.size(); j++) {
                 if (mListCurrency.get(i).getCharCode().equals(selectedCurrencyCharCode.get(j))) {
-                    outputListCurrency.add(savedData.getListAllCurrency().get(i));
+                    outputListCurrency.add(mListCurrency.get(i));
                     break;
                 }
             }
         }
 
-
         adapterCurrencyTile.setListCurrency(outputListCurrency);
         adapterCurrencyTile.notifyDataSetChanged();
+    };
+
+    private final DataBaseHelper.OnGetHistoryListener onGetHistoryListener = listHistory -> {
+        mListHistory = History.getStringList((ArrayList<History>) listHistory);
+        if (mListHistory != null) {
+            binding.tvCountThemes.setText(String.valueOf(mListHistory.size()));
+        } else {
+            binding.tvCountThemes.setText("---");
+        }
+    };
+
+    private final DataBaseHelper.OnGetBookMarksListener onGetBookMarksListener = listBookMarks -> {
+        if (listBookMarks != null) {
+            binding.tvCountTracking.setText(String.valueOf(listBookMarks.size()));
+        } else {
+            binding.tvCountTracking.setText("---");
+        }
     };
 
     private final MakeRequests.OnLoadUserListener loadUserListener = user -> {
 
         if (user == null) {
-
-            // todo : form here
-
-            savedData = jsonManager.readUserFromJson();
-            user = savedData.getUser();
-
-
-            // todo : to here
+            return;
         }
         mUser = user;
         mUser.clearThemes();
@@ -521,15 +547,15 @@ public class FragmentSettings extends Fragment {
         mUser.fillListThemes();
         new ParseCourse(parseCourseListener).execute();
 
+        if (mUser.getListHistory() != null) {
+            mListHistory = mUser.getListHistory();
+            saveHistoryToDb(History.getListFromStr(mListHistory));
+        }
+        if (mUser.getSites() != null) selectedSources = mUser.getSites();
+
         binding.collapsingToolbar.setTitle(user.getName());
         binding.tvCountThemes.setText(String.valueOf(mUser.getListHistory().size()));
         binding.tvCountTracking.setText(String.valueOf(mUser.getListThemes().size()));
-
-            /*
-            fragmentProgress.dismiss();
-            binding.nestedScrollView.setVisibility(View.VISIBLE);
-            binding.appbar.setVisibility(View.VISIBLE);
-*/
     };
 
 }
