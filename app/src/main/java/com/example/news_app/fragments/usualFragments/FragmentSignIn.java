@@ -23,6 +23,7 @@ import com.example.news_app.databinding.FragmentSignInBinding;
 import com.example.news_app.models.User;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
 import static com.example.news_app.R.string.no_internet;
 
@@ -38,6 +39,7 @@ public class FragmentSignIn extends Fragment {
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         binding = FragmentSignInBinding.inflate(inflater, container, false);
 
         binding.btnSignIn.setOnClickListener(btnSignInClicked);
@@ -53,7 +55,7 @@ public class FragmentSignIn extends Fragment {
 
     private final MakeRequests.OnSingInListener singInListener = user -> {
         Log.d("ADSF", "onSingIn: " + (user==null?"null":"not null"));
-        progressBar.dismiss();
+        if (progressBar.isAdded())progressBar.dismiss();
 
         if (user == null){
             savedData = jsonManager.readUserFromJson();

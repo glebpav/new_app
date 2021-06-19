@@ -227,7 +227,7 @@ public class FragmentSearching extends Fragment {
         if (binding.layoutSortingPictures.getVisibility() == View.GONE) {
             binding.layoutSortingPictures.setVisibility(View.VISIBLE);
             YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.layoutSortingPictures);
-            binding.btnAddSortingTiles.setImageResource(R.drawable.ic_baseline_close_24);
+            binding.btnAddSortingTiles.setImageResource(R.drawable.ic_baseline_expand_less_24);
         }
         else {
             YoYo.with(Techniques.FadeOut).duration(500).repeat(1).playOn(binding.layoutSortingPictures);
@@ -237,7 +237,7 @@ public class FragmentSearching extends Fragment {
                     binding.layoutSortingPictures.setVisibility(View.GONE);
                 }
             }, 500);
-            binding.btnAddSortingTiles.setImageResource(R.drawable.ic_baseline_add_24);
+            binding.btnAddSortingTiles.setImageResource(R.drawable.ic_baseline_expand_more_24);
         }
     };
 

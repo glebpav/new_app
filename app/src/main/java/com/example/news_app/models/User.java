@@ -2,12 +2,15 @@ package com.example.news_app.models;
 
 import android.util.Log;
 
+import androidx.room.Entity;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
+
 
 public class User {
 
