@@ -46,18 +46,7 @@ public class JsonManager {
         gson = gsonBuilder.create();
 
         sks = stringToKey(VERY_IMPORTANT_SEED);
-        //sks = null;
-        /*try {
-            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-            sr.setSeed(VERY_IMPORTANT_SEED.getBytes());
-            KeyGenerator kg = KeyGenerator.getInstance("AES");
-            kg.init(128, sr);
-            sks = new SecretKeySpec((kg.generateKey()).getEncoded(), "AES");
-        } catch (Exception e) {
-            Log.e("Crypto", "AES secret key spec error");
-        }*/
-
-    }
+            }
 
     public boolean writeDataToJson(SavedData data) {
         try {

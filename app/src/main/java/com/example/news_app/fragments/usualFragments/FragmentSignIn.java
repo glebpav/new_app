@@ -21,6 +21,7 @@ import com.example.news_app.network.MakeRequests;
 import com.example.news_app.R;
 import com.example.news_app.databinding.FragmentSignInBinding;
 import com.example.news_app.models.User;
+import com.example.news_app.utils.SharedPreferencesHelper;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -30,8 +31,7 @@ import static com.example.news_app.R.string.no_internet;
 
 public class FragmentSignIn extends Fragment {
 
-    private JsonManager jsonManager;
-    private SavedData savedData;
+    private User mUser;
     private MakeRequests requests;
     private String login, password;
     private FragmentSignInBinding binding;
@@ -45,8 +45,8 @@ public class FragmentSignIn extends Fragment {
         binding.btnSignIn.setOnClickListener(btnSignInClicked);
         binding.btnSignUp.setOnClickListener(btnSignUpClicked);
 
+        mUser = new User();
         requests = new MakeRequests();
-        jsonManager = new JsonManager(getContext());
 
         checkUser();
 
@@ -58,12 +58,15 @@ public class FragmentSignIn extends Fragment {
         if (progressBar.isAdded())progressBar.dismiss();
 
         if (user == null){
-            savedData = jsonManager.readUserFromJson();
-            if (savedData == null) {
+            loadDataFromPref();
+            //savedData = jsonManager.readUserFromJson();
+            if (mUser.getLogin() == null || mUser.getPassword() == null) {
                 Toast.makeText(getContext(), getResources().getString(R.string.trouble_with_authorization),
                         Toast.LENGTH_LONG).show();
                 return;
             }
+
+            /*
             if (binding.cbRememberMe.isChecked()) {
                 SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
                 SharedPreferences.Editor edt = pref.edit();
@@ -71,8 +74,8 @@ public class FragmentSignIn extends Fragment {
                 edt.putString("password", savedData.getPassword());
                 edt.apply();
             }
-            Log.d("TAG", "onSingIn: " + savedData.getId());
-            gotoNextActivity(savedData.getUser());
+            Log.d("TAG", "onSingIn: " + savedData.getId());*/
+            gotoNextActivity(mUser);
             return;
         }
 
@@ -119,13 +122,38 @@ public class FragmentSignIn extends Fragment {
         intent.putExtra("id", user.getId());
         intent.putExtra("name", user.getName());
         intent.putExtra("login", user.getLogin());
-        intent.putExtra("password", user.getLogin());
-        intent.putExtra("history", user.getHistory());
-        intent.putExtra("themes", user.getThemes());
         intent.putExtra("password", user.getPassword());
+        intent.putExtra("themes", user.getThemes());
+        intent.putExtra("history", user.getHistory());
         intent.putExtra("sites", user.getSites());
         intent.putExtra("currency", user.getCurrency());
+
+        SharedPreferencesHelper.writeToPref(
+                getContext().getResources().getString(R.string.name_key),
+                user.getName(),
+                getContext());
+        SharedPreferencesHelper.writeToPref(
+                getContext().getResources().getString(R.string.login_key),
+                user.getLogin(),
+                getContext());
+        SharedPreferencesHelper.writeToPref(
+                getContext().getResources().getString(R.string.password_key),
+                user.getPassword(),
+                getContext());
+
         startActivity(intent);
+    }
+
+    void loadDataFromPref() {
+        mUser.setName(SharedPreferencesHelper.readFromPref(
+                getContext().getResources().getString(R.string.name_key),
+                getContext()));
+        mUser.setLogin(SharedPreferencesHelper.readFromPref(
+                getContext().getResources().getString(R.string.login_key),
+                getContext()));
+        mUser.setPassword(SharedPreferencesHelper.readFromPref(
+                getContext().getResources().getString(R.string.password_key),
+                getContext()));
     }
 
    private void checkUser() {

@@ -16,6 +16,8 @@
     <string name="weather_desc_key">W_DESC_KEY</string>
     <string name="weather_url_key">W_URL_KEY</string>
     <string name="time_of_last_save_key">SAVE_T_KEY</string>
+    <string name="login_key">login</string>
+    <string name="password_key">password</string>
 
     <!-- Headers for fragments -->
 

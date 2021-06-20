@@ -24,6 +24,7 @@ import com.example.news_app.models.News;
 import com.example.news_app.models.SavedData;
 import com.example.news_app.models.User;
 import com.example.news_app.network.MakeRequests;
+import com.example.news_app.utils.SharedPreferencesHelper;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -42,8 +43,6 @@ public class FragmentTopNews extends Fragment {
     private AdapterTopNews adapterTopNews;
     private DialogFragmentProgressBar fragmentProgressBar;
 
-    private SavedData savedData;
-    private JsonManager jsonManager;
     private FragmentTopNewsBinding binding;
 
     @Override
@@ -56,9 +55,6 @@ public class FragmentTopNews extends Fragment {
 
         fragmentProgressBar = new DialogFragmentProgressBar();
         adapterTopNews = new AdapterTopNews(getContext(), null);
-
-        savedData = new SavedData();
-        jsonManager = new JsonManager(getContext());
         requests = new MakeRequests();
 
         return binding.getRoot();
@@ -97,23 +93,18 @@ public class FragmentTopNews extends Fragment {
             MakeRequests.FindTopNews find_topNews = requests.new FindTopNews(onFindTopNewsListener);
             find_topNews.execute();
         } else {
-
-            // Todo : new format
-
-            String dateOfSaving = jsonManager.readSavedDate();
-            if (savedData != null && dateOfSaving != null)
-                MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "последнее сохранение \n" + dateOfSaving,
-                        MotionToast.TOAST_ERROR,
-                        MotionToast.GRAVITY_BOTTOM,
-                        MotionToast.LONG_DURATION,
-                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-            else{
-                MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
-                        MotionToast.TOAST_ERROR,
-                        MotionToast.GRAVITY_BOTTOM,
-                        MotionToast.LONG_DURATION,
-                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+            String dateOfSaving = SharedPreferencesHelper.readFromPref(getContext().getResources().getString(R.string.time_of_last_save_key), getContext());
+            String outputText;
+            if (dateOfSaving != null)
+                outputText = "последнее сохранение \n" + dateOfSaving;
+            else {
+                outputText = "попробуйте перезайти поже";
             }
+            MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", outputText,
+                    MotionToast.TOAST_ERROR,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.LONG_DURATION,
+                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
         }
     }
 

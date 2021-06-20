@@ -159,9 +159,10 @@ public class User {
     }
 
     public ArrayList<String> fillListThemes() {
-        Log.d(TAG, "user themes : " + themes);
-        Log.d(TAG, String.valueOf(themes.split(";").length));
+        //Log.d(TAG, "user themes : " + themes);
+        //Log.d(TAG, String.valueOf(themes.split(";").length));
         listThemes = new ArrayList<>();
+        if (themes == null) return listThemes;
         if (!themes.contains(";") && themes.length() != 0) listThemes.add(themes);
         for (String str : themes.split(";")) {
             Log.d(TAG, str);
@@ -212,7 +213,7 @@ public class User {
         boolean isCleared;
         do {
             isCleared = false;
-            if (themes.isEmpty()) return;
+            if (themes == null) return;
             if (themes.contains(";;")) {
                 themes = themes.replace(";;", ";");
                 isCleared = true;

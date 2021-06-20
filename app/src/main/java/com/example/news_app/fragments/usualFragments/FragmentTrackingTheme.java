@@ -28,6 +28,7 @@ import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.databinding.FragmentTrackingBinding;
 import com.example.news_app.models.User;
+import com.example.news_app.utils.SharedPreferencesHelper;
 import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +45,6 @@ public class FragmentTrackingTheme extends Fragment {
     private User mUser;
     private MakeRequests requests;
     private DataBaseHelper dbHelper;
-    private JsonManager jsonManager;
     private AdapterTrackingThemes adapter;
 
     private ViewPager2 pager;
@@ -75,12 +75,11 @@ public class FragmentTrackingTheme extends Fragment {
         mUser.clearThemes();
         mUser.fillListThemes();
 
-        adapter = new AdapterTrackingThemes(Arrays.asList(mUser.getThemes().split(";")), getContext(),
+        adapter = new AdapterTrackingThemes(null, getContext(),
                 onDeleteItemClickedListener, onThemeSelectedListener);
         binding.recyclerView.setAdapter(adapter);
 
         requests = new MakeRequests();
-        jsonManager = new JsonManager(getContext());
 
         return binding.getRoot();
     }
@@ -98,20 +97,15 @@ public class FragmentTrackingTheme extends Fragment {
             YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
             requests.new LoadUser(mUser.getLogin(), mUser.getPassword(), loadUserListener).execute();
         } else {
-            String dateOfSaving = jsonManager.readSavedDate();
-            if (dateOfSaving != null) {
-                MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "последнее сохранение \n" + dateOfSaving,
-                        MotionToast.TOAST_ERROR,
-                        MotionToast.GRAVITY_BOTTOM,
-                        MotionToast.LONG_DURATION,
-                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-            } else {
-                MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
-                        MotionToast.TOAST_ERROR,
-                        MotionToast.GRAVITY_BOTTOM,
-                        MotionToast.LONG_DURATION,
-                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-            }
+            String dateOfSaving = SharedPreferencesHelper.readFromPref(getContext().getResources().getString(R.string.time_of_last_save_key), getContext());
+            String outputText;
+            if (dateOfSaving != null)outputText = "последнее сохранение \n" + dateOfSaving;
+            else outputText = "попробуйте перезайти поже";
+            MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", outputText,
+                    MotionToast.TOAST_ERROR,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.LONG_DURATION,
+                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
         }
     }
 
@@ -138,10 +132,7 @@ public class FragmentTrackingTheme extends Fragment {
     }
 
     private final MakeRequests.OnLoadUserListener loadUserListener = user -> {
-        if (user != null)
-            mUser = user;
-        //mUser.clearThemes();
-        //mUser.fillListHistory();
+        if (user != null) mUser = user;
         mUser.fillListThemes();
         Log.d(TAG, "onResultsLoaded: " + mUser.getListThemes());
 

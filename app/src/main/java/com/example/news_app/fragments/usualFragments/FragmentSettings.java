@@ -73,7 +73,6 @@ public class FragmentSettings extends Fragment {
     private Weather mWeather;
     private MakeRequests requests;
     private DataBaseHelper dbHelper;
-    private JsonManager jsonManager;
     private FragmentSettingsBinding binding;
     private AdapterSettingTiles adapterSettingTiles;
     private AdapterCurrencyTile adapterCurrencyTile;
@@ -101,9 +100,9 @@ public class FragmentSettings extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
 
+        mUser = new User();
         mWeather = new Weather();
         requests = new MakeRequests();
-        jsonManager = new JsonManager(getContext());
         fragmentProgress = new DialogFragmentProgressBar();
         dbHelper = DataBaseHelper.recreateDataBaseHelperInstance(getContext());
 
@@ -134,33 +133,32 @@ public class FragmentSettings extends Fragment {
 
         if (mWeather != null) printWeather();
 
+        if (mUser != null && mUser.getName() != null) {
+            binding.collapsingToolbar.setTitle(mUser.getName());
+        }
+
+        binding.nestedScrollView.setVisibility(View.VISIBLE);
+        binding.appbar.setVisibility(View.VISIBLE);
+
         if (MakeRequests.isInternetAvailable(getContext())) {
             binding.progressSyncing.setVisibility(View.VISIBLE);
             YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
-        } else {
-            String dateOfSaving = SharedPreferencesHelper.readFromPref(getContext().getResources().getString(R.string.time_of_last_save_key), getContext());
-            if (dateOfSaving != null)
-                MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "последнее сохранение \n" + dateOfSaving,
-                        MotionToast.TOAST_ERROR,
-                        MotionToast.GRAVITY_BOTTOM,
-                        MotionToast.LONG_DURATION,
-                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-            else {
-                MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", "попробуйте перезайти поже",
-                        MotionToast.TOAST_ERROR,
-                        MotionToast.GRAVITY_BOTTOM,
-                        MotionToast.LONG_DURATION,
-                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-            }
-        }
 
-        if (mUser != null && mUser.getName() != null)
-            binding.collapsingToolbar.setTitle(mUser.getName());
-        binding.nestedScrollView.setVisibility(View.VISIBLE);
-        binding.appbar.setVisibility(View.VISIBLE);
-        if (MakeRequests.isInternetAvailable(getContext())) {
             new ParseWeather(getContext(), onFindWeatherListener).execute();
             requests.new LoadUser(mUser.getLogin(), mUser.getPassword(), loadUserListener).execute();
+        } else {
+            String dateOfSaving = SharedPreferencesHelper.readFromPref(getContext().getResources().getString(R.string.time_of_last_save_key), getContext());
+            String outputText;
+            if (dateOfSaving != null)
+                outputText = "последнее сохранение \n" + dateOfSaving;
+            else {
+                outputText = "попробуйте перезайти поже";
+            }
+            MotionToast.Companion.createColorToast(getActivity(), "Нет интернет соединения", outputText,
+                    MotionToast.TOAST_ERROR,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.LONG_DURATION,
+                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
         }
     }
 
@@ -247,10 +245,10 @@ public class FragmentSettings extends Fragment {
                     @Override
                     public void onSelected(CentBankCurrency currency) {
                         Log.d(TAG, "onSelected: " + currency.getName() + " (isHidden - " + currency.isHidden() + ")");
-
+/*
                         if (mUser == null)
                             mUser = jsonManager.readUserFromJson().getUser();
-
+*/
                         if (!currency.isHidden()) {
                             mUser.getListCurrency().remove(currency.getCharCode());
                             mListCurrency.get(mListCurrency.indexOf(currency)).setHidden(true);
@@ -346,6 +344,12 @@ public class FragmentSettings extends Fragment {
         mUser.setName(SharedPreferencesHelper.readFromPref(
                 getContext().getResources().getString(R.string.name_key),
                 getContext()));
+        mUser.setLogin(SharedPreferencesHelper.readFromPref(
+                getContext().getResources().getString(R.string.login_key),
+                getContext()));
+        mUser.setPassword(SharedPreferencesHelper.readFromPref(
+                getContext().getResources().getString(R.string.password_key),
+                getContext()));
         mWeather.setTemperature(SharedPreferencesHelper.readFromPref(
                 getContext().getResources().getString(R.string.temperature_key),
                 getContext()));
@@ -429,7 +433,7 @@ public class FragmentSettings extends Fragment {
 
     private final DialogFragmentSureToLogOut.OnLogOutBtnClickedListener onLogOutBtnClickedListener = () -> {
         // deleting all information about user from json
-        jsonManager.writeDataToJson(new SavedData());
+        //jsonManager.writeDataToJson(new SavedData());
 
         // deleting all information about user from sharedPreferences
         SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
@@ -547,13 +551,18 @@ public class FragmentSettings extends Fragment {
         mUser.fillListThemes();
         new ParseCourse(parseCourseListener).execute();
 
+        SharedPreferencesHelper.writeToPref(
+                getContext().getResources().getString(R.string.name_key),
+                mUser.getName(),
+                getContext());
+
         if (mUser.getListHistory() != null) {
             mListHistory = mUser.getListHistory();
             saveHistoryToDb(History.getListFromStr(mListHistory));
         }
         if (mUser.getSites() != null) selectedSources = mUser.getSites();
 
-        binding.collapsingToolbar.setTitle(user.getName());
+        binding.collapsingToolbar.setTitle(mUser.getName());
         binding.tvCountThemes.setText(String.valueOf(mUser.getListHistory().size()));
         binding.tvCountTracking.setText(String.valueOf(mUser.getListThemes().size()));
     };
