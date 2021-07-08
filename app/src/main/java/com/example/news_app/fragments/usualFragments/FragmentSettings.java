@@ -306,6 +306,21 @@ public class FragmentSettings extends Fragment {
         }).start();
     }
 
+    private void clearDataFromPref(){
+        SharedPreferencesHelper.writeToPref(
+                getContext().getResources().getString(R.string.name_key),
+                null,
+                getContext());
+        SharedPreferencesHelper.writeToPref(
+                getContext().getResources().getString(R.string.login_key),
+                null,
+                getContext());
+        SharedPreferencesHelper.writeToPref(
+                getContext().getResources().getString(R.string.password_key),
+                null,
+                getContext());
+    }
+
     void saveCurrencyToDb(ArrayList<CentBankCurrency> listCurrency) {
         new Thread(() -> {
             dbHelper.getAppDataBase().getCurrencyDao().deleteAll();
@@ -443,6 +458,7 @@ public class FragmentSettings extends Fragment {
         edt.apply();
 
         clearDataInDb();
+        clearDataFromPref();
 
         fragmentSureToLogOut.dismiss();
         Intent intent = new Intent(getActivity(), ActivityMain.class);

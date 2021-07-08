@@ -31,6 +31,8 @@ import static com.example.news_app.R.string.no_internet;
 
 public class FragmentSignIn extends Fragment {
 
+    private static final String TAG = "FRAGMENT_SING_IN_SPACE";
+
     private User mUser;
     private MakeRequests requests;
     private String login, password;
@@ -54,12 +56,18 @@ public class FragmentSignIn extends Fragment {
     }
 
     private final MakeRequests.OnSingInListener singInListener = user -> {
-        Log.d("ADSF", "onSingIn: " + (user==null?"null":"not null"));
-        if (progressBar.isAdded())progressBar.dismiss();
+        Log.d(TAG, "onSingIn: " + (user == null ? "null" : "not null"));
+        if (progressBar.isAdded()) progressBar.dismiss();
 
-        if (user == null){
+        if (user == null) {
             loadDataFromPref();
             //savedData = jsonManager.readUserFromJson();
+
+            /*
+            Log.d(TAG, "login : " + mUser.getLogin());
+            Log.d(TAG, "password : " + mUser.getPassword());
+             */
+
             if (mUser.getLogin() == null || mUser.getPassword() == null) {
                 Toast.makeText(getContext(), getResources().getString(R.string.trouble_with_authorization),
                         Toast.LENGTH_LONG).show();
@@ -107,7 +115,7 @@ public class FragmentSignIn extends Fragment {
             return;
         }
 
-        if (!requests.isInternetAvailable(getContext())){
+        if (!requests.isInternetAvailable(getContext())) {
             Toast.makeText(getContext(), no_internet, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -156,7 +164,7 @@ public class FragmentSignIn extends Fragment {
                 getContext()));
     }
 
-   private void checkUser() {
+    private void checkUser() {
         SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
         login = pref.getString("login", "");
         password = pref.getString("password", "");

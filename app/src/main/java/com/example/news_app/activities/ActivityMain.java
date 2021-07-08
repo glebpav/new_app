@@ -13,6 +13,7 @@ import com.example.news_app.fragments.usualFragments.FragmentSignIn;
 import com.example.news_app.models.SavedData;
 import com.example.news_app.models.User;
 import com.example.news_app.network.MakeRequests;
+import com.example.news_app.network.ParseWeather;
 
 public class ActivityMain extends AppCompatActivity {
 
@@ -24,12 +25,16 @@ public class ActivityMain extends AppCompatActivity {
         SavedData savedData;
         DataBaseHelper.getDataBaseHelperInstance(this);
 
+        /*
         jsonManager = new JsonManager(this);
         savedData = jsonManager.readUserFromJson();
         if (!MakeRequests.isInternetAvailable(this) && savedData != null && savedData.getUser() != null) {
             gotoNextActivity(savedData.getUser());
         }
+        */
         setContentView(R.layout.activity_main);
+
+        ParseWeather parseWeather = new ParseWeather(this);
 
         getSupportFragmentManager().beginTransaction().add(R.id.MA, new FragmentSignIn()).commit();
     }

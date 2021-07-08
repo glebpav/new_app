@@ -211,6 +211,7 @@ public class User {
 
     public void clearThemes() {
         boolean isCleared;
+        if(themes == null || themes.length() == 0) return;
         do {
             isCleared = false;
             if (themes == null) return;

@@ -48,7 +48,7 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
     private static final int PERMISSION_ID = 44;
 
     private volatile boolean flag;
-    private final OnFindWeatherListener weatherListener;
+    private OnFindWeatherListener weatherListener;
 
     @SuppressLint("StaticFieldLeak")
     private final Context mContext;
@@ -59,6 +59,13 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
     public ParseWeather(Context mContext, OnFindWeatherListener weatherListener) {
         this.mContext = mContext;
         this.weatherListener = weatherListener;
+        flag = false;
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
+        getLocation();
+    }
+
+    public ParseWeather(Context mContext){
+        this.mContext = mContext;
         flag = false;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
         getLocation();
