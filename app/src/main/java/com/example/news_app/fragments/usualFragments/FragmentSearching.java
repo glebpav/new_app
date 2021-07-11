@@ -32,6 +32,7 @@ import com.example.news_app.fragments.dialogFragments.DialogFragmentProgressBar;
 import com.example.news_app.network.MakeRequests;
 import com.example.news_app.models.News;
 import com.example.news_app.models.User;
+import com.example.news_app.network.ParseWeather;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -109,6 +110,7 @@ public class FragmentSearching extends Fragment {
         comparatorArticlePositive = new ComparatorArticlePositive();
         comparatorArticleNegative = new ComparatorArticleNegative();
 
+        new ParseWeather(getContext());
         showingModel = 1;
         initChipArray();
 
@@ -192,6 +194,7 @@ public class FragmentSearching extends Fragment {
     };
 
     private final View.OnClickListener imgSortPositiveClicked = v -> {
+        //////////////////
         showingNews.sort(comparatorArticlePositive);
         adapterArticleBigTiles.setListNews(showingNews);
         adapterArticleSmallTiles.setListNews(showingNews);
@@ -278,11 +281,13 @@ public class FragmentSearching extends Fragment {
         fragmentProgressBar.dismiss();
         if (listNews != null) {
             mListNews = listNews;
+            showingNews = listNews;
 
             adapterArticleBigTiles.setListNews(listNews);
             adapterArticleSmallTiles.setListNews(listNews);
             adapterArticleSmallTiles.notifyDataSetChanged();
             binding.viewPager.setAdapter(adapterArticleBigTiles);
+
 
             switch (showingModel) {
                 case 1:

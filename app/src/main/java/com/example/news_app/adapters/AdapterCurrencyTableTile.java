@@ -57,7 +57,12 @@ public class AdapterCurrencyTableTile extends RecyclerView.Adapter<AdapterCurren
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         CentBankCurrency currency = listCurrency.get(position);
-        holder.binding.tvCurrencyName.setText(currency.getName());
+        String name = "";
+        if (currency.getName().length() > 23) {
+            name = currency.getName().substring(0, 20) + "...";
+        } else name = currency.getName();
+
+        holder.binding.tvCurrencyName.setText(name);
         holder.binding.tvCurrencyCharCode.setText(currency.getCharCode());
         holder.binding.tvValue.setText(String.format("%.2f", currency.getValue()));
 

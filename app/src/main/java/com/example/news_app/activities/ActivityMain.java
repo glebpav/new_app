@@ -20,38 +20,10 @@ public class ActivityMain extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        JsonManager jsonManager;
-        SavedData savedData;
-        DataBaseHelper.getDataBaseHelperInstance(this);
-
-        /*
-        jsonManager = new JsonManager(this);
-        savedData = jsonManager.readUserFromJson();
-        if (!MakeRequests.isInternetAvailable(this) && savedData != null && savedData.getUser() != null) {
-            gotoNextActivity(savedData.getUser());
-        }
-        */
         setContentView(R.layout.activity_main);
-
-        ParseWeather parseWeather = new ParseWeather(this);
+        DataBaseHelper.getDataBaseHelperInstance(this);
+        new ParseWeather(this);
 
         getSupportFragmentManager().beginTransaction().add(R.id.MA, new FragmentSignIn()).commit();
     }
-
-    public void gotoNextActivity(User user) {
-        Intent intent = new Intent(this, ActivityNews.class);
-        intent.putExtra("id", user.getId());
-        intent.putExtra("name", user.getName());
-        intent.putExtra("login", user.getLogin());
-        intent.putExtra("password", user.getLogin());
-        intent.putExtra("history", user.getHistory());
-        intent.putExtra("themes", user.getThemes());
-        intent.putExtra("password", user.getPassword());
-        intent.putExtra("sites", user.getSites());
-        intent.putExtra("currency", user.getCurrency());
-        startActivity(intent);
-    }
-
-
 }

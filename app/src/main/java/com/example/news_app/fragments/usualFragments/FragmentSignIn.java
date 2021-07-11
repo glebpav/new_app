@@ -61,8 +61,6 @@ public class FragmentSignIn extends Fragment {
 
         if (user == null) {
             loadDataFromPref();
-            //savedData = jsonManager.readUserFromJson();
-
             /*
             Log.d(TAG, "login : " + mUser.getLogin());
             Log.d(TAG, "password : " + mUser.getPassword());
@@ -74,15 +72,6 @@ public class FragmentSignIn extends Fragment {
                 return;
             }
 
-            /*
-            if (binding.cbRememberMe.isChecked()) {
-                SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-                SharedPreferences.Editor edt = pref.edit();
-                edt.putString("login", savedData.getLogin());
-                edt.putString("password", savedData.getPassword());
-                edt.apply();
-            }
-            Log.d("TAG", "onSingIn: " + savedData.getId());*/
             gotoNextActivity(mUser);
             return;
         }

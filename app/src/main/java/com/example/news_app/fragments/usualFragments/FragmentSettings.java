@@ -1,11 +1,14 @@
 package com.example.news_app.fragments.usualFragments;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -115,6 +118,7 @@ public class FragmentSettings extends Fragment {
         binding.recyclerViewSettings.setLayoutManager(new GridLayoutManager(getContext(), 2));
         binding.recyclerViewCurrency.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
+        Log.d(TAG, "onCreateView: on create");
         return binding.getRoot();
     }
 
@@ -123,6 +127,7 @@ public class FragmentSettings extends Fragment {
     public void onResume() {
         super.onResume();
 
+        Log.d(TAG, "onResume: is Resuming");
         dbHelper = DataBaseHelper.getDataBaseHelperInstance(getContext());
 
         dbHelper.new GetCurrencies(onGetCurrencyListener).execute();
@@ -144,7 +149,14 @@ public class FragmentSettings extends Fragment {
             binding.progressSyncing.setVisibility(View.VISIBLE);
             YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.progressSyncing);
 
-            new ParseWeather(getContext(), onFindWeatherListener).execute();
+            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                new ParseWeather(getContext(), onFindWeatherListener).execute();
+            } else {
+                binding.layoutWeather.setVisibility(View.INVISIBLE);
+            }
+            Log.d(TAG, "onResume: out of weather");
             requests.new LoadUser(mUser.getLogin(), mUser.getPassword(), loadUserListener).execute();
         } else {
             String dateOfSaving = SharedPreferencesHelper.readFromPref(getContext().getResources().getString(R.string.time_of_last_save_key), getContext());
@@ -306,7 +318,7 @@ public class FragmentSettings extends Fragment {
         }).start();
     }
 
-    private void clearDataFromPref(){
+    private void clearDataFromPref() {
         SharedPreferencesHelper.writeToPref(
                 getContext().getResources().getString(R.string.name_key),
                 null,
@@ -382,24 +394,30 @@ public class FragmentSettings extends Fragment {
     }
 
     void printWeather() {
-        try {
-            int tempInt = (int) Double.parseDouble(mWeather.getTemperature());
-            binding.tvTemp.setText(tempInt + "°");
-        } catch (Exception e) {
+
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            try {
+                int tempInt = (int) Double.parseDouble(mWeather.getTemperature());
+                binding.tvTemp.setText(tempInt + "°");
+            } catch (Exception e) {
+            }
+
+            binding.tvWeatherDesc.setText(mWeather.getWeatherDesc());
+            binding.imgWeatherDesc.setOnClickListener(v -> {
+                MotionToast.Companion.createColorToast(getActivity(), "Описание погоды", mWeather.getWeatherDesc(),
+                        MotionToast.TOAST_INFO,
+                        MotionToast.GRAVITY_BOTTOM,
+                        MotionToast.LONG_DURATION,
+                        ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
+            });
+
+            Picasso.with(getContext()).load(mWeather.getIconUrl()).into(binding.imgWeatherDesc);
+            YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.imgWeatherDesc);
+        } else {
+            binding.layoutWeather.setVisibility(View.INVISIBLE);
         }
-
-        binding.tvWeatherDesc.setText(mWeather.getWeatherDesc());
-
-        binding.imgWeatherDesc.setOnClickListener(v -> {
-            MotionToast.Companion.createColorToast(getActivity(), "Описание погоды", mWeather.getWeatherDesc(),
-                    MotionToast.TOAST_INFO,
-                    MotionToast.GRAVITY_BOTTOM,
-                    MotionToast.LONG_DURATION,
-                    ResourcesCompat.getFont(getContext(), R.font.helvetica_regular));
-        });
-
-        Picasso.with(getContext()).load(mWeather.getIconUrl()).into(binding.imgWeatherDesc);
-        YoYo.with(Techniques.BounceIn).duration(500).repeat(0).playOn(binding.imgWeatherDesc);
     }
 
     private final DialogFragmentHistory.OnAdapterTileHistoryClickedListener adapterTileHistoryClickedListener = position -> {
@@ -498,8 +516,10 @@ public class FragmentSettings extends Fragment {
 
     @SuppressLint("SetTextI18n")
     private final ParseWeather.OnFindWeatherListener onFindWeatherListener = weather -> {
+        Log.d(TAG, "weather loaded");
         if (weather != null) {
             mWeather = weather;
+            Log.d(TAG, "weather : " + weather.getTemperature());
             printWeather();
             saveWeatherToPref(weather);
             SharedPreferencesHelper.writeToPref(
@@ -570,6 +590,11 @@ public class FragmentSettings extends Fragment {
         SharedPreferencesHelper.writeToPref(
                 getContext().getResources().getString(R.string.name_key),
                 mUser.getName(),
+                getContext());
+        Log.d(TAG, "listCurrency : " + user.getCurrency());
+        SharedPreferencesHelper.writeToPref(
+                getContext().getResources().getString(R.string.selected_currency_key),
+                mUser.getCurrency(),
                 getContext());
 
         if (mUser.getListHistory() != null) {

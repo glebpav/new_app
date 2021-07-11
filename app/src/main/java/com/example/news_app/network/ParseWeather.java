@@ -53,8 +53,8 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
     @SuppressLint("StaticFieldLeak")
     private final Context mContext;
     private FusedLocationProviderClient mFusedLocationClient;
-    private String latitude;
-    private String longitude;
+    private volatile String latitude;
+    private volatile String longitude;
 
     public ParseWeather(Context mContext, OnFindWeatherListener weatherListener) {
         this.mContext = mContext;
@@ -75,8 +75,10 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
     private void getLocation() {
         // check if permissions are given
         if (checkPermissions()) {
+            Log.d(TAG, "getLocation: permissions are given");
             // check if location is enabled
             if (isLocationEnabled()) {
+                Log.d(TAG, "getLocation: location is enabled");
                 // getting last location from FusedLocationClient object
                 mFusedLocationClient.getLastLocation().addOnCompleteListener(task -> {
                     Location location = task.getResult();
@@ -87,7 +89,6 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
                         longitude = String.valueOf(location.getLongitude());
                         Log.d(TAG, "lat : " + latitude);
                         Log.d(TAG, "lon : " + longitude);
-                        flag = true;
                     }
                 });
             } else {
@@ -99,6 +100,7 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
             // if permissions aren't available, request for permissions
             requestPermissions();
         }
+        flag = true;
     }
 
     @SuppressLint("MissingPermission")
@@ -125,7 +127,10 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
     };
 
     // method to check for permissions
-    private boolean checkPermissions() {
+    public boolean checkPermissions() {
+        Log.d(TAG, "checkPermissions: " + ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION));
+        Log.d(TAG, "checkPermissions: " + ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION));
+
         return ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
@@ -150,7 +155,7 @@ public class ParseWeather extends AsyncTask<Void, Void, String> {
         String responseStr = "";
         OkHttpClient client = new OkHttpClient();
 
-        while(!flag){}
+        while(latitude == null || longitude == null){}
 
         Log.d(TAG, "doInBackground: " + OPEN_WEATHER_API_URL_1 + latitude
                 + OPEN_WEATHER_API_URL_2 + longitude
